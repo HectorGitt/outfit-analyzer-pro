@@ -217,8 +217,8 @@ export default function Profile() {
 		<div className="min-h-screen bg-gradient-hero">
 			<Navbar />
 
-			<div className="w-full px-4 py-8">
-				<div className="w-full max-w-none mx-auto">
+			<div className="container mx-auto px-4 py-8">
+				<div className="max-w-4xl mx-auto">
 					{/* Header */}
 					<div className="text-center mb-8 animate-fade-up">
 						<div className="inline-flex items-center justify-center w-16 h-16 bg-primary/10 rounded-full mb-4">
