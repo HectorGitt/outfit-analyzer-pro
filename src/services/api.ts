@@ -6,6 +6,7 @@ import {
 	User,
 	UserPreferences,
 	Token,
+	PersonalStyleGuide,
 } from "@/types";
 
 // Authentication API endpoints
@@ -31,7 +32,7 @@ export const userAPI = {
 		apiCall<User>("PUT", "/users/profile", userData),
 
 	updatePreferences: (preferences: UserPreferences) =>
-		apiCall<UserPreferences>("PUT", "/users/preferences", preferences),
+		apiCall<PersonalStyleGuide>("PUT", "/users/preferences", preferences),
 
 	getPreferences: () => apiCall<UserPreferences>("GET", `/users/preferences`),
 
