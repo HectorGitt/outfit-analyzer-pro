@@ -52,6 +52,10 @@ export const fashionAPI = {
 
 	getAnalysisById: (id: string) =>
 		apiCall<any>("GET", `/fashion/analysis/${id}`),
+
+	getLeaderboard: () => apiCall<any>("GET", "/fashion/leaderboard"),
+
+	getFashionIcon: () => apiCall<any>("GET", "/fashion/fashion-icon"),
 };
 
 // Admin API endpoints

@@ -556,9 +556,9 @@ export default function Camera() {
 						</p>
 					</div>
 
-					<div className="grid lg:grid-cols-2 gap-8">
+					<div className="flex flex-col lg:flex-row gap-8">
 						{/* Camera Section */}
-						<div className="space-y-6">
+						<div className="lg:w-1/2 space-y-6">
 							{error && (
 								<Alert variant="destructive">
 									<AlertCircle className="h-4 w-4" />
@@ -858,7 +858,7 @@ export default function Camera() {
 						</div>
 
 						{/* Analysis Results */}
-						<div className="space-y-6">
+						<div className="lg:w-1/2 space-y-6">
 							{isAnalyzing && (
 								<Card className="card-fashion">
 									<CardContent className="flex items-center justify-center py-12">
