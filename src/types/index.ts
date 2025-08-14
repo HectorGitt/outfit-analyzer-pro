@@ -9,6 +9,17 @@ export interface User {
 	updatedAt: string;
 }
 
+export interface PersonalStyleGuide {
+	message: string;
+	personal_style_guide: {
+		style_principles: string[] | string;
+		color_palette: string[] | string;
+		essential_pieces: string[] | string;
+		shopping_priorities: string[] | string;
+		styling_tips: string[] | string;
+	};
+}
+
 export interface UserPreferences {
 	style_preference: string[];
 	color_preferences: string[];
