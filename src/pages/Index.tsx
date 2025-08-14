@@ -15,6 +15,9 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Navbar } from "@/components/navigation/navbar";
+import { Leaderboard, FashionIconCard } from "@/components/ui/leaderboard";
+import { fashionAPI } from "@/services/api";
+import { useQuery } from "@tanstack/react-query";
 import heroImage from "@/assets/hero-fashion.jpg";
 
 import AOS from "aos";
@@ -28,6 +31,20 @@ const Index = () => {
 			once: true,
 		});
 	}, []);
+
+	// Fetch leaderboard data
+	const { data: leaderboardData } = useQuery({
+		queryKey: ["leaderboard"],
+		queryFn: fashionAPI.getLeaderboard,
+		staleTime: 5 * 60 * 1000, // 5 minutes
+	});
+
+	// Fetch fashion icon data
+	const { data: fashionIconData } = useQuery({
+		queryKey: ["fashionIcon"],
+		queryFn: fashionAPI.getFashionIcon,
+		staleTime: 5 * 60 * 1000, // 5 minutes
+	});
 	const features = [
 		{
 			icon: <Upload className="w-6 h-6" />,
@@ -217,8 +234,43 @@ const Index = () => {
 				</div>
 			</section>
 
-			{/* How It Works */}
+			{/* Leaderboards Section */}
 			<section className="py-20 bg-gradient-secondary">
+				<div className="container mx-auto px-4">
+					<div className="text-center mb-16">
+						<h2 className="text-4xl font-bold mb-4">
+							Community Champions
+						</h2>
+						<p className="text-xl text-muted-foreground">
+							Celebrate our top fashion enthusiasts and style icons
+						</p>
+					</div>
+
+					<div className="grid lg:grid-cols-2 gap-8 max-w-6xl mx-auto">
+						{/* Analysis Leaderboard */}
+						<div>
+							{leaderboardData?.success && (
+								<Leaderboard
+									users={leaderboardData.data.leaderboard.slice(0, 5)}
+									title="Top Analyzers"
+								/>
+							)}
+						</div>
+
+						{/* Fashion Icon */}
+						<div>
+							{fashionIconData?.success && (
+								<FashionIconCard
+									icon={fashionIconData.data.fashion_icon}
+								/>
+							)}
+						</div>
+					</div>
+				</div>
+			</section>
+
+			{/* How It Works */}
+			<section className="py-20">
 				<div className="container mx-auto px-4">
 					<div className="text-center mb-16">
 						<h2 className="text-4xl font-bold mb-4">
