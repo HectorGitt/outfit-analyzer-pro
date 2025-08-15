@@ -160,6 +160,10 @@ export default function Camera() {
 					});
 
 					setCapturedImage(imageData);
+
+					// Stop the camera after capturing the image
+					stopCamera();
+					console.log("📵 Camera stopped after capture");
 				} catch (error) {
 					console.error("❌ Error capturing photo:", error);
 					setError("Failed to capture photo. Please try again.");
@@ -493,6 +497,8 @@ export default function Camera() {
 		setCapturedImage(null);
 		setAnalysisResult(null);
 		setError(null);
+		// Restart the camera when retaking
+		startCamera();
 	};
 
 	useEffect(() => {

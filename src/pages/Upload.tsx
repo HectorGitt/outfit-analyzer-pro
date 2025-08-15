@@ -7,6 +7,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useAuthStore } from "@/stores/authStore";
 import { fashionAPI } from "@/services/api";
 import { FashionAnalysisResponse, ApiResponse } from "@/types";
+import { Navbar } from "@/components/navigation/navbar";
 
 export default function Upload() {
 	const [analysisResult, setAnalysisResult] =
@@ -59,6 +60,7 @@ export default function Upload() {
 
 	return (
 		<div className="min-h-screen bg-gradient-hero">
+			<Navbar />
 			<div className="container mx-auto px-4 py-8">
 				<div className="max-w-4xl mx-auto">
 					{/* Header */}

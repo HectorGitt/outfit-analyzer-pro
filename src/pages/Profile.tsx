@@ -25,7 +25,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Navbar } from "@/components/navigation/navbar";
 import { Badge } from "@/components/ui/badge";
 import { userAPI } from "@/services/api";
-import { UserPreferences } from "@/types";
+import { UserPreferences, PersonalStyleGuide } from "@/types";
 import { useAuthStore } from "@/stores/authStore";
 
 export default function Profile() {
@@ -33,9 +33,12 @@ export default function Profile() {
 	const [preferences, setPreferences] = useState<UserPreferences | null>(
 		null
 	);
+	const [personal_style_guide, setPersonalStyleGuide] =
+		useState<PersonalStyleGuide | null>(null);
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
 	const [saving, setSaving] = useState(false);
+	const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
 	const [selectedStyles, setSelectedStyles] = useState<string[]>([]);
 	const [selectedColors, setSelectedColors] = useState<string[]>([]);
@@ -190,6 +193,7 @@ export default function Profile() {
 
 		setSaving(true);
 		setError(null);
+		setSuccessMessage(null);
 
 		try {
 			const updatedPreferences: UserPreferences = {
@@ -200,8 +204,50 @@ export default function Profile() {
 				budget_range: budgetRange,
 			};
 
-			await userAPI.updatePreferences(updatedPreferences);
+			const response = await userAPI.updatePreferences(
+				updatedPreferences
+			);
+			console.log("Update preferences response:", response);
+			console.log("Response data:", response.data);
+			console.log(
+				"Response structure:",
+				typeof response.data,
+				Object.keys(response.data || {})
+			);
+
+			// Update the preferences state
 			setPreferences(updatedPreferences);
+
+			// Handle the PersonalStyleGuide response - try multiple possible structures
+			let styleGuideData = null;
+
+			// Check if response.data directly contains personal_style_guide
+			if (response.data?.personal_style_guide) {
+				styleGuideData = response.data;
+			}
+			/* // Check if response itself contains personal_style_guide
+			else if (response.personal_style_guide) {
+				styleGuideData = response;
+			}
+			// Check if response.data.data contains personal_style_guide
+			else if (response.data?.data?.personal_style_guide) {
+				styleGuideData = response.data.data;
+			}
+ */
+			if (styleGuideData) {
+				console.log("Setting personal style guide:", styleGuideData);
+				setPersonalStyleGuide(styleGuideData);
+				setSuccessMessage(
+					"Preferences saved and personal style guide generated!"
+				);
+			} else {
+				console.log("No personal style guide found in response");
+				console.log(
+					"Available keys:",
+					Object.keys(response.data || response || {})
+				);
+				setSuccessMessage("Preferences saved successfully!");
+			}
 
 			// Show success message (you could add a toast here)
 			console.log("Preferences saved successfully!");
@@ -241,6 +287,16 @@ export default function Profile() {
 						</Alert>
 					)}
 
+					{/* Success Alert */}
+					{successMessage && (
+						<Alert className="mb-6">
+							<AlertCircle className="h-4 w-4" />
+							<AlertDescription>
+								{successMessage}
+							</AlertDescription>
+						</Alert>
+					)}
+
 					{/* Loading State */}
 					{loading && (
 						<div className="text-center py-8">
@@ -248,6 +304,33 @@ export default function Profile() {
 							<p className="mt-2 text-muted-foreground">
 								Loading preferences...
 							</p>
+						</div>
+					)}
+
+					{/* Debug Info */}
+					{process.env.NODE_ENV === "development" && (
+						<div className="mb-4 p-4 bg-gray-100 rounded-lg text-sm">
+							<h3 className="font-bold">Debug Info:</h3>
+							<p>
+								Personal Style Guide State:{" "}
+								{personal_style_guide ? "Present" : "null"}
+							</p>
+							<p>
+								Style Guide Keys:{" "}
+								{personal_style_guide
+									? Object.keys(personal_style_guide).join(
+											", "
+									  )
+									: "none"}
+							</p>
+							{personal_style_guide?.personal_style_guide && (
+								<p>
+									Inner Keys:{" "}
+									{Object.keys(
+										personal_style_guide.personal_style_guide
+									).join(", ")}
+								</p>
+							)}
 						</div>
 					)}
 
@@ -426,80 +509,120 @@ export default function Profile() {
 									</CardContent>
 								</Card>
 
-								{/* Additional Preferences */}
-								<Card className="card-fashion">
-									<CardHeader>
-										<CardTitle>
-											Additional Preferences
-										</CardTitle>
-									</CardHeader>
-									<CardContent className="space-y-6">
-										<div className="grid md:grid-cols-2 gap-4">
-											<div>
-												<Label htmlFor="bodyType">
-													Body Type
-												</Label>
-												<Select
-													value={bodyType}
-													onValueChange={setBodyType}
-												>
-													<SelectTrigger className="input-fashion">
-														<SelectValue placeholder="Select body type" />
-													</SelectTrigger>
-													<SelectContent>
-														{bodyTypes.map(
-															(type) => (
-																<SelectItem
-																	key={type}
-																	value={type.toLowerCase()}
-																>
-																	{type}
-																</SelectItem>
-															)
+								{/* Personal Style Guide - Separate Card */}
+								{personal_style_guide?.personal_style_guide && (
+									<Card className="card-fashion">
+										<CardHeader>
+											<CardTitle className="flex items-center gap-2">
+												<Heart className="w-5 h-5 text-primary" />
+												Your Personal Style Guide
+											</CardTitle>
+										</CardHeader>
+										<CardContent className="space-y-6">
+											{[
+												{
+													label: "Style Principles",
+													key: "style_principles",
+												},
+												{
+													label: "Color Palette",
+													key: "color_palette",
+												},
+												{
+													label: "Essential Pieces",
+													key: "essential_pieces",
+												},
+												{
+													label: "Shopping Priorities",
+													key: "shopping_priorities",
+												},
+												{
+													label: "Styling Tips",
+													key: "styling_tips",
+												},
+											].map(({ label, key }) => {
+												const value =
+													personal_style_guide
+														?.personal_style_guide?.[
+														key as keyof typeof personal_style_guide.personal_style_guide
+													];
+												if (!value) return null;
+												return (
+													<div
+														key={key}
+														className="space-y-2"
+													>
+														<Label className="font-semibold text-lg">
+															{label}
+														</Label>
+														{Array.isArray(
+															value
+														) ? (
+															<ul className="list-disc pl-6 text-muted-foreground space-y-1">
+																{value.map(
+																	(
+																		item: string,
+																		idx: number
+																	) => (
+																		<li
+																			key={
+																				idx
+																			}
+																			className="leading-relaxed"
+																		>
+																			{
+																				item
+																			}
+																		</li>
+																	)
+																)}
+															</ul>
+														) : typeof value ===
+																"object" &&
+														  value !== null ? (
+															<div className="text-muted-foreground space-y-1">
+																{Object.entries(
+																	value
+																).map(
+																	(
+																		[
+																			key,
+																			val,
+																		],
+																		idx
+																	) => (
+																		<p
+																			key={
+																				idx
+																			}
+																			className="leading-relaxed"
+																		>
+																			<span className="font-medium capitalize">
+																				{key.replace(
+																					/_/g,
+																					" "
+																				)}
+
+																				:
+																			</span>{" "}
+																			{String(
+																				val
+																			)}
+																		</p>
+																	)
+																)}
+															</div>
+														) : (
+															<p className="text-muted-foreground whitespace-pre-line leading-relaxed">
+																{String(value)}
+															</p>
 														)}
-													</SelectContent>
-												</Select>
-											</div>
-											<div>
-												<Label htmlFor="budget">
-													Budget Range
-												</Label>
-												<Select
-													value={budgetRange}
-													onValueChange={
-														setBudgetRange
-													}
-												>
-													<SelectTrigger className="input-fashion">
-														<SelectValue placeholder="Select budget range" />
-													</SelectTrigger>
-													<SelectContent>
-														{budgetRanges.map(
-															(range) => (
-																<SelectItem
-																	key={range}
-																	value={range.toLowerCase()}
-																>
-																	{range}
-																</SelectItem>
-															)
-														)}
-													</SelectContent>
-												</Select>
-											</div>
-										</div>
-										<div>
-											<Label htmlFor="notes">
-												Style Notes
-											</Label>
-											<Textarea
-												id="notes"
-												placeholder="Tell us more about your style preferences, favorite brands, or specific requirements..."
-												className="input-fashion min-h-[100px]"
-											/>
-										</div>
-									</CardContent>
-								</Card>
+													</div>
+												);
+											})}
+										</CardContent>
+									</Card>
+								)}
 
 								{/* Save Button */}
 								<div className="flex justify-end">

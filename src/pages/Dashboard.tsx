@@ -7,6 +7,7 @@ import {
 	Filter,
 	Download,
 	AlertCircle,
+	RefreshCw,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -17,6 +18,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useAuthStore } from "@/stores/authStore";
 import { fashionAPI } from "@/services/api";
 import { FashionAnalysis } from "@/types";
+import { Navbar } from "@/components/navigation/navbar";
 
 export default function Dashboard() {
 	const [timeRange, setTimeRange] = useState("30d");
@@ -27,33 +29,80 @@ export default function Dashboard() {
 	const [error, setError] = useState<string | null>(null);
 	const { user } = useAuthStore();
 
-	useEffect(() => {
-		const fetchDashboardData = async () => {
-			try {
-				setLoading(true);
-				const response = await fashionAPI.getAnalysisHistory();
-				setAnalysisHistory(response.data);
-			} catch (err) {
-				setError(
-					err instanceof Error
-						? err.message
-						: "Failed to load dashboard data"
-				);
-			} finally {
-				setLoading(false);
-			}
-		};
+	const fetchDashboardData = async () => {
+		try {
+			setLoading(true);
+			setError(null); // Clear any previous errors
+			console.log("Fetching dashboard data...");
+			console.log("User:", user);
 
+			const response = await fashionAPI.getAnalysisHistory();
+			console.log("Dashboard API Response:", response);
+			console.log("Response type:", typeof response);
+			console.log("Response data:", response.data);
+
+			// Handle the nested response structure
+			if (response.data && response.data.history) {
+				console.log(
+					"Using response.data.history:",
+					response.data.history
+				);
+				setAnalysisHistory(response.data.history);
+			} else if (
+				response.data &&
+				response.data.data &&
+				response.data.data.history
+			) {
+				console.log(
+					"Using nested history data:",
+					response.data.data.history
+				);
+				setAnalysisHistory(response.data.data.history);
+			} else if (response.data && Array.isArray(response.data)) {
+				console.log("Using direct array data:", response.data);
+				setAnalysisHistory(response.data);
+			} else if (
+				response &&
+				response.data &&
+				Array.isArray(response.data)
+			) {
+				console.log("Using response.data array:", response.data);
+				setAnalysisHistory(response.data);
+			} else {
+				console.log("No valid data found, setting empty array");
+				console.log(
+					"Response structure:",
+					JSON.stringify(response, null, 2)
+				);
+				setAnalysisHistory([]);
+			}
+		} catch (err) {
+			console.error("Dashboard fetch error:", err);
+			setError(
+				err instanceof Error
+					? err.message
+					: "Failed to load dashboard data"
+			);
+		} finally {
+			setLoading(false);
+		}
+	};
+
+	useEffect(() => {
 		if (user) {
 			fetchDashboardData();
+		} else {
+			console.log("No user found, skipping fetch");
+			setLoading(false);
 		}
 	}, [user]);
 
 	const stats = [
 		{
-			label: "Analyses This Month",
+			label: "Total Analyses",
 			value: analysisHistory.length.toString(),
-			change: "+12%",
+			change:
+				analysisHistory.length > 0 ? `+${analysisHistory.length}` : "0",
 			trend: "up",
 		},
 		{
@@ -62,42 +111,41 @@ export default function Dashboard() {
 				analysisHistory.length > 0
 					? Math.round(
 							analysisHistory.reduce(
-								(acc, a) => acc + a.overall_score,
+								(acc, a) => acc + (a.overall_score || 0),
 								0
 							) / analysisHistory.length
 					  ).toString()
 					: "0",
-			change: "+5%",
+			change: analysisHistory.length > 0 ? "+5%" : "0%",
 			trend: "up",
 		},
-		{ label: "Wardrobe Items", value: "156", change: "+8%", trend: "up" },
-		{ label: "Style Achievements", value: "12", change: "+3", trend: "up" },
-	];
-
-	const recentAnalyses = [
 		{
-			id: 1,
-			date: "2024-01-15",
-			image: "/api/placeholder/150/200",
-			score: 88,
-			title: "Business Casual Look",
-			suggestions: ["Add statement jewelry", "Try a belt"],
+			label: "Average Color Harmony",
+			value:
+				analysisHistory.length > 0
+					? Math.round(
+							analysisHistory.reduce(
+								(acc, a) => acc + (a.color_harmony || 0),
+								0
+							) / analysisHistory.length
+					  ).toString()
+					: "0",
+			change: analysisHistory.length > 0 ? "+3%" : "0%",
+			trend: "up",
 		},
 		{
-			id: 2,
-			date: "2024-01-14",
-			image: "/api/placeholder/150/200",
-			score: 92,
-			title: "Weekend Casual",
-			suggestions: ["Perfect color harmony", "Great fit"],
-		},
-		{
-			id: 3,
-			date: "2024-01-13",
-			image: "/api/placeholder/150/200",
-			score: 76,
-			title: "Evening Outfit",
-			suggestions: ["Consider different shoes", "Add layering"],
+			label: "Style Coherence",
+			value:
+				analysisHistory.length > 0
+					? Math.round(
+							analysisHistory.reduce(
+								(acc, a) => acc + (a.style_coherence || 0),
+								0
+							) / analysisHistory.length
+					  ).toString()
+					: "0",
+			change: analysisHistory.length > 0 ? "+4%" : "0%",
+			trend: "up",
 		},
 	];
 
@@ -131,6 +179,7 @@ export default function Dashboard() {
 
 	return (
 		<div className="min-h-screen bg-gradient-hero">
+			<Navbar />
 			<div className="container mx-auto px-4 py-8">
 				<div className="max-w-7xl mx-auto">
 					{/* Header */}
@@ -149,6 +198,19 @@ export default function Dashboard() {
 							)}
 						</div>
 						<div className="flex items-center gap-4 mt-4 md:mt-0">
+							<Button
+								variant="outline"
+								className="gap-2"
+								onClick={fetchDashboardData}
+								disabled={loading}
+							>
+								<RefreshCw
+									className={`w-4 h-4 ${
+										loading ? "animate-spin" : ""
+									}`}
+								/>
+								{loading ? "Loading..." : "Refresh Data"}
+							</Button>
 							<Button variant="outline" className="gap-2">
 								<Filter className="w-4 h-4" />
 								Filter
@@ -386,36 +448,171 @@ export default function Dashboard() {
 									</CardTitle>
 								</CardHeader>
 								<CardContent>
-									<div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-										{recentAnalyses
-											.concat(recentAnalyses)
-											.map((analysis, index) => (
+									{loading ? (
+										<div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+											{[...Array(6)].map((_, index) => (
 												<div
 													key={index}
-													className="bg-muted/50 rounded-lg p-4 space-y-3"
+													className="bg-muted/50 rounded-lg p-4 space-y-3 animate-pulse"
 												>
-													<div className="aspect-[3/4] bg-muted rounded-lg flex items-center justify-center">
-														<span className="text-muted-foreground">
-															IMG
-														</span>
-													</div>
-													<div>
-														<div className="flex items-center justify-between mb-2">
-															<h4 className="font-medium">
-																{analysis.title}
-															</h4>
-															<Badge variant="outline">
-																{analysis.score}
-																/100
-															</Badge>
-														</div>
-														<p className="text-sm text-muted-foreground">
-															{analysis.date}
-														</p>
+													<div className="aspect-[3/4] bg-muted rounded-lg"></div>
+													<div className="space-y-2">
+														<div className="h-4 bg-muted rounded w-3/4"></div>
+														<div className="h-3 bg-muted rounded w-1/2"></div>
 													</div>
 												</div>
 											))}
-									</div>
+										</div>
+									) : analysisHistory.length > 0 ? (
+										<div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+											{analysisHistory.map((analysis) => (
+												<div
+													key={analysis.id}
+													className="bg-muted/50 rounded-lg p-4 space-y-3 hover:bg-muted/70 transition-colors"
+												>
+													<div className="aspect-[3/4] bg-muted rounded-lg flex items-center justify-center overflow-hidden">
+														{analysis.image_url ? (
+															<img
+																src={
+																	analysis.image_url
+																}
+																alt="Outfit analysis"
+																className="w-full h-full object-cover"
+															/>
+														) : (
+															<div className="text-center">
+																<BarChart3 className="w-8 h-8 text-muted-foreground mx-auto mb-2" />
+																<span className="text-xs text-muted-foreground">
+																	No Image
+																</span>
+															</div>
+														)}
+													</div>
+													<div>
+														<div className="flex items-center justify-between mb-2">
+															<h4 className="font-medium text-sm">
+																Style Analysis #
+																{analysis.id}
+															</h4>
+															<Badge
+																variant="outline"
+																className="text-xs"
+															>
+																{
+																	analysis.overall_score
+																}
+																/100
+															</Badge>
+														</div>
+														<p className="text-xs text-muted-foreground mb-2">
+															{new Date(
+																analysis.created_at
+															).toLocaleDateString(
+																"en-US",
+																{
+																	year: "numeric",
+																	month: "short",
+																	day: "numeric",
+																}
+															)}
+														</p>
+														<div className="space-y-2">
+															<div className="flex items-center gap-2 text-xs">
+																<span className="font-medium">
+																	Color:
+																</span>
+																<Badge
+																	variant="secondary"
+																	className="text-xs"
+																>
+																	{
+																		analysis.color_harmony
+																	}
+																	/100
+																</Badge>
+															</div>
+															<div className="flex items-center gap-2 text-xs">
+																<span className="font-medium">
+																	Style:
+																</span>
+																<Badge
+																	variant="secondary"
+																	className="text-xs"
+																>
+																	{
+																		analysis.style_coherence
+																	}
+																	/100
+																</Badge>
+															</div>
+														</div>
+														{analysis.analysis_text && (
+															<p className="text-xs text-muted-foreground mt-2 line-clamp-2">
+																{
+																	analysis.analysis_text
+																}
+															</p>
+														)}
+														{analysis.suggestions &&
+															analysis.suggestions
+																.length > 0 && (
+																<div className="flex flex-wrap gap-1 mt-2">
+																	{analysis.suggestions
+																		.slice(
+																			0,
+																			2
+																		)
+																		.map(
+																			(
+																				suggestion,
+																				idx
+																			) => (
+																				<span
+																					key={
+																						idx
+																					}
+																					className="text-xs bg-primary/10 text-primary px-2 py-1 rounded"
+																				>
+																					{
+																						suggestion
+																					}
+																				</span>
+																			)
+																		)}
+																	{analysis
+																		.suggestions
+																		.length >
+																		2 && (
+																		<span className="text-xs text-muted-foreground">
+																			+
+																			{analysis
+																				.suggestions
+																				.length -
+																				2}{" "}
+																			more
+																		</span>
+																	)}
+																</div>
+															)}
+													</div>
+												</div>
+											))}
+										</div>
+									) : (
+										<div className="text-center py-12">
+											<Calendar className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
+											<h3 className="text-lg font-medium mb-2">
+												No Analysis History
+											</h3>
+											<p className="text-muted-foreground mb-4">
+												You haven't analyzed any outfits
+												yet.
+											</p>
+											<Button className="btn-gradient">
+												Start Your First Analysis
+											</Button>
+										</div>
+									)}
 								</CardContent>
 							</Card>
 						</TabsContent>
