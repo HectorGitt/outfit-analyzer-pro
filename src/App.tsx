@@ -12,6 +12,8 @@ import Camera from "./pages/Camera";
 import Profile from "./pages/Profile";
 import Dashboard from "./pages/Dashboard";
 import Admin from "./pages/Admin";
+import CalendarConnect from "./pages/CalendarConnect";
+import CalendarView from "./pages/CalendarView";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -63,6 +65,22 @@ const App = () => (
 						element={
 							<ProtectedRoute requireAdmin>
 								<Admin />
+							</ProtectedRoute>
+						}
+					/>
+					<Route
+						path="/calendar-connect"
+						element={
+							<ProtectedRoute>
+								<CalendarConnect />
+							</ProtectedRoute>
+						}
+					/>
+					<Route
+						path="/calendar-view"
+						element={
+							<ProtectedRoute>
+								<CalendarView />
 							</ProtectedRoute>
 						}
 					/>
