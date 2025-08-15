@@ -7,6 +7,8 @@ import {
 	Save,
 	Camera,
 	AlertCircle,
+	Calendar,
+	ArrowRight,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -27,6 +29,7 @@ import { Badge } from "@/components/ui/badge";
 import { userAPI } from "@/services/api";
 import { UserPreferences, PersonalStyleGuide } from "@/types";
 import { useAuthStore } from "@/stores/authStore";
+import { Link } from "react-router-dom";
 
 export default function Profile() {
 	const { user } = useAuthStore();
@@ -623,6 +626,35 @@ export default function Profile() {
 										</CardContent>
 									</Card>
 								)}
+
+								{/* Calendar Integration */}
+								<Card className="card-fashion">
+									<CardHeader>
+										<CardTitle className="flex items-center gap-2">
+											<Calendar className="w-5 h-5 text-primary" />
+											Calendar Integration
+										</CardTitle>
+									</CardHeader>
+									<CardContent className="space-y-4">
+										<p className="text-muted-foreground">
+											Connect your calendar to get AI-powered outfit recommendations for your upcoming events.
+										</p>
+										<div className="flex flex-col sm:flex-row gap-3">
+											<Button variant="outline" asChild className="flex-1">
+												<Link to="/calendar-connect">
+													<Calendar className="w-4 h-4 mr-2" />
+													Connect Calendar
+												</Link>
+											</Button>
+											<Button variant="ghost" asChild className="flex-1">
+												<Link to="/calendar-view">
+													View Calendar
+													<ArrowRight className="w-4 h-4 ml-2" />
+												</Link>
+											</Button>
+										</div>
+									</CardContent>
+								</Card>
 
 								{/* Save Button */}
 								<div className="flex justify-end">

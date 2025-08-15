@@ -395,10 +395,12 @@ const Index = () => {
 										<p className="text-muted-foreground mb-6">
 											Connect your calendar and let AI automatically suggest appropriate outfits for each event, meeting, or occasion.
 										</p>
-										<Button className="btn-gradient">
+									<Button className="btn-gradient" asChild>
+										<Link to="/calendar-connect">
 											Connect Calendar
 											<ArrowRight className="ml-2 w-4 h-4" />
-										</Button>
+										</Link>
+									</Button>
 									</div>
 								</div>
 

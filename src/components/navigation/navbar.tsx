@@ -9,6 +9,7 @@ import {
 	BarChart3,
 	LogOut,
 	Shield,
+	Calendar,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -142,6 +143,15 @@ export function Navbar() {
 										>
 											<BarChart3 className="mr-2 h-4 w-4" />
 											Dashboard
+										</Link>
+									</DropdownMenuItem>
+									<DropdownMenuItem asChild>
+										<Link
+											to="/calendar-view"
+											className="cursor-pointer"
+										>
+											<Calendar className="mr-2 h-4 w-4" />
+											Calendar
 										</Link>
 									</DropdownMenuItem>
 									{user.role === "admin" && (
