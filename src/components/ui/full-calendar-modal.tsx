@@ -6,18 +6,18 @@ import {
 	DialogTitle,
 	DialogTrigger,
 } from "@/components/ui/dialog";
-import { Calendar, CalendarProps } from "@/components/ui/calendar";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
 import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
 	Calendar as CalendarIcon,
 	Clock,
 	MapPin,
 	Shirt,
-	Save,
-	RefreshCw,
+	X,
 } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface CalendarEvent {
 	id: string;
@@ -38,35 +38,47 @@ interface CalendarEvent {
 }
 
 interface FullCalendarModalProps {
-	children: React.ReactNode;
 	events: CalendarEvent[];
 	onPopulateOutfit: (eventId: string, eventTitle: string) => void;
 	onSaveOutfit: (eventId: string, eventTitle: string) => void;
 	onRetryOutfit: (eventId: string, eventTitle: string) => void;
+	children: React.ReactNode;
 }
 
 export function FullCalendarModal({
-	children,
 	events,
 	onPopulateOutfit,
 	onSaveOutfit,
 	onRetryOutfit,
+	children,
 }: FullCalendarModalProps) {
-	const [selectedDate, setSelectedDate] = useState<Date | undefined>(
-		new Date()
-	);
+	const [selectedDate, setSelectedDate] = useState<Date | undefined>();
+	const [isOpen, setIsOpen] = useState(false);
 
-	// Get events for the selected date
-	const getEventsForDate = (date: Date | undefined) => {
-		if (!date) return [];
+	const getEventTypeColor = (type: string) => {
+		const colors = {
+			work: "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200",
+			casual: "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200",
+			formal: "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200",
+			social: "bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200",
+			fitness:
+				"bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200",
+		};
+		return (
+			colors[type as keyof typeof colors] || "bg-gray-100 text-gray-800"
+		);
+	};
 
-		const dateStr = date.toISOString().split("T")[0];
+	const getEventsForDate = (date: Date) => {
+		const dateString = date.toISOString().split("T")[0];
 		return events.filter((event) => {
 			if (event.start.date) {
-				return event.start.date.startsWith(dateStr);
+				// All-day event
+				return event.start.date.startsWith(dateString);
 			}
 			if (event.start.dateTime) {
-				return event.start.dateTime.startsWith(dateStr);
+				// Timed event
+				return event.start.dateTime.startsWith(dateString);
 			}
 			return false;
 		});
@@ -86,25 +98,18 @@ export function FullCalendarModal({
 		return "No time specified";
 	};
 
-	const getEventTypeColor = (type: string) => {
-		const colors = {
-			work: "bg-blue-100 text-blue-800",
-			casual: "bg-green-100 text-green-800",
-			formal: "bg-purple-100 text-purple-800",
-			social: "bg-orange-100 text-orange-800",
-			fitness: "bg-red-100 text-red-800",
-		};
-		return (
-			colors[type as keyof typeof colors] || "bg-gray-100 text-gray-800"
-		);
+	const hasEventsOnDate = (date: Date) => {
+		return getEventsForDate(date).length > 0;
 	};
 
-	const selectedEvents = getEventsForDate(selectedDate);
+	const selectedDateEvents = selectedDate
+		? getEventsForDate(selectedDate)
+		: [];
 
 	return (
-		<Dialog>
+		<Dialog open={isOpen} onOpenChange={setIsOpen}>
 			<DialogTrigger asChild>{children}</DialogTrigger>
-			<DialogContent className="max-w-4xl max-h-[80vh] overflow-hidden flex flex-col">
+			<DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
 				<DialogHeader>
 					<DialogTitle className="flex items-center gap-2">
 						<CalendarIcon className="w-5 h-5" />
@@ -112,172 +117,167 @@ export function FullCalendarModal({
 					</DialogTitle>
 				</DialogHeader>
 
-				<div className="flex gap-6 flex-1 overflow-hidden">
+				<div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 					{/* Calendar */}
-					<div className="flex-shrink-0">
+					<div className="lg:col-span-2">
 						<Calendar
 							mode="single"
 							selected={selectedDate}
 							onSelect={setSelectedDate}
-							className="rounded-md border"
+							className="rounded-md border p-3 pointer-events-auto"
+							modifiers={{
+								hasEvents: (date) => hasEventsOnDate(date),
+							}}
+							modifiersStyles={{
+								hasEvents: {
+									backgroundColor:
+										"hsl(var(--primary) / 0.1)",
+									color: "hsl(var(--primary))",
+									fontWeight: "bold",
+								},
+							}}
 						/>
+						<div className="mt-4 text-sm text-muted-foreground">
+							<div className="flex items-center gap-2">
+								<div className="w-3 h-3 rounded-full bg-primary/20"></div>
+								<span>Days with events</span>
+							</div>
+						</div>
 					</div>
 
-					{/* Events for selected date */}
-					<div className="flex-1 overflow-y-auto">
-						<div className="space-y-4">
-							<h3 className="font-semibold text-lg">
-								Events for{" "}
-								{selectedDate?.toLocaleDateString("en-US", {
-									weekday: "long",
-									month: "long",
-									day: "numeric",
-									year: "numeric",
-								})}
-							</h3>
-
-							{selectedEvents.length === 0 ? (
-								<div className="text-center py-8 text-muted-foreground">
-									<CalendarIcon className="w-12 h-12 mx-auto mb-4 opacity-50" />
-									<p>No events scheduled for this date</p>
-								</div>
-							) : (
-								<div className="space-y-3">
-									{selectedEvents.map((event) => (
-										<Card
-											key={event.id}
-											className="border-border"
-										>
-											<CardHeader className="pb-3">
-												<div className="flex items-start justify-between">
-													<div className="flex items-start gap-3">
-														<div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center mt-1">
-															<CalendarIcon className="w-5 h-5 text-primary" />
-														</div>
-														<div>
-															<CardTitle className="text-base mb-1">
+					{/* Event Details */}
+					<div className="space-y-4">
+						{selectedDate ? (
+							<>
+								<div>
+									<h3 className="font-semibold text-lg mb-2">
+										{selectedDate.toLocaleDateString(
+											"en-US",
+											{
+												weekday: "long",
+												month: "long",
+												day: "numeric",
+											}
+										)}
+									</h3>
+									{selectedDateEvents.length === 0 ? (
+										<p className="text-muted-foreground">
+											No events on this date
+										</p>
+									) : (
+										<div className="space-y-3">
+											{selectedDateEvents.map((event) => (
+												<Card
+													key={event.id}
+													className="border-border"
+												>
+													<CardHeader className="pb-2">
+														<div className="flex items-start justify-between">
+															<CardTitle className="text-sm font-medium">
 																{event.summary}
 															</CardTitle>
-															<div className="flex items-center gap-3 text-sm text-muted-foreground">
-																<div className="flex items-center gap-1">
-																	<Clock className="w-3 h-3" />
-																	{formatEventTime(
-																		event
-																	)}
-																</div>
-																{event.location && (
-																	<div className="flex items-center gap-1">
-																		<MapPin className="w-3 h-3" />
-																		{
-																			event.location
-																		}
-																	</div>
+															<Badge
+																className={cn(
+																	"text-xs",
+																	getEventTypeColor(
+																		event.eventType ||
+																			"casual"
+																	)
+																)}
+															>
+																{event.eventType ||
+																	"casual"}
+															</Badge>
+														</div>
+													</CardHeader>
+													<CardContent className="pt-0 space-y-3">
+														<div className="space-y-1 text-xs text-muted-foreground">
+															<div className="flex items-center gap-1">
+																<Clock className="w-3 h-3" />
+																{formatEventTime(
+																	event
 																)}
 															</div>
-														</div>
-													</div>
-													<div className="flex items-center gap-2">
-														<Badge
-															className={getEventTypeColor(
-																event.eventType ||
-																	"casual"
+															{event.location && (
+																<div className="flex items-center gap-1">
+																	<MapPin className="w-3 h-3" />
+																	{
+																		event.location
+																	}
+																</div>
 															)}
-														>
-															{event.eventType ||
-																"casual"}
-														</Badge>
-														{event.hasOutfit && (
-															<Badge
-																variant="secondary"
-																className="bg-green-100 text-green-800"
+															{event.hasOutfit && (
+																<div className="flex items-center gap-1 text-green-600">
+																	<Shirt className="w-3 h-3" />
+																	Outfit Ready
+																</div>
+															)}
+														</div>
+
+														<div className="flex flex-col gap-2">
+															<Button
+																variant="default"
+																size="sm"
+																onClick={() =>
+																	onPopulateOutfit(
+																		event.id,
+																		event.summary
+																	)
+																}
+																className="w-full text-xs h-8"
 															>
 																<Shirt className="w-3 h-3 mr-1" />
-																Ready
-															</Badge>
-														)}
-													</div>
-												</div>
-											</CardHeader>
+																{event.hasOutfit
+																	? "View Outfit"
+																	: "Generate"}
+															</Button>
 
-											{event.hasOutfit &&
-												event.outfitSuggestion && (
-													<CardContent className="pt-0 pb-3">
-														<div className="p-3 bg-muted/50 rounded-lg mb-3">
-															<div className="flex items-center gap-2 mb-1">
-																<Shirt className="w-3 h-3 text-primary" />
-																<span className="text-xs font-medium">
-																	Outfit
-																	Suggestion
-																</span>
-															</div>
-															<p className="text-xs text-muted-foreground">
-																{
-																	event.outfitSuggestion
-																}
-															</p>
+															{event.hasOutfit && (
+																<div className="flex gap-1">
+																	<Button
+																		variant="outline"
+																		size="sm"
+																		onClick={() =>
+																			onSaveOutfit(
+																				event.id,
+																				event.summary
+																			)
+																		}
+																		className="flex-1 text-xs h-7"
+																	>
+																		Save
+																	</Button>
+																	<Button
+																		variant="outline"
+																		size="sm"
+																		onClick={() =>
+																			onRetryOutfit(
+																				event.id,
+																				event.summary
+																			)
+																		}
+																		className="flex-1 text-xs h-7"
+																	>
+																		Retry
+																	</Button>
+																</div>
+															)}
 														</div>
 													</CardContent>
-												)}
-
-											<CardContent className="pt-0">
-												<div className="flex items-center gap-2">
-													<Button
-														variant="default"
-														size="sm"
-														onClick={() =>
-															onPopulateOutfit(
-																event.id,
-																event.summary
-															)
-														}
-														className="flex items-center gap-1"
-													>
-														<Shirt className="w-3 h-3" />
-														{event.hasOutfit
-															? "View"
-															: "Generate"}
-													</Button>
-
-													{event.hasOutfit && (
-														<>
-															<Button
-																variant="outline"
-																size="sm"
-																onClick={() =>
-																	onSaveOutfit(
-																		event.id,
-																		event.summary
-																	)
-																}
-																className="flex items-center gap-1"
-															>
-																<Save className="w-3 h-3" />
-																Save
-															</Button>
-
-															<Button
-																variant="outline"
-																size="sm"
-																onClick={() =>
-																	onRetryOutfit(
-																		event.id,
-																		event.summary
-																	)
-																}
-																className="flex items-center gap-1"
-															>
-																<RefreshCw className="w-3 h-3" />
-																Retry
-															</Button>
-														</>
-													)}
-												</div>
-											</CardContent>
-										</Card>
-									))}
+												</Card>
+											))}
+										</div>
+									)}
 								</div>
-							)}
-						</div>
+							</>
+						) : (
+							<div className="text-center py-8">
+								<CalendarIcon className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+								<p className="text-muted-foreground">
+									Select a date to view events
+								</p>
+							</div>
+						)}
 					</div>
 				</div>
 			</DialogContent>
