@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { MessageCircle, X, Send, Sparkles } from 'lucide-react';
+import { MessageCircle, X, Send, Bot } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface Message {
@@ -90,7 +90,7 @@ const FashionChatbot = () => {
         className="fixed right-6 bottom-6 h-14 w-14 rounded-full bg-primary hover:bg-primary/90 shadow-lg z-50 p-0"
         aria-label="Open fashion chatbot"
       >
-        <Sparkles className="h-6 w-6" />
+        <Bot className="h-6 w-6" />
       </Button>
     );
   }
@@ -100,7 +100,7 @@ const FashionChatbot = () => {
       {/* Header */}
       <div className="flex items-center justify-between p-4 border-b border-border">
         <div className="flex items-center gap-2">
-          <Sparkles className="h-5 w-5 text-primary" />
+          <Bot className="h-5 w-5 text-primary" />
           <h3 className="font-semibold text-sm">Fashion Assistant</h3>
         </div>
         <Button
