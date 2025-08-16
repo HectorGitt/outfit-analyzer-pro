@@ -17,10 +17,12 @@ import {
 	Save,
 	Shirt,
 	AlertCircle,
+	CalendarDays,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { Navbar } from "@/components/navigation/navbar";
+import { FullCalendarModal } from "@/components/ui/full-calendar-modal";
 
 interface CalendarEvent {
 	id: string;
@@ -383,161 +385,190 @@ const CalendarView = () => {
 							))}
 						</div>
 					) : (
-						<div className="space-y-4">
-							{events.map((event) => (
-								<Card key={event.id} className="card-fashion">
-									<CardHeader>
-										<div className="flex items-start justify-between">
-											<div className="flex items-start gap-4">
-												<div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mt-1">
-													<Calendar className="w-6 h-6 text-primary" />
-												</div>
-												<div>
-													<CardTitle className="text-foreground mb-1">
-														{event.summary}
-													</CardTitle>
-													<div className="flex items-center gap-4 text-sm text-muted-foreground">
-														<div className="flex items-center gap-1">
-															<Clock className="w-3 h-3" />
-															{formatEventTime(
-																event
+						<>
+							<div className="flex justify-center mb-6">
+								<FullCalendarModal
+									events={events}
+									onPopulateOutfit={handlePopulateOutfit}
+									onSaveOutfit={handleSaveOutfit}
+									onRetryOutfit={handleRetryOutfit}
+								>
+									<Button
+										variant="outline"
+										className="flex items-center gap-2"
+									>
+										<CalendarDays className="w-4 h-4" />
+										Open Calendar View
+									</Button>
+								</FullCalendarModal>
+							</div>
+
+							<div className="space-y-4">
+								{events.map((event) => (
+									<Card
+										key={event.id}
+										className="card-fashion"
+									>
+										<CardHeader>
+											<div className="flex items-start justify-between">
+												<div className="flex items-start gap-4">
+													<div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mt-1">
+														<Calendar className="w-6 h-6 text-primary" />
+													</div>
+													<div>
+														<CardTitle className="text-foreground mb-1">
+															{event.summary}
+														</CardTitle>
+														<div className="flex items-center gap-4 text-sm text-muted-foreground">
+															<div className="flex items-center gap-1">
+																<Clock className="w-3 h-3" />
+																{formatEventTime(
+																	event
+																)}
+															</div>
+															{event.location && (
+																<div className="flex items-center gap-1">
+																	<MapPin className="w-3 h-3" />
+																	{
+																		event.location
+																	}
+																</div>
 															)}
 														</div>
-														{event.location && (
-															<div className="flex items-center gap-1">
-																<MapPin className="w-3 h-3" />
-																{event.location}
-															</div>
-														)}
-													</div>
-													{event.hasOutfit &&
-														event.outfitSuggestion && (
-															<div className="mt-3 p-3 bg-muted/50 rounded-lg">
-																<div className="flex items-center gap-2 mb-1">
-																	<Shirt className="w-3 h-3 text-primary" />
-																	<span className="text-xs font-medium">
-																		Outfit
-																		Suggestion
-																	</span>
+														{event.hasOutfit &&
+															event.outfitSuggestion && (
+																<div className="mt-3 p-3 bg-muted/50 rounded-lg">
+																	<div className="flex items-center gap-2 mb-1">
+																		<Shirt className="w-3 h-3 text-primary" />
+																		<span className="text-xs font-medium">
+																			Outfit
+																			Suggestion
+																		</span>
+																	</div>
+																	<p className="text-xs text-muted-foreground">
+																		{
+																			event.outfitSuggestion
+																		}
+																	</p>
 																</div>
-																<p className="text-xs text-muted-foreground">
-																	{
-																		event.outfitSuggestion
-																	}
-																</p>
-															</div>
+															)}
+													</div>
+												</div>
+												<div className="flex items-center gap-2">
+													<Badge
+														className={getEventTypeColor(
+															event.eventType ||
+																"casual"
 														)}
+													>
+														{event.eventType ||
+															"casual"}
+													</Badge>
+													{event.hasOutfit && (
+														<Badge
+															variant="secondary"
+															className="bg-green-100 text-green-800"
+														>
+															<Shirt className="w-3 h-3 mr-1" />
+															Outfit Ready
+														</Badge>
+													)}
 												</div>
 											</div>
-											<div className="flex items-center gap-2">
-												<Badge
-													className={getEventTypeColor(
-														event.eventType ||
-															"casual"
-													)}
+										</CardHeader>
+										<CardContent>
+											<div className="flex items-center gap-3">
+												<Button
+													variant="default"
+													size="sm"
+													onClick={() =>
+														handlePopulateOutfit(
+															event.id,
+															event.summary
+														)
+													}
+													className="flex items-center gap-2"
 												>
-													{event.eventType ||
-														"casual"}
-												</Badge>
+													<Shirt className="w-4 h-4" />
+													{event.hasOutfit
+														? "View Outfit"
+														: "Generate Outfit"}
+												</Button>
+
 												{event.hasOutfit && (
-													<Badge
-														variant="secondary"
-														className="bg-green-100 text-green-800"
-													>
-														<Shirt className="w-3 h-3 mr-1" />
-														Outfit Ready
-													</Badge>
+													<>
+														<Button
+															variant="outline"
+															size="sm"
+															onClick={() =>
+																handleSaveOutfit(
+																	event.id,
+																	event.summary
+																)
+															}
+															className="flex items-center gap-2"
+														>
+															<Save className="w-4 h-4" />
+															Save Outfit
+														</Button>
+
+														<Button
+															variant="outline"
+															size="sm"
+															onClick={() =>
+																handleRetryOutfit(
+																	event.id,
+																	event.summary
+																)
+															}
+															className="flex items-center gap-2"
+														>
+															<RefreshCw className="w-4 h-4" />
+															Retry Outfit
+														</Button>
+													</>
 												)}
 											</div>
+										</CardContent>
+									</Card>
+								))}
+
+								{events.length === 0 && !loading && !error && (
+									<Card className="card-fashion text-center p-8">
+										<div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
+											<Calendar className="w-8 h-8 text-muted-foreground" />
 										</div>
-									</CardHeader>
-									<CardContent>
-										<div className="flex items-center gap-3">
+										<h3 className="text-lg font-medium mb-2">
+											No Upcoming Events
+										</h3>
+										<p className="text-muted-foreground mb-4">
+											You don't have any events in the
+											next 30 days, or your calendar is
+											empty.
+										</p>
+										<div className="flex gap-2 justify-center">
 											<Button
-												variant="default"
-												size="sm"
+												onClick={
+													fetchGoogleCalendarEvents
+												}
+												variant="outline"
+											>
+												Refresh Calendar
+											</Button>
+											<Button
 												onClick={() =>
-													handlePopulateOutfit(
-														event.id,
-														event.summary
+													navigate(
+														"/calendar-connect"
 													)
 												}
-												className="flex items-center gap-2"
 											>
-												<Shirt className="w-4 h-4" />
-												{event.hasOutfit
-													? "View Outfit"
-													: "Generate Outfit"}
+												Manage Connections
 											</Button>
-
-											{event.hasOutfit && (
-												<>
-													<Button
-														variant="outline"
-														size="sm"
-														onClick={() =>
-															handleSaveOutfit(
-																event.id,
-																event.summary
-															)
-														}
-														className="flex items-center gap-2"
-													>
-														<Save className="w-4 h-4" />
-														Save Outfit
-													</Button>
-
-													<Button
-														variant="outline"
-														size="sm"
-														onClick={() =>
-															handleRetryOutfit(
-																event.id,
-																event.summary
-															)
-														}
-														className="flex items-center gap-2"
-													>
-														<RefreshCw className="w-4 h-4" />
-														Retry Outfit
-													</Button>
-												</>
-											)}
 										</div>
-									</CardContent>
-								</Card>
-							))}
-
-							{events.length === 0 && !loading && !error && (
-								<Card className="card-fashion text-center p-8">
-									<div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
-										<Calendar className="w-8 h-8 text-muted-foreground" />
-									</div>
-									<h3 className="text-lg font-medium mb-2">
-										No Upcoming Events
-									</h3>
-									<p className="text-muted-foreground mb-4">
-										You don't have any events in the next 30
-										days, or your calendar is empty.
-									</p>
-									<div className="flex gap-2 justify-center">
-										<Button
-											onClick={fetchGoogleCalendarEvents}
-											variant="outline"
-										>
-											Refresh Calendar
-										</Button>
-										<Button
-											onClick={() =>
-												navigate("/calendar-connect")
-											}
-										>
-											Manage Connections
-										</Button>
-									</div>
-								</Card>
-							)}
-						</div>
+									</Card>
+								)}
+							</div>
+						</>
 					)}
 				</div>
 			</div>
