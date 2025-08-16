@@ -87,7 +87,7 @@ const FashionChatbot = () => {
     return (
       <Button
         onClick={() => setIsOpen(true)}
-        className="fixed left-6 bottom-6 h-14 w-14 rounded-full bg-primary hover:bg-primary/90 shadow-lg z-50 p-0"
+        className="fixed right-6 bottom-6 h-14 w-14 rounded-full bg-primary hover:bg-primary/90 shadow-lg z-50 p-0"
         aria-label="Open fashion chatbot"
       >
         <Sparkles className="h-6 w-6" />
@@ -96,7 +96,7 @@ const FashionChatbot = () => {
   }
 
   return (
-    <div className="fixed left-6 bottom-6 w-80 h-96 bg-background border border-border rounded-lg shadow-xl z-50 flex flex-col">
+    <div className="fixed right-6 bottom-6 w-80 h-96 bg-background border border-border rounded-lg shadow-xl z-50 flex flex-col">
       {/* Header */}
       <div className="flex items-center justify-between p-4 border-b border-border">
         <div className="flex items-center gap-2">
