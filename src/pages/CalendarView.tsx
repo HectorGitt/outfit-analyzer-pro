@@ -2,8 +2,9 @@ import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, Clock, MapPin, RefreshCw, Save, Shirt } from "lucide-react";
+import { Calendar, Clock, MapPin, RefreshCw, Save, Shirt, CalendarDays } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { FullCalendarModal } from "@/components/ui/full-calendar-modal";
 
 interface CalendarEvent {
   id: string;
@@ -110,6 +111,20 @@ const CalendarView = () => {
             <p className="text-muted-foreground">
               Manage your events and get AI-powered outfit suggestions
             </p>
+          </div>
+
+          <div className="flex justify-center mb-6">
+            <FullCalendarModal
+              events={events}
+              onPopulateOutfit={handlePopulateOutfit}
+              onSaveOutfit={handleSaveOutfit}
+              onRetryOutfit={handleRetryOutfit}
+            >
+              <Button variant="outline" className="flex items-center gap-2">
+                <CalendarDays className="w-4 h-4" />
+                Open Calendar View
+              </Button>
+            </FullCalendarModal>
           </div>
 
           <div className="space-y-4">
