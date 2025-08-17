@@ -26,7 +26,7 @@ import { usePricingTier } from "@/hooks/useCalendar";
 export default function Camera() {
 	const navigate = useNavigate();
 	const { data: pricingData } = usePricingTier();
-	const isPro = pricingData?.is_pro ?? false;
+	const isPro = pricingData?.data?.is_pro ?? false;
 
 	const videoRef = useRef<HTMLVideoElement>(null);
 	const canvasRef = useRef<HTMLCanvasElement>(null);
