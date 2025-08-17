@@ -22,7 +22,15 @@ A modern AI-powered fashion analysis platform that provides personalized style r
 -   Live fashion analysis with periodic capture
 -   Instant feedback on outfit combinations
 
-### 👤 User Management
+### � Calendar Integration
+
+-   **Google Calendar Sync** - Connect your Google Calendar for automatic event import
+-   **AI Outfit Suggestions** - Get personalized outfit recommendations for upcoming events
+-   **Smart Event Analysis** - Automatic event type detection (work, social, formal, fitness, casual)
+-   **Context-Aware Recommendations** - Time-of-day and location-based outfit suggestions
+-   **Outfit Management** - Save, modify, and retry outfit suggestions for events
+
+### �👤 User Management
 
 -   Secure authentication with JWT tokens
 -   Personalized style preferences
@@ -47,6 +55,13 @@ A modern AI-powered fashion analysis platform that provides personalized style r
 -   **Zustand** - Lightweight state management
 -   **Axios** - HTTP client for API communication
 -   **Lucide React** - Beautiful icon library
+
+### Calendar & Integration
+
+-   **Google Calendar API** - Real-time calendar synchronization
+-   **OAuth 2.0** - Secure authentication with Google services
+-   **Event Processing** - Intelligent event type classification
+-   **AI Outfit Engine** - Context-aware fashion recommendations
 
 ### Build & Development
 
@@ -128,7 +143,31 @@ interface FashionAnalysisResponse {
     bun install
     ```
 
-3. **Start development server**
+3. **Configure Google Calendar Integration (Optional)**
+
+    Create a `.env` file in the project root:
+
+    ```sh
+    cp .env.example .env
+    ```
+
+    Add your Google OAuth credentials:
+
+    ```env
+    VITE_GOOGLE_CLIENT_ID=your_google_client_id_here.apps.googleusercontent.com
+    VITE_GOOGLE_CLIENT_SECRET=your_google_client_secret_here
+    ```
+
+    **Setting up Google OAuth:**
+
+    1. Go to [Google Cloud Console](https://console.cloud.google.com/)
+    2. Create a new project or select existing
+    3. Enable Google Calendar API
+    4. Create OAuth 2.0 credentials
+    5. Add `http://localhost:5173` to authorized origins
+    6. Add `http://localhost:5173/calendar-connect` to authorized redirect URIs
+
+4. **Start development server**
 
     ```sh
     npm run dev
@@ -136,7 +175,7 @@ interface FashionAnalysisResponse {
     bun dev
     ```
 
-4. **Open your browser**
+5. **Open your browser**
    Navigate to `http://localhost:5173`
 
 ## 📁 Key Files
@@ -148,6 +187,8 @@ interface FashionAnalysisResponse {
 -   `src/pages/Upload.tsx` - Image upload and analysis
 -   `src/pages/Camera.tsx` - Live camera analysis
 -   `src/pages/Profile.tsx` - User profile and preferences
+-   `src/pages/CalendarConnect.tsx` - Calendar service integration
+-   `src/pages/CalendarView.tsx` - Calendar events with outfit suggestions
 
 ### Components
 
@@ -160,7 +201,56 @@ interface FashionAnalysisResponse {
 -   `src/services/api.ts` - API endpoint definitions
 -   `src/lib/api.ts` - Axios HTTP client configuration
 
-## 🔐 Authentication
+## � Calendar Integration
+
+### Google Calendar Setup
+
+The calendar integration allows users to sync their Google Calendar and receive AI-powered outfit suggestions for upcoming events.
+
+### Features
+
+-   **Automatic Event Import** - Fetches events from Google Calendar for the next 30 days
+-   **Smart Event Classification** - Automatically categorizes events as work, social, formal, fitness, or casual
+-   **AI Outfit Suggestions** - Generates context-aware outfit recommendations based on:
+    -   Event type and description
+    -   Time of day (morning, afternoon, evening)
+    -   Location and venue type
+    -   Weather considerations
+
+### Event Type Detection
+
+```typescript
+// Event classification logic
+const determineEventType = (event) => {
+	if (event.summary.includes("meeting")) return "work";
+	if (event.summary.includes("dinner")) return "social";
+	if (event.summary.includes("gym")) return "fitness";
+	if (event.summary.includes("wedding")) return "formal";
+	return "casual";
+};
+```
+
+### Outfit Suggestion Engine
+
+```typescript
+interface OutfitSuggestion {
+	eventType: "work" | "social" | "fitness" | "formal" | "casual";
+	timeOfDay: "morning" | "afternoon" | "evening";
+	suggestion: string;
+	reasoning: string;
+}
+```
+
+### OAuth Flow
+
+1. User clicks "Connect Google Calendar"
+2. Redirected to Google OAuth consent screen
+3. User grants calendar read permissions
+4. OAuth token stored securely in localStorage
+5. Calendar events fetched and processed
+6. AI generates outfit suggestions for each event
+
+## �🔐 Authentication
 
 The app uses JWT token-based authentication with Zustand for state management:
 

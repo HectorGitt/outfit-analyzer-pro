@@ -1,0 +1,185 @@
+// API Types for Calendar System
+export interface User {
+	id: string;
+	email: string;
+	name: string;
+	preferences?: {
+		style?: string;
+		colors?: string[];
+		brands?: string[];
+	};
+}
+
+export interface CalendarEvent {
+	id: string;
+	googleEventId?: string;
+	title: string;
+	description?: string;
+	startTime: string;
+	endTime: string;
+	location?: string;
+	eventType:
+		| "business"
+		| "casual"
+		| "formal"
+		| "workout"
+		| "date"
+		| "party"
+		| "travel"
+		| "other";
+	weatherConsideration?: boolean;
+	userId: string;
+	createdAt: string;
+	updatedAt: string;
+}
+
+export interface WardrobeItem {
+	id: string;
+	name: string;
+	category:
+		| "tops"
+		| "bottoms"
+		| "shoes"
+		| "accessories"
+		| "outerwear"
+		| "dresses"
+		| "suits";
+	color: string;
+	brand?: string;
+	season: "spring" | "summer" | "fall" | "winter" | "all";
+	occasion: "casual" | "business" | "formal" | "workout" | "party" | "all";
+	imageUrl?: string;
+	userId: string;
+	isAvailable: boolean;
+	lastWorn?: string;
+	createdAt: string;
+}
+
+export interface OutfitSuggestion {
+	id: string;
+	eventId?: string;
+	name: string;
+	items: WardrobeItem[];
+	confidence: number;
+	weatherAppropriate: boolean;
+	occasionMatch: number;
+	aiReasoning: string;
+	alternatives: WardrobeItem[][];
+	userId: string;
+	createdAt: string;
+}
+
+export interface OutfitPlan {
+	id: string;
+	eventId: string;
+	selectedOutfit: OutfitSuggestion;
+	status: "planned" | "confirmed" | "worn" | "cancelled";
+	notes?: string;
+	userId: string;
+	createdAt: string;
+	updatedAt: string;
+}
+
+export interface WeatherData {
+	temperature: number;
+	condition: string;
+	humidity: number;
+	windSpeed: number;
+	precipitation: number;
+	location: string;
+	date: string;
+}
+
+// API Request/Response types
+export interface CreateEventRequest {
+	title: string;
+	description?: string;
+	startTime: string;
+	endTime: string;
+	location?: string;
+	eventType: CalendarEvent["eventType"];
+	weatherConsideration?: boolean;
+}
+
+export interface UpdateEventRequest extends Partial<CreateEventRequest> {
+	id: string;
+}
+
+export interface CreateWardrobeItemRequest {
+	name: string;
+	category: WardrobeItem["category"];
+	color: string;
+	brand?: string;
+	season: WardrobeItem["season"];
+	occasion: WardrobeItem["occasion"];
+	imageUrl?: string;
+}
+
+export interface GenerateOutfitRequest {
+	eventId?: string;
+	eventType: CalendarEvent["eventType"];
+	weather?: WeatherData;
+	preferences?: {
+		colors?: string[];
+		brands?: string[];
+		avoidItems?: string[];
+	};
+}
+
+export interface PlanOutfitRequest {
+	eventId: string;
+	outfitId: string;
+	notes?: string;
+}
+
+// API Response types
+export interface ApiResponse<T> {
+	data: T;
+	message?: string;
+	success: boolean;
+}
+
+export interface PaginatedResponse<T> {
+	data: T[];
+	pagination: {
+		page: number;
+		limit: number;
+		total: number;
+		totalPages: number;
+	};
+	success: boolean;
+}
+
+// Google Calendar Integration types (frontend only)
+export interface GoogleCalendarToken {
+	access_token: string;
+	refresh_token?: string;
+	expires_in: number;
+	token_type: string;
+	scope: string;
+	expires_at: number;
+}
+
+export interface GoogleCalendarTokenRequest extends GoogleCalendarToken {
+	user_email: string;
+	user_name: string;
+}
+
+export interface GoogleCalendarEvent {
+	id: string;
+	summary: string;
+	description?: string;
+	start: {
+		dateTime?: string;
+		date?: string;
+		timeZone?: string;
+	};
+	end: {
+		dateTime?: string;
+		date?: string;
+		timeZone?: string;
+	};
+	location?: string;
+	status: string;
+	htmlLink: string;
+}

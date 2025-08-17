@@ -9,145 +9,118 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Calendar, CheckCircle, ExternalLink, AlertCircle } from "lucide-react";
+import {
+	Calendar,
+	CheckCircle,
+	ExternalLink,
+	AlertCircle,
+	RefreshCw,
+} from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { Navbar } from "@/components/navigation/navbar";
+import {
+	useGoogleCalendarStatus,
+	useGoogleCalendarConnect,
+	useGoogleCalendarDisconnect,
+} from "@/hooks/useCalendar";
+import googleCalendarService from "@/services/googleCalendar";
 
 const CalendarConnect = () => {
-	const [connectedServices, setConnectedServices] = useState<string[]>([]);
 	const [isConnecting, setIsConnecting] = useState<string | null>(null);
+	const [isHandlingCallback, setIsHandlingCallback] = useState(false);
 	const navigate = useNavigate();
 	const { toast } = useToast();
 
-	// Check for existing connections on component mount
+	// Use backend connection status instead of localStorage
+	const {
+		data: backendStatus,
+		isLoading: statusLoading,
+		error: statusError,
+		refetch: refetchStatus,
+	} = useGoogleCalendarStatus();
+
+	// Use new Google Calendar hooks
+	const connectMutation = useGoogleCalendarConnect();
+	const disconnectMutation = useGoogleCalendarDisconnect();
+
+	// Check if Google Calendar is connected via backend
+	const isGoogleConnected = backendStatus?.data?.connected || false;
+
+	// Handle OAuth callback on component mount
 	useEffect(() => {
-		const googleToken = localStorage.getItem("google_calendar_token");
-		if (googleToken) {
-			setConnectedServices((prev) => [...prev, "google"]);
-		}
-	}, []);
+		const handleOAuthCallback = async () => {
+			if (googleCalendarService.isHandlingOAuthCallback()) {
+				setIsHandlingCallback(true);
+				try {
+					console.log("Handling OAuth callback...");
+					const token =
+						await googleCalendarService.handleOAuthCallbackIfPresent();
 
-	// Check for OAuth callback on component mount
-	useEffect(() => {
-		const urlParams = new URLSearchParams(window.location.search);
-		const code = urlParams.get("code");
-		const state = urlParams.get("state");
+					if (token) {
+						toast({
+							title: "Success!",
+							description:
+								"Google Calendar connected successfully.",
+						});
 
-		if (code && state === "google_calendar_auth") {
-			handleOAuthCallback(code);
-		}
-	}, []);
-
-	const handleOAuthCallback = async (code: string) => {
-		setIsConnecting("google");
-
-		try {
-			// Exchange code for access token
-			const tokenResponse = await fetch(
-				"https://oauth2.googleapis.com/token",
-				{
-					method: "POST",
-					headers: {
-						"Content-Type": "application/x-www-form-urlencoded",
-					},
-					body: new URLSearchParams({
-						client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID || "",
-						client_secret:
-							import.meta.env.VITE_GOOGLE_CLIENT_SECRET || "", // Note: In production, this should be handled server-side
-						code: code,
-						grant_type: "authorization_code",
-						redirect_uri: `${window.location.origin}/calendar-connect`,
-					}),
+						// Refresh the connection status
+						refetchStatus();
+					}
+				} catch (error) {
+					console.error("OAuth callback failed:", error);
+					toast({
+						title: "Connection Failed",
+						description:
+							error instanceof Error
+								? error.message
+								: "Failed to connect Google Calendar",
+						variant: "destructive",
+					});
+				} finally {
+					setIsHandlingCallback(false);
 				}
-			);
-
-			if (!tokenResponse.ok) {
-				throw new Error("Failed to exchange code for token");
 			}
+		};
 
-			const tokenData = await tokenResponse.json();
-			console.log("OAuth token data:", tokenData);
+		handleOAuthCallback();
+	}, [toast, refetchStatus]);
 
-			// Store the access token (in production, store securely)
-			localStorage.setItem(
-				"google_calendar_token",
-				tokenData.access_token
+	// Handle Google Calendar connection using redirect flow
+	const handleGoogleConnect = async () => {
+		setIsConnecting("google");
+		try {
+			// This will redirect to Google OAuth
+			await googleCalendarService.signIn();
+		} catch (error) {
+			console.error(
+				"Failed to initiate Google Calendar connection:",
+				error
 			);
-			if (tokenData.refresh_token) {
-				localStorage.setItem(
-					"google_calendar_refresh_token",
-					tokenData.refresh_token
-				);
+
+			// Only show error if it's not a redirect
+			if (!error.message.includes("Redirecting")) {
+				toast({
+					title: "Connection Failed",
+					description:
+						error instanceof Error
+							? error.message
+							: "Failed to connect Google Calendar",
+					variant: "destructive",
+				});
 			}
-
-			// Update UI
-			setConnectedServices((prev) =>
-				prev.includes("google") ? prev : [...prev, "google"]
-			);
-
-			toast({
-				title: "Connected Successfully",
-				description:
-					"Google Calendar has been connected to your account.",
-			});
-
-			// Clean up URL
-			window.history.replaceState(
-				{},
-				document.title,
-				window.location.pathname
-			);
-		} catch (error: any) {
-			console.error("OAuth callback error:", error);
-			toast({
-				title: "Connection Failed",
-				description: "Failed to complete Google Calendar connection.",
-				variant: "destructive",
-			});
 		} finally {
 			setIsConnecting(null);
 		}
 	};
 
-	const handleGoogleConnect = async () => {
-		setIsConnecting("google");
-
+	// Handle disconnection
+	const handleGoogleDisconnect = async () => {
 		try {
-			// Google OAuth configuration
-			const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
-			const redirectUri = `${window.location.origin}/calendar-connect`;
-			const scope = "https://www.googleapis.com/auth/calendar.readonly";
-
-			if (!clientId) {
-				throw new Error(
-					"Google Calendar integration not configured. Please add VITE_GOOGLE_CLIENT_ID to your environment variables."
-				);
-			}
-
-			// Build OAuth URL
-			const authUrl = new URL(
-				"https://accounts.google.com/o/oauth2/v2/auth"
-			);
-			authUrl.searchParams.append("client_id", clientId);
-			authUrl.searchParams.append("redirect_uri", redirectUri);
-			authUrl.searchParams.append("response_type", "code");
-			authUrl.searchParams.append("scope", scope);
-			authUrl.searchParams.append("access_type", "offline");
-			authUrl.searchParams.append("prompt", "consent");
-			authUrl.searchParams.append("state", "google_calendar_auth");
-
-			// Redirect to Google OAuth
-			window.location.href = authUrl.toString();
-		} catch (error: any) {
-			console.error("Google Calendar connection error:", error);
-			toast({
-				title: "Connection Failed",
-				description:
-					error.message || "Failed to connect to Google Calendar",
-				variant: "destructive",
-			});
-			setIsConnecting(null);
+			await disconnectMutation.mutateAsync();
+			// Disconnection success is handled by the hook's onSuccess callback
+		} catch (error) {
+			console.error("Google Calendar disconnection failed:", error);
 		}
 	};
 
@@ -160,15 +133,8 @@ const CalendarConnect = () => {
 				title: "Coming Soon",
 				description: `${service} integration will be available soon.`,
 			});
-
-			// Simulate connection for UI demo
-			setConnectedServices((prev) => [...prev, service]);
-			setIsConnecting(null);
 		}
 	};
-
-	const isConnected = (service: string) =>
-		connectedServices.includes(service);
 
 	return (
 		<div className="min-h-screen bg-gradient-hero">
@@ -187,6 +153,25 @@ const CalendarConnect = () => {
 							your events
 						</p>
 					</div>
+
+					{statusError && (
+						<Alert className="mb-6">
+							<AlertCircle className="h-4 w-4" />
+							<AlertDescription>
+								<strong>Connection Error:</strong> Unable to
+								check backend connection status. Please ensure
+								the backend is running and try again.
+								<Button
+									variant="link"
+									onClick={() => refetchStatus()}
+									className="p-0 h-auto ml-2"
+								>
+									<RefreshCw className="w-4 h-4 mr-1" />
+									Retry
+								</Button>
+							</AlertDescription>
+						</Alert>
+					)}
 
 					{!import.meta.env.VITE_GOOGLE_CLIENT_ID && (
 						<Alert className="mb-6">
@@ -228,15 +213,43 @@ const CalendarConnect = () => {
 											</CardDescription>
 										</div>
 									</div>
-									{isConnected("google") && (
-										<Badge
-											variant="secondary"
-											className="bg-green-100 text-green-800"
-										>
-											<CheckCircle className="w-3 h-3 mr-1" />
-											Connected
-										</Badge>
-									)}
+									<div className="flex items-center gap-2">
+										{statusLoading ? (
+											<Badge
+												variant="secondary"
+												className="bg-gray-100 text-gray-600"
+											>
+												<RefreshCw className="w-3 h-3 mr-1 animate-spin" />
+												Checking...
+											</Badge>
+										) : isGoogleConnected ? (
+											<>
+												<Badge
+													variant="secondary"
+													className="bg-green-100 text-green-800"
+												>
+													<CheckCircle className="w-3 h-3 mr-1" />
+													Connected
+												</Badge>
+												{backendStatus?.data
+													?.user_email && (
+													<span className="text-xs text-muted-foreground">
+														{
+															backendStatus.data
+																.user_email
+														}
+													</span>
+												)}
+											</>
+										) : (
+											<Badge
+												variant="secondary"
+												className="bg-red-100 text-red-800"
+											>
+												Not Connected
+											</Badge>
+										)}
+									</div>
 								</div>
 							</CardHeader>
 							<CardContent>
@@ -245,25 +258,47 @@ const CalendarConnect = () => {
 										Access your events and get outfit
 										recommendations
 									</div>
-									<Button
-										onClick={() => handleConnect("google")}
-										disabled={
-											isConnected("google") ||
-											isConnecting === "google"
-										}
-										className="flex items-center gap-2"
-									>
-										{isConnecting === "google" ? (
-											"Connecting..."
-										) : isConnected("google") ? (
-											"Connected"
+									<div className="flex gap-2">
+										{isGoogleConnected ? (
+											<Button
+												onClick={handleGoogleDisconnect}
+												disabled={
+													disconnectMutation.isPending
+												}
+												variant="outline"
+												className="flex items-center gap-2"
+											>
+												{disconnectMutation.isPending
+													? "Disconnecting..."
+													: "Disconnect"}
+											</Button>
 										) : (
-											<>
-												<ExternalLink className="w-4 h-4" />
-												Connect
-											</>
+											<Button
+												onClick={handleGoogleConnect}
+												disabled={
+													connectMutation.isPending ||
+													isConnecting === "google" ||
+													isHandlingCallback
+												}
+												className="flex items-center gap-2 bg-primary-dark"
+											>
+												{connectMutation.isPending ||
+												isConnecting === "google" ||
+												isHandlingCallback ? (
+													isHandlingCallback ? (
+														"Processing..."
+													) : (
+														"Connecting..."
+													)
+												) : (
+													<>
+														<ExternalLink className="w-4 h-4" />
+														Connect
+													</>
+												)}
+											</Button>
 										)}
-									</Button>
+									</div>
 								</div>
 							</CardContent>
 						</Card>
@@ -286,15 +321,12 @@ const CalendarConnect = () => {
 											</CardDescription>
 										</div>
 									</div>
-									{isConnected("outlook") && (
-										<Badge
-											variant="secondary"
-											className="bg-green-100 text-green-800"
-										>
-											<CheckCircle className="w-3 h-3 mr-1" />
-											Connected
-										</Badge>
-									)}
+									<Badge
+										variant="secondary"
+										className="bg-gray-100 text-gray-600"
+									>
+										Coming Soon
+									</Badge>
 								</div>
 							</CardHeader>
 							<CardContent>
@@ -320,15 +352,14 @@ const CalendarConnect = () => {
 							<Button
 								onClick={() => navigate("/calendar-view")}
 								size="lg"
-								disabled={connectedServices.length === 0}
+								disabled={!isGoogleConnected}
 								className="btn-gradient px-8"
 							>
 								Continue to Calendar View
 							</Button>
-							{connectedServices.length === 0 && (
+							{!isGoogleConnected && (
 								<p className="text-sm text-muted-foreground mt-2">
-									Connect at least one calendar service to
-									continue
+									Connect Google Calendar to continue
 								</p>
 							)}
 						</div>

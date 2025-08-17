@@ -63,6 +63,33 @@ api.interceptors.response.use(
 				window.location.href = "/login";
 			}
 		}
+
+		// Handle 403 errors for calendar endpoints - remove Google Calendar tokens
+		if (error.response?.status === 403) {
+			const url = error.config?.url || "";
+			if (url.includes("/calendar/") || url.includes("calendar")) {
+				console.warn(
+					"📅 Calendar 403 error - removing Google Calendar tokens and redirecting to calendar connect"
+				);
+				// Remove any stored Google Calendar tokens
+				localStorage.removeItem("google_calendar_token");
+				localStorage.removeItem("google_calendar_refresh_token");
+				localStorage.removeItem("google_calendar_expires_at");
+				localStorage.removeItem("google_calendar_user_email");
+				localStorage.removeItem("google_calendar_user_name");
+
+				console.log(
+					"🔐 Google Calendar tokens removed due to 403 error"
+				);
+
+				// Redirect to calendar connect page to re-authenticate
+				if (window.location.pathname !== "/calendar-connect") {
+					console.log("� Redirecting to calendar connect page");
+					window.location.href = "/calendar-connect";
+				}
+			}
+		}
+
 		return Promise.reject(error);
 	}
 );

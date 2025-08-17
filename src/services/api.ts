@@ -8,6 +8,19 @@ import {
 	Token,
 	PersonalStyleGuide,
 } from "@/types";
+import {
+	CalendarEvent,
+	WardrobeItem,
+	OutfitSuggestion,
+	OutfitPlan,
+	WeatherData,
+	CreateEventRequest,
+	UpdateEventRequest,
+	CreateWardrobeItemRequest,
+	GenerateOutfitRequest,
+	PlanOutfitRequest,
+	PaginatedResponse,
+} from "@/types/api";
 
 // Authentication API endpoints
 export const authAPI = {
@@ -22,6 +35,67 @@ export const authAPI = {
 	refreshToken: () => apiCall<AuthUser>("POST", "/auth/refresh"),
 
 	getCurrentUser: () => apiCall<User>("GET", "/auth/me"),
+
+	// Send Google Calendar token to backend after connection
+	sendGoogleCalendarToken: (token: {
+		access_token: string;
+		refresh_token?: string;
+		expires_in: number;
+		token_type: string;
+		scope: string;
+		expires_at: number;
+		user_email: string;
+		user_name: string;
+	}) =>
+		apiCall<{ success: boolean; message: string }>(
+			"POST",
+			"/calendar/google-token",
+			token
+		),
+
+	// Disconnect Google Calendar from backend
+	disconnectGoogleCalendar: () =>
+		apiCall<{ success: boolean; message: string }>(
+			"DELETE",
+			"/calendar/google-token"
+		),
+
+	// Check Google Calendar connection status
+	getGoogleCalendarStatus: () =>
+		apiCall<{
+			connected: boolean;
+			user_email?: string;
+			user_name?: string;
+			last_sync?: string;
+		}>("GET", "/calendar/google-calendar/status"),
+
+	// Alternative endpoint for connection status
+	getConnectionStatus: () =>
+		apiCall<{
+			google_calendar: {
+				connected: boolean;
+				user_email?: string;
+				user_name?: string;
+				last_sync?: string;
+				expires_at?: string;
+			};
+			outlook_calendar?: {
+				connected: boolean;
+				user_email?: string;
+				user_name?: string;
+				last_sync?: string;
+			};
+		}>("GET", "/connection-status"),
+
+	// Clear Google Calendar tokens from frontend storage
+	clearGoogleCalendarTokens: () => {
+		localStorage.removeItem("google_calendar_token");
+		localStorage.removeItem("google_calendar_refresh_token");
+		localStorage.removeItem("google_calendar_expires_at");
+		localStorage.removeItem("google_calendar_user_email");
+		localStorage.removeItem("google_calendar_user_name");
+		console.log("🔐 Google Calendar tokens cleared from frontend storage");
+	},
 };
 
 // User API endpoints
@@ -71,4 +145,166 @@ export const adminAPI = {
 		apiCall<any>("GET", `/admin/users?page=${page}&limit=${limit}`),
 
 	getUserById: (id: string) => apiCall<any>("GET", `/admin/users/${id}`),
+};
+
+// Calendar Events API endpoints
+export const calendarAPI = {
+	getEvents: (params?: {
+		startDate?: string;
+		endDate?: string;
+		eventType?: string;
+		page?: number;
+		limit?: number;
+	}) =>
+		apiCall<PaginatedResponse<CalendarEvent>>(
+			"GET",
+			"/calendar/events",
+			undefined,
+			params
+		),
+
+	getEvent: (id: string) =>
+		apiCall<CalendarEvent>("GET", `/calendar/events/${id}`),
+
+	createEvent: (data: CreateEventRequest) =>
+		apiCall<CalendarEvent>("POST", "/calendar/events", data),
+
+	updateEvent: (data: UpdateEventRequest) =>
+		apiCall<CalendarEvent>("PUT", `/calendar/events/${data.id}`, data),
+
+	deleteEvent: (id: string) =>
+		apiCall<void>("DELETE", `/calendar/events/${id}`),
+
+	syncGoogleCalendarEvents: (
+		events: {
+			googleEventId: string;
+			title: string;
+			description?: string;
+			startTime: string;
+			endTime: string;
+			location?: string;
+		}[]
+	) =>
+		apiCall<CalendarEvent[]>("POST", "/calendar/events/sync-google", {
+			events,
+		}),
+};
+
+// Wardrobe API endpoints
+export const wardrobeAPI = {
+	getItems: (params?: {
+		category?: string;
+		occasion?: string;
+		season?: string;
+		available?: boolean;
+		page?: number;
+		limit?: number;
+	}) =>
+		apiCall<PaginatedResponse<WardrobeItem>>(
+			"GET",
+			"calendar/wardrobe",
+			undefined,
+			params
+		),
+
+	getItem: (id: string) => apiCall<WardrobeItem>("GET", `/wardrobe/${id}`),
+
+	createItem: (data: CreateWardrobeItemRequest) =>
+		apiCall<WardrobeItem>("POST", "calendar/wardrobe", data),
+
+	updateItem: (id: string, data: Partial<CreateWardrobeItemRequest>) =>
+		apiCall<WardrobeItem>("PUT", `/calendar/wardrobe/${id}`, data),
+
+	deleteItem: (id: string) =>
+		apiCall<void>("DELETE", `/calendar/wardrobe/${id}`),
+
+	markItemWorn: (id: string, date: string) =>
+		apiCall<WardrobeItem>("PUT", `/calendar/wardrobe/${id}/worn`, {
+			date,
+		}),
+
+	uploadItemImage: (id: string, file: File) =>
+		uploadFile(`calendar/wardrobe/${id}/image`, file),
+};
+
+// Outfit Suggestions API endpoints
+export const outfitAPI = {
+	generateSuggestions: (data: GenerateOutfitRequest) =>
+		apiCall<OutfitSuggestion[]>("POST", "/calendar/outfit-plans", data),
+
+	getSuggestions: (params?: {
+		eventId?: string;
+		page?: number;
+		limit?: number;
+	}) =>
+		apiCall<PaginatedResponse<OutfitSuggestion>>(
+			"GET",
+			"/outfits",
+			undefined,
+			params
+		),
+
+	getSuggestion: (id: string) =>
+		apiCall<OutfitSuggestion>("GET", `/outfits/${id}`),
+
+	saveSuggestion: (id: string) =>
+		apiCall<OutfitSuggestion>("POST", `/outfits/${id}/save`),
+
+	deleteSuggestion: (id: string) => apiCall<void>("DELETE", `/outfits/${id}`),
+};
+
+// Outfit Planning API endpoints
+export const planningAPI = {
+	planOutfit: (data: PlanOutfitRequest) =>
+		apiCall<OutfitPlan>("POST", "calendar/outfit-plans", data),
+
+	getPlans: (params?: {
+		eventId?: string;
+		status?: string;
+		startDate?: string;
+		endDate?: string;
+		page?: number;
+		limit?: number;
+	}) =>
+		apiCall<PaginatedResponse<OutfitPlan>>(
+			"GET",
+			"calendar/outfit-plans",
+			undefined,
+			params
+		),
+
+	getPlan: (id: string) => apiCall<OutfitPlan>("GET", `/plans/${id}`),
+
+	updatePlan: (
+		id: string,
+		data: {
+			status?: OutfitPlan["status"];
+			notes?: string;
+			outfitId?: string;
+		}
+	) => apiCall<OutfitPlan>("PUT", `/plans/${id}`, data),
+
+	deletePlan: (id: string) => apiCall<void>("DELETE", `/plans/${id}`),
+};
+
+// Weather API endpoints
+export const weatherAPI = {
+	getWeather: (params: {
+		location?: string;
+		lat?: number;
+		lon?: number;
+		date?: string;
+	}) => apiCall<WeatherData>("GET", "/weather", undefined, params),
+};
+
+// Analytics API endpoints
+export const analyticsAPI = {
+	getOutfitAnalytics: (params?: { startDate?: string; endDate?: string }) =>
+		apiCall<{
+			totalOutfits: number;
+			favoriteItems: WardrobeItem[];
+			colorDistribution: { color: string; count: number }[];
+			occasionBreakdown: { occasion: string; count: number }[];
+			monthlyTrends: { month: string; outfits: number }[];
+		}>("GET", "/analytics/outfits", undefined, params),
 };

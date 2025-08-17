@@ -1,397 +1,468 @@
-import { useState, useEffect } from "react";
-import {
-	Card,
-	CardContent,
-	CardDescription,
-	CardHeader,
-	CardTitle,
-} from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Alert, AlertDescription } from "@/components/ui/alert";
+import React, { useState, useEffect, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
 import {
 	Calendar,
 	Clock,
 	MapPin,
-	RefreshCw,
-	Save,
 	Shirt,
-	AlertCircle,
+	Save,
+	RefreshCw,
 	CalendarDays,
+	AlertCircle,
+	Sparkles,
 } from "lucide-react";
-import { useNavigate } from "react-router-dom";
-import { useToast } from "@/hooks/use-toast";
-import { Navbar } from "@/components/navigation/navbar";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Skeleton } from "@/components/ui/skeleton";
 import { FullCalendarModal } from "@/components/ui/full-calendar-modal";
+import { Navbar } from "@/components/navigation/navbar";
+import { toast } from "sonner";
+import {
+	useEvents,
+	useSyncGoogleCalendarEvents,
+	useGenerateOutfitSuggestions,
+	useWardrobeItems,
+	useCalendarDashboard,
+} from "@/hooks/useCalendar";
+import {
+	CalendarEvent as InternalCalendarEvent,
+	GoogleCalendarEvent,
+} from "@/types/api";
 
-interface CalendarEvent {
-	id: string;
-	summary: string;
-	start: {
-		dateTime?: string;
-		date?: string;
-	};
-	end: {
-		dateTime?: string;
-		date?: string;
-	};
-	location?: string;
-	description?: string;
-	eventType?: string;
+// Enhanced event interface for display
+interface DisplayEvent extends InternalCalendarEvent {
 	outfitSuggestion?: string;
 	hasOutfit?: boolean;
+	outfitPlan?: {
+		id: number;
+		outfit_description: string;
+		wardrobe_item_ids: number[];
+		alternatives: string[];
+		weather_considerations: string;
+		confidence_score: number;
+	};
+	outfitItems?: Array<{
+		id: number;
+		description: string;
+		category: string;
+		color_primary: string;
+		subcategory?: string;
+	}>;
+	// Handle both snake_case and camelCase field names from different sources
+	start_time?: string;
+	end_time?: string;
 }
-
 const CalendarView = () => {
-	const { toast } = useToast();
 	const navigate = useNavigate();
-	const [events, setEvents] = useState<CalendarEvent[]>([]);
-	const [loading, setLoading] = useState(true);
-	const [error, setError] = useState<string | null>(null);
+	const [googleEvents, setGoogleEvents] = useState<GoogleCalendarEvent[]>([]);
+	const [isConnected, setIsConnected] = useState(true); // Default to true to show backend data
 
-	useEffect(() => {
-		fetchGoogleCalendarEvents();
-	}, []);
+	// API Hooks
+	const { events, plans, wardrobe, isLoading, isError } =
+		useCalendarDashboard();
+	const syncGoogleEvents = useSyncGoogleCalendarEvents();
+	const generateOutfits = useGenerateOutfitSuggestions();
 
-	const fetchGoogleCalendarEvents = async () => {
-		try {
-			setLoading(true);
-			setError(null);
+	// Combine Google Calendar events with backend events for display
+	const displayEvents = useMemo<DisplayEvent[]>(() => {
+		console.log("Debug - events data:", events);
+		console.log("Debug - plans data:", plans);
+		console.log("Debug - wardrobe data:", wardrobe);
 
-			// Check if we have Google access token
-			const accessToken = localStorage.getItem("google_calendar_token");
-			if (!accessToken) {
-				setError(
-					"No calendar connection found. Please connect your Google Calendar first."
-				);
-				setLoading(false);
-				return;
-			}
+		// Handle actual API response structures based on your data
+		// API returns: { success: true, data: { events: [...] } }
+		const backendEventsData = (events?.data as any)?.events || [];
+		// API returns: { outfit_plans: [...] }
+		const plansData = (plans?.data?.data as any)?.outfit_plans || [];
+		// API returns: { data: { wardrobe: [...] } }
+		const wardrobeData = (wardrobe?.data as any)?.data?.wardrobe || [];
+		const combinedEvents: DisplayEvent[] = [];
 
-			// Fetch events from Google Calendar API
-			const timeMin = new Date().toISOString();
-			const timeMax = new Date(
-				Date.now() + 30 * 24 * 60 * 60 * 1000
-			).toISOString(); // Next 30 days
+		console.log("Debug - backendEventsData:", backendEventsData);
+		console.log("Debug - plansData:", plansData);
+		console.log("Debug - wardrobeData:", wardrobeData);
 
-			const response = await fetch(
-				`https://www.googleapis.com/calendar/v3/calendars/primary/events?timeMin=${timeMin}&timeMax=${timeMax}&singleEvents=true&orderBy=startTime&maxResults=20`,
-				{
-					headers: {
-						Authorization: `Bearer ${accessToken}`,
-						"Content-Type": "application/json",
-					},
-				}
-			);
+		// Add backend events (handle both snake_case and camelCase field names)
+		if (Array.isArray(backendEventsData)) {
+			backendEventsData.forEach((event) => {
+				// Find matching outfit plan for this event
+				const matchingPlan = Array.isArray(plansData)
+					? plansData.find((plan) => {
+							// Match by event title and date
+							const planDate = plan.date
+								? new Date(plan.date).toDateString()
+								: null;
+							const eventDate = event.start_time
+								? new Date(event.start_time).toDateString()
+								: null;
+							return (
+								plan.event_title === event.title &&
+								planDate === eventDate
+							);
+					  })
+					: null;
 
-			if (!response.ok) {
-				if (response.status === 401) {
-					// Token expired, redirect to reconnect
-					localStorage.removeItem("google_calendar_token");
-					localStorage.removeItem("google_calendar_refresh_token");
-					setError(
-						"Calendar access expired. Please reconnect your Google Calendar."
-					);
-					return;
-				}
-				throw new Error("Failed to fetch calendar events");
-			}
+				// Get wardrobe items for this outfit plan
+				const outfitItems =
+					matchingPlan && Array.isArray(wardrobeData)
+						? wardrobeData.filter((item) =>
+								matchingPlan.wardrobe_item_ids.includes(item.id)
+						  )
+						: [];
 
-			const data = await response.json();
-			const eventsWithSuggestions =
-				data.items?.map((event: any) => ({
+				combinedEvents.push({
 					...event,
-					eventType: determineEventType(event),
-					outfitSuggestion: generateOutfitSuggestion(event),
-					hasOutfit: Math.random() > 0.5, // Random for demo
-				})) || [];
-
-			setEvents(eventsWithSuggestions);
-		} catch (err: any) {
-			console.error("Error fetching calendar events:", err);
-			setError(err.message || "Failed to load calendar events");
-		} finally {
-			setLoading(false);
+					// Handle field name conversion from snake_case to camelCase
+					startTime: event.startTime || event.start_time,
+					endTime: event.endTime || event.end_time,
+					hasOutfit: !!matchingPlan,
+					outfitPlan: matchingPlan || undefined,
+					outfitItems:
+						outfitItems.length > 0 ? outfitItems : undefined,
+				});
+			});
 		}
-	};
 
-	const determineEventType = (event: any): string => {
-		const summary = event.summary?.toLowerCase() || "";
-		const description = event.description?.toLowerCase() || "";
-		const location = event.location?.toLowerCase() || "";
+		// Add Google Calendar events that aren't synced yet
+		googleEvents.forEach((googleEvent) => {
+			const isAlreadySynced =
+				Array.isArray(backendEventsData) &&
+				backendEventsData.some(
+					(event) => event.googleEventId === googleEvent.id
+				);
 
-		if (
-			summary.includes("meeting") ||
-			summary.includes("conference") ||
-			summary.includes("presentation") ||
-			summary.includes("interview")
-		) {
-			return "work";
-		} else if (
-			summary.includes("dinner") ||
-			summary.includes("party") ||
-			summary.includes("social") ||
-			summary.includes("friends")
-		) {
-			return "social";
-		} else if (
-			summary.includes("gym") ||
-			summary.includes("workout") ||
-			summary.includes("fitness") ||
-			summary.includes("exercise")
-		) {
-			return "fitness";
-		} else if (
-			summary.includes("wedding") ||
-			summary.includes("formal") ||
-			summary.includes("gala")
-		) {
-			return "formal";
-		} else if (
-			location.includes("restaurant") ||
-			location.includes("bar") ||
-			location.includes("cafe")
-		) {
-			return "social";
-		} else {
-			return "casual";
-		}
-	};
+			if (!isAlreadySynced) {
+				const startTime =
+					googleEvent.start.dateTime || googleEvent.start.date || "";
+				const endTime =
+					googleEvent.end.dateTime || googleEvent.end.date || "";
 
-	const generateOutfitSuggestion = (event: any): string => {
-		const eventType = determineEventType(event);
-		const timeOfDay = getTimeOfDay(
-			event.start?.dateTime || event.start?.date
+				combinedEvents.push({
+					id: `google_${googleEvent.id}`,
+					googleEventId: googleEvent.id,
+					title: googleEvent.summary || "Untitled Event",
+					description: googleEvent.description,
+					startTime,
+					endTime,
+					location: googleEvent.location,
+					eventType: classifyEventType(googleEvent.summary || ""),
+					userId: "current-user", // This would come from auth context
+					createdAt: new Date().toISOString(),
+					updatedAt: new Date().toISOString(),
+					hasOutfit: false,
+				});
+			}
+		});
+
+		return combinedEvents.sort(
+			(a, b) =>
+				new Date(a.startTime).getTime() -
+				new Date(b.startTime).getTime()
 		);
+	}, [events?.data, googleEvents, plans?.data]);
 
-		const suggestions = {
-			work: [
-				"Professional blazer with dress pants and closed-toe shoes",
-				"Button-down shirt with tailored trousers and loafers",
-				"Modest dress with cardigan and professional accessories",
-			],
-			social: [
-				"Smart casual outfit with nice jeans and a stylish top",
-				"Casual dress with comfortable yet fashionable shoes",
-				"Trendy blouse with chinos and stylish sneakers",
-			],
-			fitness: [
-				"Athletic wear with moisture-wicking fabric and supportive sneakers",
-				"Gym clothes in breathable materials with proper sports shoes",
-				"Activewear suitable for your workout type",
-			],
-			formal: [
-				"Formal dress or suit with elegant accessories",
-				"Evening wear appropriate for the occasion",
-				"Sophisticated outfit with dress shoes and refined details",
-			],
-			casual: [
-				"Comfortable and stylish everyday outfit",
-				"Relaxed clothing appropriate for the activity",
-				"Casual wear with personal style touches",
-			],
-		};
-
-		const eventSuggestions =
-			suggestions[eventType as keyof typeof suggestions] ||
-			suggestions.casual;
-		const randomSuggestion =
-			eventSuggestions[
-				Math.floor(Math.random() * eventSuggestions.length)
-			];
-
-		// Add time-specific recommendations
-		if (timeOfDay === "evening") {
-			return randomSuggestion + " (Consider darker colors for evening)";
-		} else if (timeOfDay === "morning") {
-			return (
-				randomSuggestion +
-				" (Opt for comfortable layers for morning events)"
-			);
+	// Enhanced outfit generation for all events
+	const handleGenerateWardrobeSuggestions = async () => {
+		if (displayEvents.length === 0) {
+			toast.info("No events found to generate outfit suggestions for");
+			return;
 		}
 
-		return randomSuggestion;
+		try {
+			const upcomingEvents = displayEvents.filter(
+				(event) => new Date(event.startTime) > new Date()
+			);
+
+			for (const event of upcomingEvents.slice(0, 5)) {
+				// Limit to next 5 events
+				await generateOutfits.mutateAsync({
+					eventId: event.id,
+					eventType: event.eventType,
+					preferences: {
+						colors: [], // Would come from user preferences
+						brands: [], // Would come from user preferences
+					},
+				});
+			}
+
+			toast.success(
+				`Generated outfit suggestions for ${Math.min(
+					upcomingEvents.length,
+					5
+				)} upcoming events`
+			);
+		} catch (error) {
+			console.error("Failed to generate outfit suggestions:", error);
+			toast.error("Failed to generate outfit suggestions");
+		}
 	};
 
-	const getTimeOfDay = (dateTimeString: string): string => {
-		const date = new Date(dateTimeString);
-		const hour = date.getHours();
-
-		if (hour < 12) return "morning";
-		if (hour < 17) return "afternoon";
-		return "evening";
-	};
-
-	const formatEventTime = (event: CalendarEvent): string => {
-		if (event.start.dateTime) {
-			const startDate = new Date(event.start.dateTime);
-
-			const dateStr = startDate.toLocaleDateString("en-US", {
-				weekday: "short",
-				month: "short",
-				day: "numeric",
+	// Single event outfit generation
+	const handleGenerateOutfitForEvent = async (event: DisplayEvent) => {
+		try {
+			await generateOutfits.mutateAsync({
+				eventId: event.id,
+				eventType: event.eventType,
 			});
 
-			const timeStr = startDate.toLocaleTimeString("en-US", {
+			toast.success(`Generated outfit suggestion for "${event.title}"`);
+		} catch (error) {
+			console.error("Failed to generate outfit for event:", error);
+			toast.error("Failed to generate outfit suggestion");
+		}
+	};
+
+	// Classify event type based on title/description
+	const classifyEventType = (
+		title: string
+	): InternalCalendarEvent["eventType"] => {
+		const titleLower = title.toLowerCase();
+
+		if (
+			titleLower.includes("meeting") ||
+			titleLower.includes("work") ||
+			titleLower.includes("office")
+		) {
+			return "business";
+		}
+		if (
+			titleLower.includes("dinner") ||
+			titleLower.includes("date") ||
+			titleLower.includes("romantic")
+		) {
+			return "date";
+		}
+		if (
+			titleLower.includes("party") ||
+			titleLower.includes("celebration") ||
+			titleLower.includes("birthday")
+		) {
+			return "party";
+		}
+		if (
+			titleLower.includes("gym") ||
+			titleLower.includes("workout") ||
+			titleLower.includes("fitness")
+		) {
+			return "workout";
+		}
+		if (
+			titleLower.includes("wedding") ||
+			titleLower.includes("gala") ||
+			titleLower.includes("formal")
+		) {
+			return "formal";
+		}
+		if (
+			titleLower.includes("travel") ||
+			titleLower.includes("flight") ||
+			titleLower.includes("trip")
+		) {
+			return "travel";
+		}
+
+		return "casual";
+	};
+
+	// Format event time for display
+	const formatEventTime = (event: DisplayEvent) => {
+		try {
+			const start = new Date(event.startTime);
+			const end = new Date(event.endTime);
+
+			const startTime = start.toLocaleTimeString("en-US", {
 				hour: "numeric",
 				minute: "2-digit",
 				hour12: true,
 			});
 
-			return `${dateStr} at ${timeStr}`;
-		} else if (event.start.date) {
-			const date = new Date(event.start.date);
-			return (
-				date.toLocaleDateString("en-US", {
-					weekday: "long",
-					month: "long",
+			const endTime = end.toLocaleTimeString("en-US", {
+				hour: "numeric",
+				minute: "2-digit",
+				hour12: true,
+			});
+
+			const isToday = start.toDateString() === new Date().toDateString();
+			const isTomorrow =
+				start.toDateString() ===
+				new Date(Date.now() + 86400000).toDateString();
+
+			let dateStr = "";
+			if (isToday) {
+				dateStr = "Today";
+			} else if (isTomorrow) {
+				dateStr = "Tomorrow";
+			} else {
+				dateStr = start.toLocaleDateString("en-US", {
+					month: "short",
 					day: "numeric",
-				}) + " (All day)"
-			);
+				});
+			}
+
+			return `${dateStr}, ${startTime} - ${endTime}`;
+		} catch {
+			return "Invalid date";
 		}
-		return "No date specified";
 	};
 
-	const handlePopulateOutfit = (eventId: string, eventTitle: string) => {
-		const event = events.find((e) => e.id === eventId);
-		if (event && !event.hasOutfit) {
-			// Generate new outfit suggestion
-			const newSuggestion = generateOutfitSuggestion(event);
-			setEvents((prevEvents) =>
-				prevEvents.map((e) =>
-					e.id === eventId
-						? {
-								...e,
-								outfitSuggestion: newSuggestion,
-								hasOutfit: true,
-						  }
-						: e
-				)
-			);
-		}
-
-		toast({
-			title: event?.hasOutfit ? "Viewing Outfit" : "Outfit Generated",
-			description: event?.hasOutfit
-				? `Showing outfit for "${eventTitle}"`
-				: `Created outfit suggestion for "${eventTitle}"`,
-		});
-	};
-
-	const handleSaveOutfit = (eventId: string, eventTitle: string) => {
-		toast({
-			title: "Outfit Saved",
-			description: `Outfit for "${eventTitle}" saved to your wardrobe.`,
-		});
-	};
-
-	const handleRetryOutfit = (eventId: string, eventTitle: string) => {
-		const event = events.find((e) => e.id === eventId);
-		if (event) {
-			const newSuggestion = generateOutfitSuggestion(event);
-			setEvents((prevEvents) =>
-				prevEvents.map((e) =>
-					e.id === eventId
-						? { ...e, outfitSuggestion: newSuggestion }
-						: e
-				)
-			);
-		}
-
-		toast({
-			title: "New Outfit Generated",
-			description: `Created new outfit suggestion for "${eventTitle}"`,
-		});
-	};
-
-	const getEventTypeColor = (type: string) => {
+	// Get event type color
+	const getEventTypeColor = (eventType: string) => {
 		const colors = {
-			work: "bg-blue-100 text-blue-800",
+			business: "bg-blue-100 text-blue-800",
 			casual: "bg-green-100 text-green-800",
 			formal: "bg-purple-100 text-purple-800",
-			social: "bg-orange-100 text-orange-800",
-			fitness: "bg-red-100 text-red-800",
+			workout: "bg-orange-100 text-orange-800",
+			date: "bg-pink-100 text-pink-800",
+			party: "bg-yellow-100 text-yellow-800",
+			travel: "bg-indigo-100 text-indigo-800",
+			other: "bg-gray-100 text-gray-800",
 		};
-		return (
-			colors[type as keyof typeof colors] || "bg-gray-100 text-gray-800"
-		);
+		return colors[eventType as keyof typeof colors] || colors.other;
 	};
 
-	const handleReconnect = () => {
-		navigate("/calendar-connect");
+	// Convert DisplayEvent to CalendarEvent format for FullCalendarModal
+	const convertToModalEvents = (events: DisplayEvent[]): any[] => {
+		return events.map((event) => ({
+			id: event.id,
+			summary: event.title,
+			start: {
+				dateTime: event.startTime,
+			},
+			end: {
+				dateTime: event.endTime,
+			},
+			location: event.location,
+			description: event.description,
+			eventType: event.eventType,
+			hasOutfit: event.hasOutfit,
+		}));
+	};
+
+	// Refresh calendar data
+	const refreshCalendar = async () => {
+		// Force refresh of backend data by invalidating queries
+		window.location.reload(); // Simple refresh for now
 	};
 
 	return (
-		<div className="min-h-screen bg-gradient-hero">
+		<div className="min-h-screen bg-background">
 			<Navbar />
 			<div className="container mx-auto px-4 py-8">
-				<div className="max-w-4xl mx-auto">
-					<div className="flex items-center justify-between mb-8">
+				<div className="max-w-6xl mx-auto space-y-6">
+					{/* Header Section */}
+					<div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
 						<div>
-							<h1 className="text-3xl font-bold text-foreground mb-2">
-								Your Calendar & Outfits
+							<h1 className="text-3xl font-bold">
+								Calendar & Outfits
 							</h1>
-							<p className="text-muted-foreground">
-								AI-powered outfit recommendations for your
-								upcoming events
+							<p className="text-muted-foreground mt-1">
+								AI-powered outfit suggestions for your upcoming
+								events
 							</p>
 						</div>
-						<Button
-							onClick={fetchGoogleCalendarEvents}
-							disabled={loading}
-							variant="outline"
-							className="gap-2"
-						>
-							<RefreshCw
-								className={`w-4 h-4 ${
-									loading ? "animate-spin" : ""
-								}`}
-							/>
-							Refresh
-						</Button>
+						<div className="flex flex-wrap gap-2">
+							<Button
+								onClick={handleGenerateWardrobeSuggestions}
+								disabled={
+									generateOutfits.isPending ||
+									displayEvents.length === 0
+								}
+								className="flex items-center gap-2"
+							>
+								<Sparkles className="w-4 h-4" />
+								{generateOutfits.isPending
+									? "Generating..."
+									: "Generate All Outfits"}
+							</Button>
+							<Button
+								onClick={refreshCalendar}
+								variant="outline"
+								disabled={!isConnected}
+								className="flex items-center gap-2"
+							>
+								<RefreshCw className="w-4 h-4" />
+								Refresh Calendar
+							</Button>
+						</div>
 					</div>
 
-					{error && (
-						<Alert variant="destructive" className="mb-6">
-							<AlertCircle className="h-4 w-4" />
-							<AlertDescription className="flex items-center justify-between">
-								<span>{error}</span>
-								{error.includes("connect") && (
-									<Button
-										onClick={handleReconnect}
-										size="sm"
-										variant="outline"
-									>
-										Reconnect Calendar
-									</Button>
-								)}
-							</AlertDescription>
-						</Alert>
-					)}
-
-					{loading ? (
+					{/* Loading State */}
+					{isLoading && (
 						<div className="space-y-4">
-							{[1, 2, 3].map((i) => (
-								<Card
-									key={i}
-									className="animate-pulse card-fashion"
-								>
-									<CardContent className="p-6">
-										<div className="h-4 bg-muted rounded w-3/4 mb-2"></div>
-										<div className="h-3 bg-muted rounded w-1/2 mb-4"></div>
-										<div className="h-16 bg-muted rounded"></div>
+							{[...Array(3)].map((_, i) => (
+								<Card key={i} className="card-fashion">
+									<CardHeader>
+										<div className="flex items-start justify-between">
+											<div className="flex items-start gap-4">
+												<Skeleton className="w-12 h-12 rounded-lg" />
+												<div className="space-y-2">
+													<Skeleton className="h-4 w-32" />
+													<Skeleton className="h-3 w-24" />
+												</div>
+											</div>
+											<div className="flex gap-2">
+												<Skeleton className="h-6 w-16" />
+												<Skeleton className="h-6 w-20" />
+											</div>
+										</div>
+									</CardHeader>
+									<CardContent>
+										<div className="flex gap-2">
+											<Skeleton className="h-8 w-24" />
+											<Skeleton className="h-8 w-20" />
+										</div>
 									</CardContent>
 								</Card>
 							))}
 						</div>
-					) : (
+					)}
+
+					{/* Error State */}
+					{isError && (
+						<Alert variant="destructive">
+							<AlertCircle className="h-4 w-4" />
+							<AlertDescription>
+								Failed to load calendar data. Please try again
+								later.
+							</AlertDescription>
+						</Alert>
+					)}
+
+					{/* Events List */}
+					{!isLoading && !isError && (
 						<>
-							<div className="flex justify-center mb-6">
+							{/* Full Calendar Modal */}
+							<div className="flex justify-center">
 								<FullCalendarModal
-									events={events}
-									onPopulateOutfit={handlePopulateOutfit}
-									onSaveOutfit={handleSaveOutfit}
-									onRetryOutfit={handleRetryOutfit}
+									events={convertToModalEvents(displayEvents)}
+									onPopulateOutfit={(
+										eventId: string,
+										eventTitle: string
+									) => {
+										const event = displayEvents.find(
+											(e) => e.id === eventId
+										);
+										if (event)
+											handleGenerateOutfitForEvent(event);
+									}}
+									onSaveOutfit={(
+										eventId: string,
+										eventTitle: string
+									) => {
+										navigate(`/wardrobe?event=${eventId}`);
+									}}
+									onRetryOutfit={(
+										eventId: string,
+										eventTitle: string
+									) => {
+										const event = displayEvents.find(
+											(e) => e.id === eventId
+										);
+										if (event)
+											handleGenerateOutfitForEvent(event);
+									}}
 								>
 									<Button
 										variant="outline"
@@ -404,7 +475,7 @@ const CalendarView = () => {
 							</div>
 
 							<div className="space-y-4">
-								{events.map((event) => (
+								{displayEvents.map((event) => (
 									<Card
 										key={event.id}
 										className="card-fashion"
@@ -417,7 +488,7 @@ const CalendarView = () => {
 													</div>
 													<div>
 														<CardTitle className="text-foreground mb-1">
-															{event.summary}
+															{event.title}
 														</CardTitle>
 														<div className="flex items-center gap-4 text-sm text-muted-foreground">
 															<div className="flex items-center gap-1">
@@ -435,23 +506,13 @@ const CalendarView = () => {
 																</div>
 															)}
 														</div>
-														{event.hasOutfit &&
-															event.outfitSuggestion && (
-																<div className="mt-3 p-3 bg-muted/50 rounded-lg">
-																	<div className="flex items-center gap-2 mb-1">
-																		<Shirt className="w-3 h-3 text-primary" />
-																		<span className="text-xs font-medium">
-																			Outfit
-																			Suggestion
-																		</span>
-																	</div>
-																	<p className="text-xs text-muted-foreground">
-																		{
-																			event.outfitSuggestion
-																		}
-																	</p>
-																</div>
-															)}
+														{event.description && (
+															<p className="text-sm text-muted-foreground mt-2 line-clamp-2">
+																{
+																	event.description
+																}
+															</p>
+														)}
 													</div>
 												</div>
 												<div className="flex items-center gap-2">
@@ -477,21 +538,144 @@ const CalendarView = () => {
 											</div>
 										</CardHeader>
 										<CardContent>
+											{/* Show outfit details if available */}
+											{event.hasOutfit &&
+												event.outfitPlan && (
+													<div className="mb-4 p-4 bg-gray-50 rounded-lg">
+														<div className="flex items-center gap-2 mb-3">
+															<Shirt className="w-4 h-4 text-primary" />
+															<h4 className="font-medium text-foreground">
+																Outfit Plan
+															</h4>
+															<Badge
+																variant="secondary"
+																className="bg-blue-100 text-blue-800 text-xs"
+															>
+																{
+																	event
+																		.outfitPlan
+																		.confidence_score
+																}
+																% confidence
+															</Badge>
+														</div>
+
+														{/* Outfit Description */}
+														<p className="text-sm text-muted-foreground mb-3">
+															{
+																event.outfitPlan
+																	.outfit_description
+															}
+														</p>
+
+														{/* Wardrobe Items */}
+														{event.outfitItems &&
+															event.outfitItems
+																.length > 0 && (
+																<div className="mb-3">
+																	<h5 className="text-xs font-medium text-muted-foreground mb-2">
+																		OUTFIT
+																		ITEMS
+																	</h5>
+																	<div className="flex flex-wrap gap-2">
+																		{event.outfitItems.map(
+																			(
+																				item
+																			) => (
+																				<Badge
+																					key={
+																						item.id
+																					}
+																					variant="outline"
+																					className="bg-white text-xs"
+																				>
+																					{
+																						item.color_primary
+																					}{" "}
+																					{item.subcategory ||
+																						item.category}
+																				</Badge>
+																			)
+																		)}
+																	</div>
+																</div>
+															)}
+
+														{/* Weather Considerations */}
+														{event.outfitPlan
+															.weather_considerations && (
+															<div className="mb-3">
+																<h5 className="text-xs font-medium text-muted-foreground mb-1">
+																	WEATHER
+																	NOTES
+																</h5>
+																<p className="text-xs text-muted-foreground">
+																	{
+																		event
+																			.outfitPlan
+																			.weather_considerations
+																	}
+																</p>
+															</div>
+														)}
+
+														{/* Alternatives */}
+														{event.outfitPlan
+															.alternatives &&
+															event.outfitPlan
+																.alternatives
+																.length > 0 && (
+																<div>
+																	<h5 className="text-xs font-medium text-muted-foreground mb-1">
+																		ALTERNATIVES
+																	</h5>
+																	<ul className="text-xs text-muted-foreground">
+																		{event.outfitPlan.alternatives.map(
+																			(
+																				alt,
+																				index
+																			) => (
+																				<li
+																					key={
+																						index
+																					}
+																					className="flex items-start gap-1"
+																				>
+																					<span className="text-primary">
+																						•
+																					</span>
+																					<span>
+																						{
+																							alt
+																						}
+																					</span>
+																				</li>
+																			)
+																		)}
+																	</ul>
+																</div>
+															)}
+													</div>
+												)}
+
+											{/* Action Buttons */}
 											<div className="flex items-center gap-3">
 												<Button
 													variant="default"
 													size="sm"
 													onClick={() =>
-														handlePopulateOutfit(
-															event.id,
-															event.summary
+														handleGenerateOutfitForEvent(
+															event
 														)
+													}
+													disabled={
+														generateOutfits.isPending
 													}
 													className="flex items-center gap-2"
 												>
 													<Shirt className="w-4 h-4" />
 													{event.hasOutfit
-														? "View Outfit"
+														? "Update Outfit"
 														: "Generate Outfit"}
 												</Button>
 
@@ -501,30 +685,31 @@ const CalendarView = () => {
 															variant="outline"
 															size="sm"
 															onClick={() =>
-																handleSaveOutfit(
-																	event.id,
-																	event.summary
+																navigate(
+																	`/wardrobe?event=${event.id}`
 																)
 															}
 															className="flex items-center gap-2"
 														>
 															<Save className="w-4 h-4" />
-															Save Outfit
+															View Wardrobe
 														</Button>
 
 														<Button
 															variant="outline"
 															size="sm"
 															onClick={() =>
-																handleRetryOutfit(
-																	event.id,
-																	event.summary
+																handleGenerateOutfitForEvent(
+																	event
 																)
+															}
+															disabled={
+																generateOutfits.isPending
 															}
 															className="flex items-center gap-2"
 														>
 															<RefreshCw className="w-4 h-4" />
-															Retry Outfit
+															Regenerate
 														</Button>
 													</>
 												)}
@@ -533,7 +718,7 @@ const CalendarView = () => {
 									</Card>
 								))}
 
-								{events.length === 0 && !loading && !error && (
+								{displayEvents.length === 0 && (
 									<Card className="card-fashion text-center p-8">
 										<div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
 											<Calendar className="w-8 h-8 text-muted-foreground" />
@@ -542,33 +727,84 @@ const CalendarView = () => {
 											No Upcoming Events
 										</h3>
 										<p className="text-muted-foreground mb-4">
-											You don't have any events in the
-											next 30 days, or your calendar is
-											empty.
+											{isConnected
+												? "You don't have any events in the next 30 days."
+												: "Connect your Google Calendar to see your events and get outfit suggestions."}
 										</p>
 										<div className="flex gap-2 justify-center">
 											<Button
-												onClick={
-													fetchGoogleCalendarEvents
-												}
+												onClick={refreshCalendar}
 												variant="outline"
+												disabled={!isConnected}
 											>
-												Refresh Calendar
+												{isConnected
+													? "Refresh Calendar"
+													: "Connect Calendar"}
 											</Button>
-											<Button
-												onClick={() =>
-													navigate(
-														"/calendar-connect"
-													)
-												}
-											>
-												Manage Connections
-											</Button>
+											{!isConnected && (
+												<Button
+													onClick={() =>
+														navigate(
+															"/calendar-connect"
+														)
+													}
+												>
+													Connect Google Calendar
+												</Button>
+											)}
 										</div>
 									</Card>
 								)}
 							</div>
 						</>
+					)}
+
+					{/* Quick Stats */}
+					{!isLoading && displayEvents.length > 0 && (
+						<Card className="border-dashed">
+							<CardContent className="pt-6">
+								<div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+									<div>
+										<p className="text-2xl font-bold text-primary">
+											{displayEvents.length}
+										</p>
+										<p className="text-sm text-muted-foreground">
+											Total Events
+										</p>
+									</div>
+									<div>
+										<p className="text-2xl font-bold text-green-600">
+											{
+												displayEvents.filter(
+													(e) => e.hasOutfit
+												).length
+											}
+										</p>
+										<p className="text-sm text-muted-foreground">
+											Outfits Ready
+										</p>
+									</div>
+									<div>
+										<p className="text-2xl font-bold text-blue-600">
+											{(wardrobe?.data as any)?.data
+												?.wardrobe?.length || 0}
+										</p>
+										<p className="text-sm text-muted-foreground">
+											Wardrobe Items
+										</p>
+									</div>
+									<div>
+										<p className="text-2xl font-bold text-purple-600">
+											{(plans?.data as any)?.outfit_plans
+												?.length || 0}
+										</p>
+										<p className="text-sm text-muted-foreground">
+											Planned Outfits
+										</p>
+									</div>
+								</div>
+							</CardContent>
+						</Card>
 					)}
 				</div>
 			</div>
