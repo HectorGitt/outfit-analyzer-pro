@@ -11,6 +11,7 @@ import {
 import {
 	CalendarEvent,
 	WardrobeItem,
+	WardrobeResponse,
 	OutfitSuggestion,
 	OutfitPlan,
 	WeatherData,
@@ -96,6 +97,24 @@ export const authAPI = {
 		localStorage.removeItem("google_calendar_user_name");
 		console.log("🔐 Google Calendar tokens cleared from frontend storage");
 	},
+
+	// Get user pricing tier information
+	getPricingTier: () =>
+		apiCall<{
+			user_id: number;
+			pricing_tier: string;
+			is_pro: boolean;
+			subscription_status: string;
+			subscription_start_date?: string;
+			subscription_end_date?: string;
+			tier_features: {
+				name: string;
+				max_wardrobe_items?: number;
+				max_outfit_generations?: number;
+				advanced_features?: boolean;
+				image_upload?: boolean;
+			};
+		}>("GET", "users/pricing-tier"),
 };
 
 // User API endpoints
@@ -196,11 +215,11 @@ export const wardrobeAPI = {
 		category?: string;
 		occasion?: string;
 		season?: string;
-		available?: boolean;
-		page?: number;
 		limit?: number;
+		offset?: number;
+		wardrobe: WardrobeItem[];
 	}) =>
-		apiCall<PaginatedResponse<WardrobeItem>>(
+		apiCall<WardrobeResponse>(
 			"GET",
 			"calendar/wardrobe",
 			undefined,
@@ -211,6 +230,13 @@ export const wardrobeAPI = {
 
 	createItem: (data: CreateWardrobeItemRequest) =>
 		apiCall<WardrobeItem>("POST", "calendar/wardrobe", data),
+
+	createBulkItems: (description: string) =>
+		apiCall<{ success: boolean; items_created: number; message: string }>(
+			"POST",
+			"calendar/wardrobe",
+			{ description }
+		),
 
 	updateItem: (id: string, data: Partial<CreateWardrobeItemRequest>) =>
 		apiCall<WardrobeItem>("PUT", `/calendar/wardrobe/${id}`, data),

@@ -10,6 +10,7 @@ import {
 	LogOut,
 	Shield,
 	Calendar,
+	Shirt,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -29,6 +30,7 @@ const authenticatedNavigation = [
 	{ name: "Home", href: "/", icon: null },
 	{ name: "Upload Analysis", href: "/upload", icon: Upload },
 	{ name: "Live Camera", href: "/camera", icon: Camera },
+	{ name: "Wardrobe", href: "/wardrobe", icon: Shirt },
 	{ name: "Profile", href: "/profile", icon: User },
 	{ name: "Dashboard", href: "/dashboard", icon: BarChart3 },
 ];
@@ -134,6 +136,15 @@ export function Navbar() {
 										>
 											<User className="mr-2 h-4 w-4" />
 											Profile
+										</Link>
+									</DropdownMenuItem>
+									<DropdownMenuItem asChild>
+										<Link
+											to="/wardrobe"
+											className="cursor-pointer"
+										>
+											<Shirt className="mr-2 h-4 w-4" />
+											Wardrobe
 										</Link>
 									</DropdownMenuItem>
 									<DropdownMenuItem asChild>

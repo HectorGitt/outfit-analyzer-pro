@@ -14,6 +14,7 @@ import Dashboard from "./pages/Dashboard";
 import Admin from "./pages/Admin";
 import CalendarConnect from "./pages/CalendarConnect";
 import CalendarView from "./pages/CalendarView";
+import Wardrobe from "./pages/Wardrobe";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -86,6 +87,14 @@ const App = () => (
 						element={
 							<ProtectedRoute>
 								<CalendarView />
+							</ProtectedRoute>
+						}
+					/>
+					<Route
+						path="/wardrobe"
+						element={
+							<ProtectedRoute>
+								<Wardrobe />
 							</ProtectedRoute>
 						}
 					/>

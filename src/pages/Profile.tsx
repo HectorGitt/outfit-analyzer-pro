@@ -30,6 +30,7 @@ import { userAPI } from "@/services/api";
 import { UserPreferences, PersonalStyleGuide } from "@/types";
 import { useAuthStore } from "@/stores/authStore";
 import { Link } from "react-router-dom";
+import { set } from "react-hook-form";
 
 export default function Profile() {
 	const { user } = useAuthStore();
@@ -76,7 +77,13 @@ export default function Profile() {
 					}
 
 					console.log("Extracted preferences:", prefs);
+
+					setPersonalStyleGuide(prefs.personal_style_guide || null);
 					setPreferences(prefs);
+					console.log(
+						"Personal Style Guide:",
+						prefs.personal_style_guide
+					);
 
 					// Set form values from API response
 					setSelectedStyles(prefs.style_preference || []);
@@ -226,7 +233,7 @@ export default function Profile() {
 
 			// Check if response.data directly contains personal_style_guide
 			if (response.data?.personal_style_guide) {
-				styleGuideData = response.data;
+				styleGuideData = response.data.personal_style_guide;
 			}
 			/* // Check if response itself contains personal_style_guide
 			else if (response.personal_style_guide) {
@@ -513,7 +520,7 @@ export default function Profile() {
 								</Card>
 
 								{/* Personal Style Guide - Separate Card */}
-								{personal_style_guide?.personal_style_guide && (
+								{personal_style_guide && (
 									<Card className="card-fashion">
 										<CardHeader>
 											<CardTitle className="flex items-center gap-2">
@@ -545,9 +552,8 @@ export default function Profile() {
 												},
 											].map(({ label, key }) => {
 												const value =
-													personal_style_guide
-														?.personal_style_guide?.[
-														key as keyof typeof personal_style_guide.personal_style_guide
+													personal_style_guide?.[
+														key as keyof typeof personal_style_guide
 													];
 												if (!value) return null;
 												return (
@@ -637,16 +643,26 @@ export default function Profile() {
 									</CardHeader>
 									<CardContent className="space-y-4">
 										<p className="text-muted-foreground">
-											Connect your calendar to get AI-powered outfit recommendations for your upcoming events.
+											Connect your calendar to get
+											AI-powered outfit recommendations
+											for your upcoming events.
 										</p>
 										<div className="flex flex-col sm:flex-row gap-3">
-											<Button variant="outline" asChild className="flex-1">
+											<Button
+												variant="outline"
+												asChild
+												className="flex-1"
+											>
 												<Link to="/calendar-connect">
 													<Calendar className="w-4 h-4 mr-2" />
 													Connect Calendar
 												</Link>
 											</Button>
-											<Button variant="ghost" asChild className="flex-1">
+											<Button
+												variant="ghost"
+												asChild
+												className="flex-1"
+											>
 												<Link to="/calendar-view">
 													View Calendar
 													<ArrowRight className="w-4 h-4 ml-2" />

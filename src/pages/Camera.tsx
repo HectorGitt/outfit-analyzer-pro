@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import {
 	Camera as CameraIcon,
 	Square,
@@ -9,6 +10,7 @@ import {
 	Play,
 	Pause,
 	Timer,
+	Lock,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -19,8 +21,13 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useAuthStore } from "@/stores/authStore";
 import { fashionAPI } from "@/services/api";
 import { FashionAnalysisResponse, ApiResponse } from "@/types";
+import { usePricingTier } from "@/hooks/useCalendar";
 
 export default function Camera() {
+	const navigate = useNavigate();
+	const { data: pricingData } = usePricingTier();
+	const isPro = pricingData?.is_pro ?? false;
+
 	const videoRef = useRef<HTMLVideoElement>(null);
 	const canvasRef = useRef<HTMLCanvasElement>(null);
 	const liveAnalysisIntervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -39,6 +46,13 @@ export default function Camera() {
 	const { user } = useAuthStore();
 
 	const startCamera = async () => {
+		if (!isPro) {
+			setError(
+				"Camera analysis is a Pro feature. Please upgrade to access live camera functionality."
+			);
+			return;
+		}
+
 		console.log("🎥 Starting camera...");
 		setError(null); // Clear any previous errors
 		setIsStartingCamera(true);
@@ -395,6 +409,13 @@ export default function Camera() {
 
 	// Start live analysis mode
 	const startLiveAnalysis = () => {
+		if (!isPro) {
+			setError(
+				"Live analysis is a Pro feature. Please upgrade to access this functionality."
+			);
+			return;
+		}
+
 		if (!user) {
 			setError("Please log in to enable live analysis");
 			return;
@@ -433,7 +454,6 @@ export default function Camera() {
 
 	const analyzeCapture = async () => {
 		if (!capturedImage) return;
-
 		console.log("🔍 Starting camera analysis...", {
 			user: !!user,
 			hasImage: !!capturedImage,
@@ -578,6 +598,14 @@ export default function Camera() {
 										<span className="flex items-center gap-2">
 											<CameraIcon className="w-5 h-5 text-primary" />
 											Camera Feed
+											{!isPro && (
+												<Badge
+													variant="outline"
+													className="ml-2"
+												>
+													Pro Only
+												</Badge>
+											)}
 										</span>
 										{isStreaming && (
 											<Badge className="bg-success text-success-foreground">
@@ -586,9 +614,53 @@ export default function Camera() {
 											</Badge>
 										)}
 									</CardTitle>
+									{!isPro && (
+										<p className="text-sm text-muted-foreground">
+											Live camera analysis is available
+											with our Pro plan. Upgrade to access
+											real-time outfit feedback.
+										</p>
+									)}
 								</CardHeader>
 								<CardContent>
 									<div className="relative bg-muted rounded-xl overflow-hidden aspect-video">
+										{!isPro && (
+											<div className="absolute inset-0 bg-background/80 backdrop-blur-sm z-10 rounded-xl flex items-center justify-center">
+												<div className="text-center">
+													<Lock className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+													<h3 className="text-lg font-semibold mb-2">
+														Camera Analysis - Pro
+														Feature
+													</h3>
+													<p className="text-muted-foreground mb-4 max-w-sm mx-auto">
+														Get real-time fashion
+														feedback with live
+														camera analysis
+													</p>
+													<div className="space-y-3 mb-4">
+														<div className="text-sm text-muted-foreground">
+															<p>
+																📸 Live camera
+																analysis
+															</p>
+															<p>
+																⚡ Real-time
+																outfit feedback
+															</p>
+															<p>
+																🎯 Instant style
+																recommendations
+															</p>
+															<p>
+																📱 Mobile &
+																desktop support
+															</p>
+														</div>
+													</div>
+												</div>
+											</div>
+										)}
+
 										{!isStreaming && !capturedImage && (
 											<div
 												className="absolute inset-0 flex items-center justify-center"
@@ -618,30 +690,34 @@ export default function Camera() {
 															Start your camera to
 															begin live analysis
 														</p>
-														<Button
-															onClick={(e) => {
-																console.log(
-																	"🖱️ Start Camera button clicked!",
+														{isPro && (
+															<Button
+																onClick={(
 																	e
-																);
-																startCamera();
-															}}
-															className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
-															disabled={
-																isStartingCamera
-															}
-															style={{
-																pointerEvents:
-																	"auto",
-																zIndex: 10,
-																position:
-																	"relative",
-															}}
-														>
-															{isStartingCamera
-																? "Starting..."
-																: "Start Camera"}
-														</Button>
+																) => {
+																	console.log(
+																		"🖱️ Start Camera button clicked!",
+																		e
+																	);
+																	startCamera();
+																}}
+																className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
+																disabled={
+																	isStartingCamera
+																}
+																style={{
+																	pointerEvents:
+																		"auto",
+																	zIndex: 10,
+																	position:
+																		"relative",
+																}}
+															>
+																{isStartingCamera
+																	? "Starting..."
+																	: "Start Camera"}
+															</Button>
+														)}
 													</div>
 												</div>
 											</div>
@@ -671,32 +747,34 @@ export default function Camera() {
 
 									{/* Camera Controls */}
 									<div className="flex items-center justify-center gap-4 mt-4">
-										{isStreaming && !capturedImage && (
-											<>
-												<Button
-													variant="outline"
-													onClick={switchCamera}
-												>
-													<RotateCcw className="w-4 h-4 mr-2" />
-													Switch
-												</Button>
-												<Button
-													onClick={capturePhoto}
-													className="btn-gradient"
-												>
-													<Square className="w-4 h-4 mr-2" />
-													Capture
-												</Button>
-												<Button
-													variant="outline"
-													onClick={stopCamera}
-												>
-													Stop Camera
-												</Button>
-											</>
-										)}
+										{isStreaming &&
+											!capturedImage &&
+											isPro && (
+												<>
+													<Button
+														variant="outline"
+														onClick={switchCamera}
+													>
+														<RotateCcw className="w-4 h-4 mr-2" />
+														Switch
+													</Button>
+													<Button
+														onClick={capturePhoto}
+														className="btn-gradient"
+													>
+														<Square className="w-4 h-4 mr-2" />
+														Capture
+													</Button>
+													<Button
+														variant="outline"
+														onClick={stopCamera}
+													>
+														Stop Camera
+													</Button>
+												</>
+											)}
 
-										{capturedImage && (
+										{capturedImage && isPro && (
 											<>
 												<Button
 													variant="outline"
@@ -718,93 +796,150 @@ export default function Camera() {
 												</Button>
 											</>
 										)}
+
+										{!isPro && (
+											<Button
+												onClick={() =>
+													navigate("/profile")
+												}
+												className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600"
+											>
+												Upgrade for Camera Access
+											</Button>
+										)}
 									</div>
 
 									{/* Live Analysis Controls */}
 									{isStreaming && !capturedImage && (
-										<div className="mt-4 p-4 bg-gray-50 rounded-lg">
-											<div className="flex items-center justify-between mb-3">
-												<h4 className="text-sm font-medium flex items-center gap-2">
-													<Timer className="w-4 h-4 text-blue-600" />
-													Live Analysis
-												</h4>
-												{isLiveAnalysis && (
-													<Badge className="bg-red-100 text-red-700 border-red-200">
-														<div className="w-2 h-2 bg-red-500 rounded-full mr-1 animate-pulse" />
-														Live
-													</Badge>
-												)}
-											</div>
+										<div className="mt-4">
+											{!isPro ? (
+												// Pro upgrade card for free users
+												<Card className="bg-gradient-to-r from-purple-50 to-pink-50 border-purple-200">
+													<CardContent className="pt-6">
+														<div className="text-center">
+															<Timer className="w-12 h-12 text-purple-600 mx-auto mb-4" />
+															<h3 className="text-lg font-semibold mb-2">
+																Live Analysis -
+																Pro Feature
+															</h3>
+															<p className="text-muted-foreground mb-6 max-w-md mx-auto">
+																Get real-time
+																outfit feedback
+																with automatic
+																analysis every
+																few seconds.
+																Perfect for
+																trying on
+																different looks!
+															</p>
+															<Button
+																onClick={() =>
+																	navigate(
+																		"/profile"
+																	)
+																}
+																className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600"
+															>
+																Upgrade to Pro
+															</Button>
+														</div>
+													</CardContent>
+												</Card>
+											) : (
+												// Pro user live analysis functionality
+												<div className="p-4 bg-gray-50 rounded-lg">
+													<div className="flex items-center justify-between mb-3">
+														<h4 className="text-sm font-medium flex items-center gap-2">
+															<Timer className="w-4 h-4 text-blue-600" />
+															Live Analysis
+														</h4>
+														{isLiveAnalysis && (
+															<Badge className="bg-red-100 text-red-700 border-red-200">
+																<div className="w-2 h-2 bg-red-500 rounded-full mr-1 animate-pulse" />
+																Live
+															</Badge>
+														)}
+													</div>
 
-											<div className="flex items-center gap-3 mb-3">
-												<label className="text-xs text-gray-600">
-													Interval:
-												</label>
-												<select
-													value={liveAnalysisInterval}
-													onChange={(e) =>
-														setLiveAnalysisInterval(
-															Number(
-																e.target.value
-															)
-														)
-													}
-													className="text-xs border rounded px-2 py-1"
-													disabled={isLiveAnalysis}
-												>
-													<option value={3}>
-														3 seconds
-													</option>
-													<option value={5}>
-														5 seconds
-													</option>
-													<option value={10}>
-														10 seconds
-													</option>
-													<option value={15}>
-														15 seconds
-													</option>
-													<option value={30}>
-														30 seconds
-													</option>
-												</select>
-											</div>
+													<div className="flex items-center gap-3 mb-3">
+														<label className="text-xs text-gray-600">
+															Interval:
+														</label>
+														<select
+															value={
+																liveAnalysisInterval
+															}
+															onChange={(e) =>
+																setLiveAnalysisInterval(
+																	Number(
+																		e.target
+																			.value
+																	)
+																)
+															}
+															className="text-xs border rounded px-2 py-1"
+															disabled={
+																isLiveAnalysis
+															}
+														>
+															<option value={3}>
+																3 seconds
+															</option>
+															<option value={5}>
+																5 seconds
+															</option>
+															<option value={10}>
+																10 seconds
+															</option>
+															<option value={15}>
+																15 seconds
+															</option>
+															<option value={30}>
+																30 seconds
+															</option>
+														</select>
+													</div>
 
-											<div className="flex items-center justify-center gap-2">
-												{!isLiveAnalysis ? (
-													<Button
-														onClick={
-															startLiveAnalysis
-														}
-														size="sm"
-														className="bg-green-600 hover:bg-green-700 text-white"
-														disabled={
-															!user || isAnalyzing
-														}
-													>
-														<Play className="w-3 h-3 mr-1" />
-														Start Live Analysis
-													</Button>
-												) : (
-													<Button
-														onClick={
-															stopLiveAnalysis
-														}
-														size="sm"
-														variant="outline"
-														className="border-red-300 text-red-600 hover:bg-red-50"
-													>
-														<Pause className="w-3 h-3 mr-1" />
-														Stop Live Analysis
-													</Button>
-												)}
-											</div>
+													<div className="flex items-center justify-center gap-2">
+														{!isLiveAnalysis ? (
+															<Button
+																onClick={
+																	startLiveAnalysis
+																}
+																size="sm"
+																className="bg-green-600 hover:bg-green-700 text-white"
+																disabled={
+																	!user ||
+																	isAnalyzing
+																}
+															>
+																<Play className="w-3 h-3 mr-1" />
+																Start Live
+																Analysis
+															</Button>
+														) : (
+															<Button
+																onClick={
+																	stopLiveAnalysis
+																}
+																size="sm"
+																variant="outline"
+																className="border-red-300 text-red-600 hover:bg-red-50"
+															>
+																<Pause className="w-3 h-3 mr-1" />
+																Stop Live
+																Analysis
+															</Button>
+														)}
+													</div>
 
-											{!user && (
-												<p className="text-xs text-gray-500 mt-2 text-center">
-													Login required for live
-													analysis
-												</p>
+													{!user && (
+														<p className="text-xs text-gray-500 mt-2 text-center">
+															Login required for
+															live analysis
+														</p>
+													)}
+												</div>
 											)}
 										</div>
 									)}
@@ -820,6 +955,26 @@ export default function Camera() {
 									</CardTitle>
 								</CardHeader>
 								<CardContent>
+									{!isPro && (
+										<Alert className="mb-4">
+											<Lock className="h-4 w-4" />
+											<AlertDescription>
+												Live camera analysis is a Pro
+												feature.
+												<Button
+													variant="link"
+													className="p-0 h-auto ml-1 text-primary"
+													onClick={() =>
+														navigate("/profile")
+													}
+												>
+													Upgrade to Pro
+												</Button>
+												to unlock real-time outfit
+												feedback.
+											</AlertDescription>
+										</Alert>
+									)}
 									{!user && (
 										<Alert className="mb-4">
 											<AlertCircle className="h-4 w-4" />
@@ -848,16 +1003,20 @@ export default function Camera() {
 											<span className="w-1.5 h-1.5 bg-primary rounded-full mt-2 flex-shrink-0" />
 											Use a plain background when possible
 										</li>
-										<li className="flex items-start gap-2">
-											<span className="w-1.5 h-1.5 bg-green-600 rounded-full mt-2 flex-shrink-0" />
-											Use Live Analysis for real-time
-											fashion feedback
-										</li>
-										<li className="flex items-start gap-2">
-											<span className="w-1.5 h-1.5 bg-green-600 rounded-full mt-2 flex-shrink-0" />
-											Longer intervals save battery and
-											data usage
-										</li>
+										{isPro && (
+											<>
+												<li className="flex items-start gap-2">
+													<span className="w-1.5 h-1.5 bg-green-600 rounded-full mt-2 flex-shrink-0" />
+													Use Live Analysis for
+													real-time fashion feedback
+												</li>
+												<li className="flex items-start gap-2">
+													<span className="w-1.5 h-1.5 bg-green-600 rounded-full mt-2 flex-shrink-0" />
+													Longer intervals save
+													battery and data usage
+												</li>
+											</>
+										)}
 									</ul>
 								</CardContent>
 							</Card>

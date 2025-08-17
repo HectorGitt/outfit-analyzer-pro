@@ -190,9 +190,9 @@ export const useWardrobeItems = (params?: {
 	category?: string;
 	occasion?: string;
 	season?: string;
-	available?: boolean;
-	page?: number;
 	limit?: number;
+	offset?: number;
+	wardrobe: WardrobeItem[];
 }) => {
 	return useQuery({
 		queryKey: ["wardrobe", params],
@@ -221,6 +221,26 @@ export const useCreateWardrobeItem = () => {
 		onError: (error: any) => {
 			console.error("Failed to create wardrobe item:", error);
 			toast.error("Failed to create wardrobe item. Please try again.");
+		},
+	});
+};
+
+export const useCreateBulkWardrobeItems = () => {
+	const queryClient = useQueryClient();
+
+	return useMutation({
+		mutationFn: (description: string) =>
+			wardrobeAPI.createBulkItems(description),
+		onSuccess: (response) => {
+			queryClient.invalidateQueries({ queryKey: ["wardrobe"] });
+			const itemsCreated = response?.data?.items_created || 0;
+			toast.success(
+				`${itemsCreated} wardrobe items created successfully!`
+			);
+		},
+		onError: (error: any) => {
+			console.error("Failed to create bulk wardrobe items:", error);
+			toast.error("Failed to create wardrobe items. Please try again.");
 		},
 	});
 };
@@ -499,10 +519,7 @@ export const useCalendarDashboard = (date?: Date) => {
 		limit: 50,
 	});
 
-	const wardrobeQuery = useWardrobeItems({
-		available: true,
-		limit: 100,
-	});
+	const wardrobeQuery = useWardrobeItems();
 
 	return {
 		events: eventsQuery,
@@ -515,4 +532,12 @@ export const useCalendarDashboard = (date?: Date) => {
 		isError:
 			eventsQuery.isError || plansQuery.isError || wardrobeQuery.isError,
 	};
+};
+
+// Pricing Tier Hook
+export const usePricingTier = () => {
+	return useQuery({
+		queryKey: ["pricing-tier"],
+		queryFn: () => authAPI.getPricingTier(),
+	});
 };

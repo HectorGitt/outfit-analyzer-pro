@@ -26,6 +26,7 @@ export interface UserPreferences {
 	body_type?: string;
 	occasion_types: string[];
 	budget_range?: string;
+	personal_style_guide?: PersonalStyleGuide;
 }
 
 export interface FashionAnalysis {

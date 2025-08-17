@@ -34,25 +34,42 @@ export interface CalendarEvent {
 }
 
 export interface WardrobeItem {
-	id: string;
-	name: string;
+	id: number;
 	category:
-		| "tops"
-		| "bottoms"
+		| "top"
+		| "bottom"
+		| "pants"
+		| "shirt"
 		| "shoes"
 		| "accessories"
 		| "outerwear"
-		| "dresses"
-		| "suits";
-	color: string;
-	brand?: string;
+		| "dress";
+	subcategory?: string | null;
+	description: string;
+	color_primary: string;
+	color_secondary?: string | null;
+	brand?: string | null;
+	size?: string | null;
 	season: "spring" | "summer" | "fall" | "winter" | "all";
-	occasion: "casual" | "business" | "formal" | "workout" | "party" | "all";
-	imageUrl?: string;
-	userId: string;
-	isAvailable: boolean;
-	lastWorn?: string;
-	createdAt: string;
+	occasion: string[];
+	image_url?: string | null;
+	tags: string[];
+	is_favorite: boolean;
+	created_at: string;
+}
+
+export interface WardrobeResponse {
+	wardrobe: WardrobeItem[];
+	total_count: number;
+	limit: number;
+	offset: number;
+	has_more: boolean;
+	filters: {
+		category: string | null;
+		season: string | null;
+		occasion: string | null;
+	};
+	message: string;
 }
 
 export interface OutfitSuggestion {
@@ -106,13 +123,17 @@ export interface UpdateEventRequest extends Partial<CreateEventRequest> {
 }
 
 export interface CreateWardrobeItemRequest {
-	name: string;
+	description: string;
 	category: WardrobeItem["category"];
-	color: string;
+	subcategory?: string;
+	color_primary: string;
+	color_secondary?: string;
 	brand?: string;
+	size?: string;
 	season: WardrobeItem["season"];
-	occasion: WardrobeItem["occasion"];
-	imageUrl?: string;
+	occasion: string[];
+	image_url?: string;
+	tags?: string[];
 }
 
 export interface GenerateOutfitRequest {

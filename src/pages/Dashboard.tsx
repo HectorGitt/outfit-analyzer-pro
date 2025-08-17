@@ -8,6 +8,7 @@ import {
 	Download,
 	AlertCircle,
 	RefreshCw,
+	Lock,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -19,6 +20,7 @@ import { useAuthStore } from "@/stores/authStore";
 import { fashionAPI } from "@/services/api";
 import { FashionAnalysis } from "@/types";
 import { Navbar } from "@/components/navigation/navbar";
+import { usePricingTier } from "@/hooks/useCalendar";
 
 export default function Dashboard() {
 	const [timeRange, setTimeRange] = useState("30d");
@@ -28,6 +30,8 @@ export default function Dashboard() {
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
 	const { user } = useAuthStore();
+	const { data: pricingData } = usePricingTier();
+	const isPro = pricingData?.data?.is_pro ?? false;
 
 	const fetchDashboardData = async () => {
 		try {
@@ -281,8 +285,34 @@ export default function Dashboard() {
 						<TabsList className="grid w-full grid-cols-4">
 							<TabsTrigger value="overview">Overview</TabsTrigger>
 							<TabsTrigger value="history">History</TabsTrigger>
-							<TabsTrigger value="wardrobe">Wardrobe</TabsTrigger>
-							<TabsTrigger value="insights">Insights</TabsTrigger>
+							<TabsTrigger
+								value="wardrobe"
+								disabled={!isPro}
+								className={
+									!isPro
+										? "opacity-50 cursor-not-allowed"
+										: ""
+								}
+							>
+								<div className="flex items-center gap-2">
+									Wardrobe
+									{!isPro && <Lock className="w-3 h-3" />}
+								</div>
+							</TabsTrigger>
+							<TabsTrigger
+								value="insights"
+								disabled={!isPro}
+								className={
+									!isPro
+										? "opacity-50 cursor-not-allowed"
+										: ""
+								}
+							>
+								<div className="flex items-center gap-2">
+									Insights
+									{!isPro && <Lock className="w-3 h-3" />}
+								</div>
+							</TabsTrigger>
 						</TabsList>
 
 						<TabsContent value="overview" className="space-y-6">
@@ -618,85 +648,159 @@ export default function Dashboard() {
 						</TabsContent>
 
 						<TabsContent value="wardrobe" className="space-y-6">
-							<Card className="card-fashion">
-								<CardHeader>
-									<CardTitle className="flex items-center gap-2">
-										<BarChart3 className="w-5 h-5 text-primary" />
-										Wardrobe Recommendations
-									</CardTitle>
-								</CardHeader>
-								<CardContent>
-									<div className="space-y-4">
-										{wardrobeRecommendations.map(
-											(rec, index) => (
-												<div
-													key={index}
-													className="flex items-center justify-between p-4 rounded-lg bg-muted/50"
-												>
-													<div>
-														<h4 className="font-medium">
-															{rec.category}
-														</h4>
-														<p className="text-sm text-muted-foreground">
-															{rec.items} items
-															currently
-														</p>
-														<p className="text-sm mt-1">
-															{rec.recommendation}
-														</p>
-													</div>
-													<Badge
-														variant={
-															rec.priority ===
-															"high"
-																? "destructive"
-																: rec.priority ===
-																  "medium"
-																? "default"
-																: "secondary"
-														}
+							{isPro ? (
+								<Card className="card-fashion">
+									<CardHeader>
+										<CardTitle className="flex items-center gap-2">
+											<BarChart3 className="w-5 h-5 text-primary" />
+											Wardrobe Recommendations
+										</CardTitle>
+									</CardHeader>
+									<CardContent>
+										<div className="space-y-4">
+											{wardrobeRecommendations.map(
+												(rec, index) => (
+													<div
+														key={index}
+														className="flex items-center justify-between p-4 rounded-lg bg-muted/50"
 													>
-														{rec.priority} priority
-													</Badge>
+														<div>
+															<h4 className="font-medium">
+																{rec.category}
+															</h4>
+															<p className="text-sm text-muted-foreground">
+																{rec.items}{" "}
+																items currently
+															</p>
+															<p className="text-sm mt-1">
+																{
+																	rec.recommendation
+																}
+															</p>
+														</div>
+														<Badge
+															variant={
+																rec.priority ===
+																"high"
+																	? "destructive"
+																	: rec.priority ===
+																	  "medium"
+																	? "default"
+																	: "secondary"
+															}
+														>
+															{rec.priority}{" "}
+															priority
+														</Badge>
+													</div>
+												)
+											)}
+										</div>
+									</CardContent>
+								</Card>
+							) : (
+								<Card className="card-fashion relative">
+									<div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-purple-600/10 backdrop-blur-sm rounded-lg z-10" />
+									<CardHeader className="relative z-20">
+										<CardTitle className="flex items-center gap-2">
+											<Lock className="w-5 h-5 text-blue-600" />
+											Wardrobe Recommendations - Pro
+											Feature
+										</CardTitle>
+									</CardHeader>
+									<CardContent className="relative z-20">
+										<div className="text-center py-8">
+											<div className="mb-6 relative">
+												<div className="bg-gradient-to-br from-blue-500 to-purple-600 w-16 h-16 rounded-full mx-auto flex items-center justify-center">
+													<BarChart3 className="w-8 h-8 text-white" />
 												</div>
-											)
-										)}
-									</div>
-								</CardContent>
-							</Card>
+											</div>
+											<h3 className="text-xl font-semibold mb-2">
+												Unlock Wardrobe Insights
+											</h3>
+											<p className="text-muted-foreground mb-6 max-w-md mx-auto">
+												Get personalized wardrobe
+												recommendations, gap analysis,
+												and style suggestions with our
+												Pro plan.
+											</p>
+											<Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-8 py-2">
+												Upgrade to Pro
+											</Button>
+										</div>
+									</CardContent>
+								</Card>
+							)}
 						</TabsContent>
 
 						<TabsContent value="insights" className="space-y-6">
-							<div className="grid lg:grid-cols-2 gap-6">
-								<Card className="card-fashion">
-									<CardHeader>
-										<CardTitle>Style Evolution</CardTitle>
-									</CardHeader>
-									<CardContent>
-										<div className="text-center py-8">
-											<TrendingUp className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
-											<p className="text-muted-foreground">
-												Style evolution chart coming
-												soon
-											</p>
-										</div>
-									</CardContent>
-								</Card>
+							{isPro ? (
+								<div className="grid lg:grid-cols-2 gap-6">
+									<Card className="card-fashion">
+										<CardHeader>
+											<CardTitle>
+												Style Evolution
+											</CardTitle>
+										</CardHeader>
+										<CardContent>
+											<div className="text-center py-8">
+												<TrendingUp className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
+												<p className="text-muted-foreground">
+													Style evolution chart coming
+													soon
+												</p>
+											</div>
+										</CardContent>
+									</Card>
 
-								<Card className="card-fashion">
-									<CardHeader>
-										<CardTitle>Color Analysis</CardTitle>
+									<Card className="card-fashion">
+										<CardHeader>
+											<CardTitle>
+												Color Analysis
+											</CardTitle>
+										</CardHeader>
+										<CardContent>
+											<div className="text-center py-8">
+												<BarChart3 className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
+												<p className="text-muted-foreground">
+													Color analysis coming soon
+												</p>
+											</div>
+										</CardContent>
+									</Card>
+								</div>
+							) : (
+								<Card className="card-fashion relative">
+									<div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-purple-600/10 backdrop-blur-sm rounded-lg z-10" />
+									<CardHeader className="relative z-20">
+										<CardTitle className="flex items-center gap-2">
+											<Lock className="w-5 h-5 text-blue-600" />
+											Style Insights - Pro Feature
+										</CardTitle>
 									</CardHeader>
-									<CardContent>
+									<CardContent className="relative z-20">
 										<div className="text-center py-8">
-											<BarChart3 className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
-											<p className="text-muted-foreground">
-												Color analysis coming soon
+											<div className="mb-6 relative">
+												<div className="bg-gradient-to-br from-blue-500 to-purple-600 w-16 h-16 rounded-full mx-auto flex items-center justify-center">
+													<Star className="w-8 h-8 text-white" />
+												</div>
+											</div>
+											<h3 className="text-xl font-semibold mb-2">
+												Unlock Advanced Analytics
+											</h3>
+											<p className="text-muted-foreground mb-6 max-w-md mx-auto">
+												Discover your style evolution,
+												color preferences, and detailed
+												fashion insights with advanced
+												analytics.
 											</p>
+											<Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-8 py-2">
+												Upgrade to Pro
+											</Button>
 										</div>
 									</CardContent>
 								</Card>
-							</div>
+							)}
 						</TabsContent>
 					</Tabs>
 				</div>

@@ -10,6 +10,7 @@ import {
 	CalendarDays,
 	AlertCircle,
 	Sparkles,
+	Lock,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -25,6 +26,7 @@ import {
 	useGenerateOutfitSuggestions,
 	useWardrobeItems,
 	useCalendarDashboard,
+	usePricingTier,
 } from "@/hooks/useCalendar";
 import {
 	CalendarEvent as InternalCalendarEvent,
@@ -64,6 +66,10 @@ const CalendarView = () => {
 		useCalendarDashboard();
 	const syncGoogleEvents = useSyncGoogleCalendarEvents();
 	const generateOutfits = useGenerateOutfitSuggestions();
+	const { data: pricingData } = usePricingTier();
+
+	// Get Pro user status
+	const isPro = pricingData?.data?.is_pro ?? false;
 
 	// Combine Google Calendar events with backend events for display
 	const displayEvents = useMemo<DisplayEvent[]>(() => {
@@ -165,6 +171,13 @@ const CalendarView = () => {
 
 	// Enhanced outfit generation for all events
 	const handleGenerateWardrobeSuggestions = async () => {
+		if (!isPro) {
+			toast.error(
+				"Outfit generation is only available for Pro users. Please upgrade your account."
+			);
+			return;
+		}
+
 		if (displayEvents.length === 0) {
 			toast.info("No events found to generate outfit suggestions for");
 			return;
@@ -201,6 +214,13 @@ const CalendarView = () => {
 
 	// Single event outfit generation
 	const handleGenerateOutfitForEvent = async (event: DisplayEvent) => {
+		if (!isPro) {
+			toast.error(
+				"Outfit generation is only available for Pro users. Please upgrade your account."
+			);
+			return;
+		}
+
 		try {
 			await generateOutfits.mutateAsync({
 				eventId: event.id,
@@ -354,12 +374,24 @@ const CalendarView = () => {
 					{/* Header Section */}
 					<div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
 						<div>
-							<h1 className="text-3xl font-bold">
-								Calendar & Outfits
-							</h1>
+							<div className="flex items-center gap-3">
+								<h1 className="text-3xl font-bold">
+									Calendar & Outfits
+								</h1>
+								{!isPro && (
+									<Badge
+										variant="outline"
+										className="text-blue-600 border-blue-200"
+									>
+										<Lock className="w-3 h-3 mr-1" />
+										Pro Feature
+									</Badge>
+								)}
+							</div>
 							<p className="text-muted-foreground mt-1">
-								AI-powered outfit suggestions for your upcoming
-								events
+								{isPro
+									? "AI-powered outfit suggestions for your upcoming events"
+									: "AI-powered outfit suggestions for your upcoming events • Upgrade to Pro to generate outfits"}
 							</p>
 						</div>
 						<div className="flex flex-wrap gap-2">
@@ -367,12 +399,23 @@ const CalendarView = () => {
 								onClick={handleGenerateWardrobeSuggestions}
 								disabled={
 									generateOutfits.isPending ||
-									displayEvents.length === 0
+									displayEvents.length === 0 ||
+									!isPro
 								}
-								className="flex items-center gap-2"
+								className={`flex items-center gap-2 ${
+									!isPro
+										? "opacity-60 cursor-not-allowed"
+										: ""
+								}`}
 							>
-								<Sparkles className="w-4 h-4" />
-								{generateOutfits.isPending
+								{!isPro ? (
+									<Lock className="w-4 h-4" />
+								) : (
+									<Sparkles className="w-4 h-4" />
+								)}
+								{!isPro
+									? "Pro Only - Generate All Outfits"
+									: generateOutfits.isPending
 									? "Generating..."
 									: "Generate All Outfits"}
 							</Button>
@@ -660,25 +703,6 @@ const CalendarView = () => {
 
 											{/* Action Buttons */}
 											<div className="flex items-center gap-3">
-												<Button
-													variant="default"
-													size="sm"
-													onClick={() =>
-														handleGenerateOutfitForEvent(
-															event
-														)
-													}
-													disabled={
-														generateOutfits.isPending
-													}
-													className="flex items-center gap-2"
-												>
-													<Shirt className="w-4 h-4" />
-													{event.hasOutfit
-														? "Update Outfit"
-														: "Generate Outfit"}
-												</Button>
-
 												{event.hasOutfit && (
 													<>
 														<Button
@@ -704,12 +728,23 @@ const CalendarView = () => {
 																)
 															}
 															disabled={
-																generateOutfits.isPending
+																generateOutfits.isPending ||
+																!isPro
 															}
-															className="flex items-center gap-2"
+															className={`flex items-center gap-2 ${
+																!isPro
+																	? "opacity-60 cursor-not-allowed"
+																	: ""
+															}`}
 														>
-															<RefreshCw className="w-4 h-4" />
-															Regenerate
+															{!isPro ? (
+																<Lock className="w-4 h-4" />
+															) : (
+																<RefreshCw className="w-4 h-4" />
+															)}
+															{!isPro
+																? "Pro Only"
+																: "Regenerate"}
 														</Button>
 													</>
 												)}
