@@ -16,13 +16,13 @@ import {
 	Target,
 	Palette,
 	BarChart3,
+	Bot,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Navbar } from "@/components/navigation/navbar";
 import { Leaderboard, FashionIconCard } from "@/components/ui/leaderboard";
-import PersonalizedFashionBot from "@/components/ui/personalized-fashion-bot";
 import { fashionAPI } from "@/services/api";
 import { useQuery } from "@tanstack/react-query";
 import heroImage from "@/assets/hero-fashion.jpg";
@@ -193,19 +193,47 @@ const Index = () => {
 				</div>
 			</section>
 
-			{/* Personalized Fashion Bot Section */}
+			{/* Fashion Bot Feature Showcase */}
 			<section className="py-16 bg-gradient-secondary/30">
 				<div className="container mx-auto px-4">
-					<div className="max-w-4xl mx-auto">
-						<div className="text-center mb-12">
+					<div className="max-w-4xl mx-auto text-center">
+						<div className="mb-8">
 							<h2 className="text-3xl font-bold mb-4">
-								Your Personal Style Guide
+								Meet Your Fashion Assistant
 							</h2>
 							<p className="text-lg text-muted-foreground">
-								AI-powered fashion recommendations tailored to your preferences
+								Get instant style advice and fashion tips from our AI assistant
 							</p>
 						</div>
-						<PersonalizedFashionBot />
+						
+						<Card className="card-fashion max-w-2xl mx-auto">
+							<CardContent className="p-8">
+								<div className="flex items-center justify-center mb-6">
+									<div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center">
+										<Bot className="w-8 h-8 text-primary" />
+									</div>
+								</div>
+								<h3 className="text-xl font-semibold mb-4">Always Ready to Help</h3>
+								<p className="text-muted-foreground mb-6 leading-relaxed">
+									Our fashion bot is available 24/7 to answer your style questions, provide outfit suggestions, 
+									and help you make confident fashion choices. Look for the bot icon in the bottom right corner!
+								</p>
+								<div className="flex items-center justify-center gap-4 text-sm text-muted-foreground">
+									<div className="flex items-center gap-2">
+										<Sparkles className="w-4 h-4 text-accent" />
+										<span>Style Tips</span>
+									</div>
+									<div className="flex items-center gap-2">
+										<Palette className="w-4 h-4 text-accent" />
+										<span>Color Advice</span>
+									</div>
+									<div className="flex items-center gap-2">
+										<TrendingUp className="w-4 h-4 text-accent" />
+										<span>Trend Updates</span>
+									</div>
+								</div>
+							</CardContent>
+						</Card>
 					</div>
 				</div>
 			</section>
