@@ -9,6 +9,8 @@ import {
 	AlertCircle,
 	Calendar,
 	ArrowRight,
+	Globe,
+	Users,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -49,6 +51,8 @@ export default function Profile() {
 	const [selectedOccasions, setSelectedOccasions] = useState<string[]>([]);
 	const [bodyType, setBodyType] = useState<string>("");
 	const [budgetRange, setBudgetRange] = useState<string>("");
+	const [country, setCountry] = useState<string>("");
+	const [gender, setGender] = useState<string>("");
 
 	// Fetch user preferences on component mount
 	useEffect(() => {
@@ -91,6 +95,8 @@ export default function Profile() {
 					setSelectedOccasions(prefs.occasion_types || []);
 					setBodyType(prefs.body_type || "");
 					setBudgetRange(prefs.budget_range || "");
+					setCountry(prefs.country || "");
+					setGender(prefs.gender || "");
 				})
 				.catch((err) => {
 					console.error("Failed to load preferences:", err);
@@ -212,6 +218,8 @@ export default function Profile() {
 				body_type: bodyType,
 				occasion_types: selectedOccasions,
 				budget_range: budgetRange,
+				country: country,
+				gender: gender,
 			};
 
 			const response = await userAPI.updatePreferences(
@@ -391,6 +399,131 @@ export default function Profile() {
 													className="input-fashion"
 													disabled
 												/>
+											</div>
+											<div>
+												<Label htmlFor="country">
+													Country
+												</Label>
+												<div className="relative">
+													<Globe className="absolute left-3 top-3 h-4 w-4 text-muted-foreground z-10" />
+													<Select
+														value={country}
+														onValueChange={
+															setCountry
+														}
+													>
+														<SelectTrigger className="pl-10 input-fashion">
+															<SelectValue placeholder="Select country" />
+														</SelectTrigger>
+														<SelectContent>
+															<SelectItem value="US">
+																United States
+															</SelectItem>
+															<SelectItem value="CA">
+																Canada
+															</SelectItem>
+															<SelectItem value="GB">
+																United Kingdom
+															</SelectItem>
+															<SelectItem value="AU">
+																Australia
+															</SelectItem>
+															<SelectItem value="DE">
+																Germany
+															</SelectItem>
+															<SelectItem value="FR">
+																France
+															</SelectItem>
+															<SelectItem value="IT">
+																Italy
+															</SelectItem>
+															<SelectItem value="ES">
+																Spain
+															</SelectItem>
+															<SelectItem value="NL">
+																Netherlands
+															</SelectItem>
+															<SelectItem value="SE">
+																Sweden
+															</SelectItem>
+															<SelectItem value="NO">
+																Norway
+															</SelectItem>
+															<SelectItem value="DK">
+																Denmark
+															</SelectItem>
+															<SelectItem value="JP">
+																Japan
+															</SelectItem>
+															<SelectItem value="KR">
+																South Korea
+															</SelectItem>
+															<SelectItem value="CN">
+																China
+															</SelectItem>
+															<SelectItem value="IN">
+																India
+															</SelectItem>
+															<SelectItem value="BR">
+																Brazil
+															</SelectItem>
+															<SelectItem value="MX">
+																Mexico
+															</SelectItem>
+															<SelectItem value="AR">
+																Argentina
+															</SelectItem>
+															<SelectItem value="ZA">
+																South Africa
+															</SelectItem>
+															<SelectItem value="EG">
+																Egypt
+															</SelectItem>
+															<SelectItem value="NG">
+																Nigeria
+															</SelectItem>
+															<SelectItem value="KE">
+																Kenya
+															</SelectItem>
+															<SelectItem value="other">
+																Other
+															</SelectItem>
+														</SelectContent>
+													</Select>
+												</div>
+											</div>
+											<div>
+												<Label htmlFor="gender">
+													Gender
+												</Label>
+												<div className="relative">
+													<Users className="absolute left-3 top-3 h-4 w-4 text-muted-foreground z-10" />
+													<Select
+														value={gender}
+														onValueChange={
+															setGender
+														}
+													>
+														<SelectTrigger className="pl-10 input-fashion">
+															<SelectValue placeholder="Select gender" />
+														</SelectTrigger>
+														<SelectContent>
+															<SelectItem value="male">
+																Male
+															</SelectItem>
+															<SelectItem value="female">
+																Female
+															</SelectItem>
+															<SelectItem value="non-binary">
+																Non-binary
+															</SelectItem>
+															<SelectItem value="prefer-not-to-say">
+																Prefer not to
+																say
+															</SelectItem>
+														</SelectContent>
+													</Select>
+												</div>
 											</div>
 										</div>
 									</CardContent>

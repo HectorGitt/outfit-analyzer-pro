@@ -418,68 +418,148 @@ const Wardrobe = () => {
 									{!isPro && (
 										<p className="text-sm text-muted-foreground">
 											Enter all your wardrobe items in the
-											text area below, one per line.
+											text area below.
 										</p>
 									)}
 								</CardHeader>
 								<CardContent>
-									{/* Bulk text input for free users */}
-									{!isPro && (
-										<div className="space-y-4 mb-6">
-											<div>
-												<Label htmlFor="bulkItems">
-													Your Wardrobe Items
-												</Label>
-												<Textarea
-													id="bulkItems"
-													placeholder="Enter your clothing items, one per line:&#10;Blue jeans&#10;White t-shirt&#10;Black sneakers&#10;Red hoodie&#10;..."
-													value={bulkWardrobeText}
-													onChange={(e) =>
-														setBulkWardrobeText(
-															e.target.value
-														)
-													}
-													rows={6}
-													className="mt-2"
-												/>
-												<p className="text-xs text-muted-foreground mt-2">
-													Tip: List each clothing item
-													on a separate line for best
-													results
-												</p>
-											</div>
-											<div className="flex items-center justify-between">
-												<Button
-													onClick={
-														handleCreateBulkItems
-													}
-													disabled={
-														createBulkItems.isPending
-													}
-													className="flex items-center gap-2"
-												>
-													<Plus className="w-4 h-4" />
-													{createBulkItems.isPending
-														? "Processing..."
-														: "Add All Items"}
-												</Button>
-												<div className="text-sm text-muted-foreground">
+									{/* Show bulk text input for all users, but prioritize Pro features */}
+									{isPro ? (
+										<>
+											{/* Pro users get both options */}
+											<div className="space-y-6">
+												{/* Quick bulk add option for Pro users */}
+												<div className="space-y-4">
+													<div className="flex items-center gap-2">
+														<div className="h-px bg-border flex-1" />
+														<Badge
+															variant="secondary"
+															className="text-xs"
+														>
+															Quick Bulk Add
+														</Badge>
+														<div className="h-px bg-border flex-1" />
+													</div>
+													<div>
+														<Label htmlFor="bulkItemsPro">
+															Add Multiple Items
+															(Quick)
+														</Label>
+														<Textarea
+															id="bulkItemsPro"
+															placeholder="Example&#10;2 brown cotton jeans , 1 white t-shirt, 3 black sneakers, 1 red hoodie with red inscription"
+															value={
+																bulkWardrobeText
+															}
+															onChange={(e) =>
+																setBulkWardrobeText(
+																	e.target
+																		.value
+																)
+															}
+															rows={4}
+															className="mt-2"
+														/>
+														<p className="text-xs text-muted-foreground mt-2">
+															Quick way to add
+															multiple items - LLM
+															will parse all the
+															text and generate
+															your wardrobe items.
+														</p>
+													</div>
 													<Button
-														variant="link"
-														className="p-0 h-auto text-purple-600 hover:text-purple-700"
-														onClick={() =>
-															navigate("/profile")
+														onClick={
+															handleCreateBulkItems
 														}
+														disabled={
+															createBulkItems.isPending
+														}
+														className="flex items-center gap-2"
+														variant="outline"
 													>
-														Upgrade to Pro
-													</Button>{" "}
-													for detailed item management
+														<Plus className="w-4 h-4" />
+														{createBulkItems.isPending
+															? "Processing..."
+															: "Add All Items"}
+													</Button>
+												</div>
+
+												{/* Divider */}
+												<div className="flex items-center gap-2">
+													<div className="h-px bg-border flex-1" />
+													<Badge
+														variant="default"
+														className="text-xs bg-gradient-to-r from-purple-500 to-pink-500"
+													>
+														Detailed Item Management
+													</Badge>
+													<div className="h-px bg-border flex-1" />
 												</div>
 											</div>
-										</div>
+										</>
+									) : (
+										<>
+											{/* Free users only get bulk text input */}
+											<div className="space-y-4 mb-6">
+												<div>
+													<Label htmlFor="bulkItems">
+														Your Wardrobe Items
+													</Label>
+													<Textarea
+														id="bulkItems"
+														placeholder="Enter your clothing items, one per line:&#10;Blue jeans&#10;White t-shirt&#10;Black sneakers&#10;Red hoodie&#10;..."
+														value={bulkWardrobeText}
+														onChange={(e) =>
+															setBulkWardrobeText(
+																e.target.value
+															)
+														}
+														rows={6}
+														className="mt-2"
+													/>
+													<p className="text-xs text-muted-foreground mt-2">
+														Tip: List each clothing
+														item on a separate line
+														for best results
+													</p>
+												</div>
+												<div className="flex items-center justify-between">
+													<Button
+														onClick={
+															handleCreateBulkItems
+														}
+														disabled={
+															createBulkItems.isPending
+														}
+														className="flex items-center gap-2"
+													>
+														<Plus className="w-4 h-4" />
+														{createBulkItems.isPending
+															? "Processing..."
+															: "Add All Items"}
+													</Button>
+													<div className="text-sm text-muted-foreground">
+														<Button
+															variant="link"
+															className="p-0 h-auto text-purple-600 hover:text-purple-700"
+															onClick={() =>
+																navigate(
+																	"/profile"
+																)
+															}
+														>
+															Upgrade to Pro
+														</Button>{" "}
+														for detailed item
+														management
+													</div>
+												</div>
+											</div>
+										</>
 									)}
 
-									{/* Pro upgrade overlay for free users */}
+									{/* Detailed form - always shown for Pro, disabled overlay for free users */}
 									<div
 										className={`relative ${
 											!isPro

@@ -96,13 +96,34 @@ const CalendarView = () => {
 				// Find matching outfit plan for this event
 				const matchingPlan = Array.isArray(plansData)
 					? plansData.find((plan) => {
-							// Match by event title and date
-							const planDate = plan.date
-								? new Date(plan.date).toDateString()
-								: null;
-							const eventDate = event.start_time
-								? new Date(event.start_time).toDateString()
-								: null;
+							// Match by event title and date using timezone-safe comparison
+							let planDate = null;
+							let eventDate = null;
+
+							if (plan.date) {
+								const planDateObj = new Date(plan.date);
+								const year = planDateObj.getFullYear();
+								const month = String(
+									planDateObj.getMonth() + 1
+								).padStart(2, "0");
+								const day = String(
+									planDateObj.getDate()
+								).padStart(2, "0");
+								planDate = `${year}-${month}-${day}`;
+							}
+
+							if (event.start_time) {
+								const eventDateObj = new Date(event.start_time);
+								const year = eventDateObj.getFullYear();
+								const month = String(
+									eventDateObj.getMonth() + 1
+								).padStart(2, "0");
+								const day = String(
+									eventDateObj.getDate()
+								).padStart(2, "0");
+								eventDate = `${year}-${month}-${day}`;
+							}
+
 							return (
 								plan.event_title === event.title &&
 								planDate === eventDate
@@ -305,9 +326,11 @@ const CalendarView = () => {
 			});
 
 			const isToday = start.toDateString() === new Date().toDateString();
-			const isTomorrow =
-				start.toDateString() ===
-				new Date(Date.now() + 86400000).toDateString();
+			const isTomorrow = (() => {
+				const tomorrow = new Date();
+				tomorrow.setDate(tomorrow.getDate() + 1);
+				return start.toDateString() === tomorrow.toDateString();
+			})();
 
 			let dateStr = "";
 			if (isToday) {

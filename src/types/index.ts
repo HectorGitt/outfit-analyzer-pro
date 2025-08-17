@@ -26,6 +26,8 @@ export interface UserPreferences {
 	body_type?: string;
 	occasion_types: string[];
 	budget_range?: string;
+	country?: string;
+	gender?: string;
 	personal_style_guide?: PersonalStyleGuide;
 }
 
@@ -96,6 +98,8 @@ export interface RegisterCredentials {
 	password: string;
 	confirmPassword: string;
 	full_name: string;
+	country?: string;
+	gender?: string;
 }
 
 export interface AnalysisRequest {

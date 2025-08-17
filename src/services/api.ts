@@ -21,6 +21,8 @@ import {
 	GenerateOutfitRequest,
 	PlanOutfitRequest,
 	PaginatedResponse,
+	ChatbotRequest,
+	ChatbotResponse,
 } from "@/types/api";
 
 // Authentication API endpoints
@@ -149,6 +151,9 @@ export const fashionAPI = {
 	getLeaderboard: () => apiCall<any>("GET", "/fashion/leaderboard"),
 
 	getFashionIcon: () => apiCall<any>("GET", "/fashion/fashion-icon"),
+
+	chatbot: (data: ChatbotRequest) =>
+		apiCall<ChatbotResponse>("POST", "/fashion/chatbot", data),
 };
 
 // Admin API endpoints

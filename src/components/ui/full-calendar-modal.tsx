@@ -70,15 +70,28 @@ export function FullCalendarModal({
 	};
 
 	const getEventsForDate = (date: Date) => {
-		const dateString = date.toISOString().split("T")[0];
+		// Use local timezone instead of UTC to avoid date shifting
+		const year = date.getFullYear();
+		const month = String(date.getMonth() + 1).padStart(2, "0");
+		const day = String(date.getDate()).padStart(2, "0");
+		const dateString = `${year}-${month}-${day}`;
+
 		return events.filter((event) => {
 			if (event.start.date) {
-				// All-day event
+				// All-day event - compare date strings directly
 				return event.start.date.startsWith(dateString);
 			}
 			if (event.start.dateTime) {
-				// Timed event
-				return event.start.dateTime.startsWith(dateString);
+				// Timed event - convert to local date for comparison
+				const eventDate = new Date(event.start.dateTime);
+				const eventYear = eventDate.getFullYear();
+				const eventMonth = String(eventDate.getMonth() + 1).padStart(
+					2,
+					"0"
+				);
+				const eventDay = String(eventDate.getDate()).padStart(2, "0");
+				const eventDateString = `${eventYear}-${eventMonth}-${eventDay}`;
+				return eventDateString === dateString;
 			}
 			return false;
 		});

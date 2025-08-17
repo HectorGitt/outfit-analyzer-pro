@@ -153,6 +153,22 @@ export interface PlanOutfitRequest {
 	notes?: string;
 }
 
+// Chatbot API types
+export interface ChatbotRequest {
+	message: string;
+	conversation_id?: string;
+	include_wardrobe?: boolean;
+	include_preferences?: boolean;
+}
+
+export interface ChatbotResponse {
+	response: string;
+	conversation_id: string;
+	context_used: Record<string, any>;
+	message_count?: number;
+	remaining_messages?: number;
+}
+
 // API Response types
 export interface ApiResponse<T> {
 	data: T;

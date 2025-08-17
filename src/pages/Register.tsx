@@ -9,11 +9,20 @@ import {
 	ArrowRight,
 	Check,
 	AlertCircle,
+	Globe,
+	Users,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/select";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { ErrorDisplay } from "@/components/ui/error-display";
 import { useAuthStore } from "@/stores/authStore";
@@ -29,6 +38,8 @@ export default function Register() {
 		confirmPassword: "",
 		firstName: "",
 		lastName: "",
+		country: "",
+		gender: "",
 	});
 	const [validationErrors, setValidationErrors] = useState<string[]>([]);
 
@@ -43,6 +54,16 @@ export default function Register() {
 			[name]: value,
 		}));
 		// Clear any existing errors when user starts typing
+		if (error) clearError();
+		if (validationErrors.length > 0) setValidationErrors([]);
+	};
+
+	const handleSelectChange = (name: string, value: string) => {
+		setFormData((prev) => ({
+			...prev,
+			[name]: value,
+		}));
+		// Clear any existing errors when user makes selection
 		if (error) clearError();
 		if (validationErrors.length > 0) setValidationErrors([]);
 	};
@@ -91,6 +112,8 @@ export default function Register() {
 				password: formData.password,
 				confirmPassword: formData.confirmPassword,
 				full_name: `${formData.firstName} ${formData.lastName}`.trim(),
+				country: formData.country,
+				gender: formData.gender,
 			});
 
 			if (success) {
@@ -257,6 +280,139 @@ export default function Register() {
 												onChange={handleInputChange}
 												required
 											/>
+										</div>
+									</div>
+
+									<div className="grid grid-cols-2 gap-4">
+										<div className="space-y-2">
+											<Label htmlFor="country">
+												Country
+											</Label>
+											<div className="relative">
+												<Globe className="absolute left-3 top-3 h-4 w-4 text-muted-foreground z-10" />
+												<Select
+													value={formData.country}
+													onValueChange={(value) =>
+														handleSelectChange(
+															"country",
+															value
+														)
+													}
+												>
+													<SelectTrigger className="pl-10 input-fashion">
+														<SelectValue placeholder="Select country" />
+													</SelectTrigger>
+													<SelectContent>
+														<SelectItem value="US">
+															United States
+														</SelectItem>
+														<SelectItem value="CA">
+															Canada
+														</SelectItem>
+														<SelectItem value="GB">
+															United Kingdom
+														</SelectItem>
+														<SelectItem value="AU">
+															Australia
+														</SelectItem>
+														<SelectItem value="DE">
+															Germany
+														</SelectItem>
+														<SelectItem value="FR">
+															France
+														</SelectItem>
+														<SelectItem value="IT">
+															Italy
+														</SelectItem>
+														<SelectItem value="ES">
+															Spain
+														</SelectItem>
+														<SelectItem value="NL">
+															Netherlands
+														</SelectItem>
+														<SelectItem value="SE">
+															Sweden
+														</SelectItem>
+														<SelectItem value="NO">
+															Norway
+														</SelectItem>
+														<SelectItem value="DK">
+															Denmark
+														</SelectItem>
+														<SelectItem value="JP">
+															Japan
+														</SelectItem>
+														<SelectItem value="KR">
+															South Korea
+														</SelectItem>
+														<SelectItem value="CN">
+															China
+														</SelectItem>
+														<SelectItem value="IN">
+															India
+														</SelectItem>
+														<SelectItem value="BR">
+															Brazil
+														</SelectItem>
+														<SelectItem value="MX">
+															Mexico
+														</SelectItem>
+														<SelectItem value="AR">
+															Argentina
+														</SelectItem>
+														<SelectItem value="ZA">
+															South Africa
+														</SelectItem>
+														<SelectItem value="EG">
+															Egypt
+														</SelectItem>
+														<SelectItem value="NG">
+															Nigeria
+														</SelectItem>
+														<SelectItem value="KE">
+															Kenya
+														</SelectItem>
+														<SelectItem value="other">
+															Other
+														</SelectItem>
+													</SelectContent>
+												</Select>
+											</div>
+										</div>
+										<div className="space-y-2">
+											<Label htmlFor="gender">
+												Gender
+											</Label>
+											<div className="relative">
+												<Users className="absolute left-3 top-3 h-4 w-4 text-muted-foreground z-10" />
+												<Select
+													value={formData.gender}
+													onValueChange={(value) =>
+														handleSelectChange(
+															"gender",
+															value
+														)
+													}
+												>
+													<SelectTrigger className="pl-10 input-fashion">
+														<SelectValue placeholder="Select gender" />
+													</SelectTrigger>
+													<SelectContent>
+														<SelectItem value="male">
+															Male
+														</SelectItem>
+														<SelectItem value="female">
+															Female
+														</SelectItem>
+														<SelectItem value="non-binary">
+															Non-binary
+														</SelectItem>
+														<SelectItem value="prefer-not-to-say">
+															Prefer not to say
+														</SelectItem>
+													</SelectContent>
+												</Select>
+											</div>
 										</div>
 									</div>
 
