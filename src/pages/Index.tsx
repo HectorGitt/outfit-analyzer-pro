@@ -22,6 +22,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Navbar } from "@/components/navigation/navbar";
 import { Leaderboard, FashionIconCard } from "@/components/ui/leaderboard";
+import PersonalizedFashionBot from "@/components/ui/personalized-fashion-bot";
 import { fashionAPI } from "@/services/api";
 import { useQuery } from "@tanstack/react-query";
 import heroImage from "@/assets/hero-fashion.jpg";
@@ -188,6 +189,23 @@ const Index = () => {
 								<div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent rounded-2xl" />
 							</div>
 						</div>
+					</div>
+				</div>
+			</section>
+
+			{/* Personalized Fashion Bot Section */}
+			<section className="py-16 bg-gradient-secondary/30">
+				<div className="container mx-auto px-4">
+					<div className="max-w-4xl mx-auto">
+						<div className="text-center mb-12">
+							<h2 className="text-3xl font-bold mb-4">
+								Your Personal Style Guide
+							</h2>
+							<p className="text-lg text-muted-foreground">
+								AI-powered fashion recommendations tailored to your preferences
+							</p>
+						</div>
+						<PersonalizedFashionBot />
 					</div>
 				</div>
 			</section>
