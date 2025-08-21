@@ -85,7 +85,7 @@ api.interceptors.response.use(
 
 				// Redirect to calendar connect page to re-authenticate
 				if (window.location.pathname !== "/calendar-connect") {
-					console.log("� Redirecting to calendar connect page");
+					//console.log("� Redirecting to calendar connect page");
 					window.location.href = "/calendar-connect";
 				}
 			}
@@ -103,10 +103,10 @@ export const apiCall = async <T>(
 	config?: any
 ): Promise<ApiResponse<T>> => {
 	try {
-		console.log(`🚀 API Call - ${method} ${endpoint}:`, {
+		/* console.log(`🚀 API Call - ${method} ${endpoint}:`, {
 			data,
 			config,
-		});
+		}); */
 
 		const response = await api.request({
 			method,
@@ -116,7 +116,7 @@ export const apiCall = async <T>(
 		});
 		return response.data;
 	} catch (error) {
-		console.error(`💥 API Call Failed - ${method} ${endpoint}:`, error);
+		/* console.error(`💥 API Call Failed - ${method} ${endpoint}:`, error); */
 
 		if (axios.isAxiosError(error)) {
 			const errorResponse = error.response?.data;

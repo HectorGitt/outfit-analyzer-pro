@@ -93,7 +93,7 @@ const Wardrobe = () => {
 
 	// Get wardrobe items from API response
 	const wardrobeItems = wardrobeData?.wardrobe || [];
-	console.log("Wardrobe items:", wardrobeItems);
+	//console.log("Wardrobe items:", wardrobeItems);
 
 	// Filter items based on search and filters
 	const filteredItems = wardrobeItems.filter((item: any) => {

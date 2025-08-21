@@ -63,7 +63,7 @@ export default function Profile() {
 			userAPI
 				.getPreferences()
 				.then((response) => {
-					console.log("API Response:", response);
+					//console.log("API Response:", response);
 					// Handle different response structures
 					let prefs: UserPreferences;
 
@@ -80,14 +80,14 @@ export default function Profile() {
 						prefs = response as any;
 					}
 
-					console.log("Extracted preferences:", prefs);
+					//console.log("Extracted preferences:", prefs);
 
 					setPersonalStyleGuide(prefs.personal_style_guide || null);
 					setPreferences(prefs);
-					console.log(
+					/* console.log(
 						"Personal Style Guide:",
 						prefs.personal_style_guide
-					);
+					); */
 
 					// Set form values from API response
 					setSelectedStyles(prefs.style_preference || []);
@@ -225,13 +225,13 @@ export default function Profile() {
 			const response = await userAPI.updatePreferences(
 				updatedPreferences
 			);
-			console.log("Update preferences response:", response);
-			console.log("Response data:", response.data);
-			console.log(
+			//console.log("Update preferences response:", response);
+			//console.log("Response data:", response.data);
+			/* console.log(
 				"Response structure:",
 				typeof response.data,
 				Object.keys(response.data || {})
-			);
+			); */
 
 			// Update the preferences state
 			setPreferences(updatedPreferences);
@@ -253,22 +253,22 @@ export default function Profile() {
 			}
  */
 			if (styleGuideData) {
-				console.log("Setting personal style guide:", styleGuideData);
+				//console.log("Setting personal style guide:", styleGuideData);
 				setPersonalStyleGuide(styleGuideData);
 				setSuccessMessage(
 					"Preferences saved and personal style guide generated!"
 				);
 			} else {
-				console.log("No personal style guide found in response");
-				console.log(
+				//console.log("No personal style guide found in response");
+				/* console.log(
 					"Available keys:",
 					Object.keys(response.data || response || {})
-				);
+				); */
 				setSuccessMessage("Preferences saved successfully!");
 			}
 
 			// Show success message (you could add a toast here)
-			console.log("Preferences saved successfully!");
+			//console.log("Preferences saved successfully!");
 		} catch (err: any) {
 			console.error("Failed to save preferences:", err);
 			setError(err.message || "Failed to save preferences");

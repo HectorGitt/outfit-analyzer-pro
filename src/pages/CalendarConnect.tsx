@@ -53,7 +53,7 @@ const CalendarConnect = () => {
 			if (googleCalendarService.isHandlingOAuthCallback()) {
 				setIsHandlingCallback(true);
 				try {
-					console.log("Handling OAuth callback...");
+					//console.log("Handling OAuth callback...");
 					const token =
 						await googleCalendarService.handleOAuthCallbackIfPresent();
 

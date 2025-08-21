@@ -37,47 +37,47 @@ export default function Dashboard() {
 		try {
 			setLoading(true);
 			setError(null); // Clear any previous errors
-			console.log("Fetching dashboard data...");
-			console.log("User:", user);
+			//console.log("Fetching dashboard data...");
+			//console.log("User:", user);
 
 			const response = await fashionAPI.getAnalysisHistory();
-			console.log("Dashboard API Response:", response);
-			console.log("Response type:", typeof response);
-			console.log("Response data:", response.data);
+			//console.log("Dashboard API Response:", response);
+			//console.log("Response type:", typeof response);
+			//console.log("Response data:", response.data);
 
 			// Handle the nested response structure
 			if (response.data && response.data.history) {
-				console.log(
+				/* console.log(
 					"Using response.data.history:",
 					response.data.history
-				);
+				); */
 				setAnalysisHistory(response.data.history);
 			} else if (
 				response.data &&
 				response.data.data &&
 				response.data.data.history
 			) {
-				console.log(
+				/* console.log(
 					"Using nested history data:",
 					response.data.data.history
-				);
+				); */
 				setAnalysisHistory(response.data.data.history);
 			} else if (response.data && Array.isArray(response.data)) {
-				console.log("Using direct array data:", response.data);
+				//console.log("Using direct array data:", response.data);
 				setAnalysisHistory(response.data);
 			} else if (
 				response &&
 				response.data &&
 				Array.isArray(response.data)
 			) {
-				console.log("Using response.data array:", response.data);
+				//console.log("Using response.data array:", response.data);
 				setAnalysisHistory(response.data);
 			} else {
-				console.log("No valid data found, setting empty array");
-				console.log(
+				//console.log("No valid data found, setting empty array");
+				/* console.log(
 					"Response structure:",
 					JSON.stringify(response, null, 2)
-				);
+				); */
 				setAnalysisHistory([]);
 			}
 		} catch (err) {
@@ -96,7 +96,7 @@ export default function Dashboard() {
 		if (user) {
 			fetchDashboardData();
 		} else {
-			console.log("No user found, skipping fetch");
+			//console.log("No user found, skipping fetch");
 			setLoading(false);
 		}
 	}, [user]);

@@ -44,10 +44,10 @@ export const useAuthStore = create<AuthState & AuthActions>()(
 				set({ isLoading: true, error: null, errorDetails: null });
 				try {
 					const response = await authAPI.login(credentials);
-					console.log("Login response:", response);
+					//console.log("Login response:", response);
 
 					const tokenData = response.data;
-					console.log("Token data:", tokenData);
+					//console.log("Token data:", tokenData);
 
 					// Check if we have the expected structure
 					if (!tokenData) {
@@ -130,15 +130,15 @@ export const useAuthStore = create<AuthState & AuthActions>()(
 			register: async (credentials: RegisterCredentials) => {
 				set({ isLoading: true, error: null, errorDetails: null });
 				try {
-					console.log(
+					/* console.log(
 						"Registering user with credentials:",
 						credentials
-					);
+					); */
 					const response = await authAPI.register(credentials);
-					console.log("Register response:", response);
+					//console.log("Register response:", response);
 
 					const tokenData = response.data;
-					console.log("Token data:", tokenData);
+					//console.log("Token data:", tokenData);
 
 					// Check if we have the expected structure
 					if (!tokenData) {

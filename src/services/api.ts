@@ -97,7 +97,7 @@ export const authAPI = {
 		localStorage.removeItem("google_calendar_expires_at");
 		localStorage.removeItem("google_calendar_user_email");
 		localStorage.removeItem("google_calendar_user_name");
-		console.log("🔐 Google Calendar tokens cleared from frontend storage");
+		//console.log("🔐 Google Calendar tokens cleared from frontend storage");
 	},
 
 	// Get user pricing tier information

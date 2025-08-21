@@ -53,7 +53,7 @@ export default function Camera() {
 			return;
 		}
 
-		console.log("🎥 Starting camera...");
+		//console.log("🎥 Starting camera...");
 		setError(null); // Clear any previous errors
 		setIsStartingCamera(true);
 
@@ -66,7 +66,7 @@ export default function Camera() {
 				throw new Error("Camera not supported in this browser");
 			}
 
-			console.log("📱 Requesting camera access...");
+			//console.log("📱 Requesting camera access...");
 			const stream = await navigator.mediaDevices.getUserMedia({
 				video: {
 					facingMode,
@@ -75,12 +75,12 @@ export default function Camera() {
 				},
 			});
 
-			console.log("✅ Camera access granted");
+			//console.log("✅ Camera access granted");
 
 			if (videoRef.current) {
 				videoRef.current.srcObject = stream;
 				setIsStreaming(true);
-				console.log("🔄 Video stream connected");
+				//console.log("🔄 Video stream connected");
 			} else {
 				console.error("❌ Video ref not available");
 				throw new Error("Video element not ready");
@@ -167,17 +167,17 @@ export default function Camera() {
 						return;
 					}
 
-					console.log("📸 Photo captured:", {
+					/* console.log("📸 Photo captured:", {
 						width: canvas.width,
 						height: canvas.height,
 						dataSize: imageData.length,
-					});
+					}); */
 
 					setCapturedImage(imageData);
 
 					// Stop the camera after capturing the image
 					stopCamera();
-					console.log("📵 Camera stopped after capture");
+					//console.log("📵 Camera stopped after capture");
 				} catch (error) {
 					console.error("❌ Error capturing photo:", error);
 					setError("Failed to capture photo. Please try again.");
@@ -208,12 +208,12 @@ export default function Camera() {
 				u8arr[i] = bstr.charCodeAt(i);
 			}
 
-			console.log("🖼️ Created file from data URL:", {
+			/* console.log("🖼️ Created file from data URL:", {
 				filename,
 				mime,
 				size: u8arr.length,
 				dataUrlLength: dataurl.length,
-			});
+			}); */
 
 			return new File([u8arr], filename, { type: mime });
 		} catch (error) {
@@ -260,12 +260,12 @@ export default function Camera() {
 										}
 									);
 
-									console.log("� Frame captured as blob:", {
+									/* console.log("� Frame captured as blob:", {
 										width: canvas.width,
 										height: canvas.height,
 										fileSize: file.size,
 										fileType: file.type,
-									});
+									}); */
 
 									resolve(file);
 								} else {
@@ -327,11 +327,11 @@ export default function Camera() {
 						return null;
 					}
 
-					console.log("📸 Frame captured:", {
+					/* console.log("📸 Frame captured:", {
 						width: canvas.width,
 						height: canvas.height,
 						dataSize: imageData.length,
-					});
+					}); */
 
 					return imageData;
 				} catch (error) {
@@ -349,7 +349,7 @@ export default function Camera() {
 			return;
 		}
 
-		console.log("🔄 Performing live analysis...");
+		//console.log("🔄 Performing live analysis...");
 
 		setIsAnalyzing(true);
 		setError(null);
@@ -373,16 +373,16 @@ export default function Camera() {
 				throw new Error("Captured image file is too large");
 			}
 
-			console.log("📤 Sending live frame for analysis...", {
+			/* console.log("📤 Sending live frame for analysis...", {
 				fileSize: file.size,
 				fileType: file.type,
 				fileName: file.name,
-			});
+			}); */
 
 			const response: ApiResponse<any> = await fashionAPI.cameraAnalyze(
 				file
 			);
-			console.log("✅ Live analysis completed:", response);
+			//console.log("✅ Live analysis completed:", response);
 
 			// Transform the ApiResponse to FashionAnalysisResponse format
 			const fashionAnalysisResponse: FashionAnalysisResponse = {
@@ -426,9 +426,9 @@ export default function Camera() {
 			return;
 		}
 
-		console.log(
+		/* console.log(
 			`🔴 Starting live analysis every ${liveAnalysisInterval} seconds`
-		);
+		); */
 		setIsLiveAnalysis(true);
 
 		// Perform initial analysis
@@ -443,7 +443,7 @@ export default function Camera() {
 
 	// Stop live analysis mode
 	const stopLiveAnalysis = () => {
-		console.log("⏹️ Stopping live analysis");
+		//console.log("⏹️ Stopping live analysis");
 		setIsLiveAnalysis(false);
 
 		if (liveAnalysisIntervalRef.current) {
@@ -454,10 +454,10 @@ export default function Camera() {
 
 	const analyzeCapture = async () => {
 		if (!capturedImage) return;
-		console.log("🔍 Starting camera analysis...", {
+		/* console.log("🔍 Starting camera analysis...", {
 			user: !!user,
 			hasImage: !!capturedImage,
-		});
+		}); */
 
 		if (!user) {
 			setError("Please log in to analyze your outfit");
@@ -482,16 +482,16 @@ export default function Camera() {
 				throw new Error("Captured image file is too large");
 			}
 
-			console.log("📤 Uploading camera capture for analysis...", {
+			/* console.log("📤 Uploading camera capture for analysis...", {
 				fileSize: file.size,
 				fileType: file.type,
 				fileName: file.name,
-			});
+			}); */
 
 			const response: ApiResponse<any> = await fashionAPI.cameraAnalyze(
 				file
 			);
-			console.log("✅ Camera analysis completed:", response);
+			//console.log("✅ Camera analysis completed:", response);
 
 			// Transform the ApiResponse to FashionAnalysisResponse format
 			const fashionAnalysisResponse: FashionAnalysisResponse = {
@@ -524,14 +524,14 @@ export default function Camera() {
 	useEffect(() => {
 		// Check for camera support on component mount
 		const checkCameraSupport = () => {
-			console.log("🔍 Checking camera support...");
-			console.log("navigator.mediaDevices:", !!navigator.mediaDevices);
-			console.log(
+			//console.log("🔍 Checking camera support...");
+			//console.log("navigator.mediaDevices:", !!navigator.mediaDevices);
+			/* console.log(
 				"getUserMedia:",
 				!!navigator.mediaDevices?.getUserMedia
-			);
-			console.log("Location protocol:", window.location.protocol);
-			console.log("User agent:", navigator.userAgent);
+			); */
+			//console.log("Location protocol:", window.location.protocol);
+			//console.log("User agent:", navigator.userAgent);
 
 			if (
 				!navigator.mediaDevices ||
@@ -662,25 +662,8 @@ export default function Camera() {
 										)}
 
 										{!isStreaming && !capturedImage && (
-											<div
-												className="absolute inset-0 flex items-center justify-center"
-												onClick={(e) =>
-													console.log(
-														"🖱️ Container clicked",
-														e.target
-													)
-												}
-											>
-												<div
-													className="text-center space-y-4"
-													onClick={(e) => {
-														console.log(
-															"🖱️ Inner div clicked",
-															e.target
-														);
-														e.stopPropagation();
-													}}
-												>
+											<div className="absolute inset-0 flex items-center justify-center">
+												<div className="text-center space-y-4">
 													<CameraIcon className="w-16 h-16 text-muted-foreground mx-auto" />
 													<div>
 														<h3 className="font-medium mb-2">
@@ -695,10 +678,6 @@ export default function Camera() {
 																onClick={(
 																	e
 																) => {
-																	console.log(
-																		"🖱️ Start Camera button clicked!",
-																		e
-																	);
 																	startCamera();
 																}}
 																className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"

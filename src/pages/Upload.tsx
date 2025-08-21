@@ -17,11 +17,11 @@ export default function Upload() {
 	const { user } = useAuthStore();
 
 	const handleAnalyze = async (file: File): Promise<void> => {
-		console.log("🔍 Starting analysis...", {
+		/* console.log("🔍 Starting analysis...", {
 			user: !!user,
 			fileName: file.name,
 			fileSize: file.size,
-		});
+		}); */
 
 		if (!user) {
 			setError("Please log in to analyze your outfit");
@@ -32,11 +32,11 @@ export default function Upload() {
 		setError(null);
 
 		try {
-			console.log("📤 Uploading file for analysis...");
+			//console.log("📤 Uploading file for analysis...");
 			const response: ApiResponse<any> = await fashionAPI.uploadAnalyze(
 				file
 			);
-			console.log("✅ Analysis completed:", response);
+			//console.log("✅ Analysis completed:", response);
 
 			// Transform the ApiResponse to FashionAnalysisResponse format
 			const fashionAnalysisResponse: FashionAnalysisResponse = {

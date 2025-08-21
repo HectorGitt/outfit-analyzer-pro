@@ -73,9 +73,9 @@ const CalendarView = () => {
 
 	// Combine Google Calendar events with backend events for display
 	const displayEvents = useMemo<DisplayEvent[]>(() => {
-		console.log("Debug - events data:", events);
-		console.log("Debug - plans data:", plans);
-		console.log("Debug - wardrobe data:", wardrobe);
+		////////console.log("Debug - events data:", events);
+		//console.log("Debug - plans data:", plans);
+		//console.log("Debug - wardrobe data:", wardrobe);
 
 		// Handle actual API response structures based on your data
 		// API returns: { success: true, data: { events: [...] } }
@@ -86,9 +86,9 @@ const CalendarView = () => {
 		const wardrobeData = (wardrobe?.data as any)?.data?.wardrobe || [];
 		const combinedEvents: DisplayEvent[] = [];
 
-		console.log("Debug - backendEventsData:", backendEventsData);
-		console.log("Debug - plansData:", plansData);
-		console.log("Debug - wardrobeData:", wardrobeData);
+		//console.log("Debug - backendEventsData:", backendEventsData);
+		//console.log("Debug - plansData:", plansData);
+		//console.log("Debug - wardrobeData:", wardrobeData);
 
 		// Add backend events (handle both snake_case and camelCase field names)
 		if (Array.isArray(backendEventsData)) {

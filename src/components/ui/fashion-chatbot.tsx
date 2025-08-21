@@ -69,12 +69,12 @@ const FashionChatbot = () => {
 			};
 
 			const apiResponse = await fashionAPI.chatbot(request);
-			console.log("Full API Response:", apiResponse);
+			//console.log("Full API Response:", apiResponse);
 
 			// The apiCall function returns ApiResponse<ChatbotResponse>
 			// So the actual chatbot data is in apiResponse.data
 			const response = apiResponse.data;
-			console.log("Chatbot Response:", response);
+			//console.log("Chatbot Response:", response);
 
 			// Update conversation state in store
 			if (response.conversation_id) {
