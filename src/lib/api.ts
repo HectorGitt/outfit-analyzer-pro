@@ -31,7 +31,7 @@ api.interceptors.request.use(
 api.interceptors.response.use(
 	(response: AxiosResponse) => {
 		// Log successful responses for debugging
-		console.log(
+		/* console.log(
 			`✅ ${response.config.method?.toUpperCase()} ${
 				response.config.url
 			}:`,
@@ -39,12 +39,12 @@ api.interceptors.response.use(
 				status: response.status,
 				data: response.data,
 			}
-		);
+		); */
 		return response;
 	},
 	(error: AxiosError) => {
 		// Enhanced error logging
-		console.error(
+		/* console.error(
 			`❌ API Error - ${error.config?.method?.toUpperCase()} ${
 				error.config?.url
 			}:`,
@@ -55,7 +55,7 @@ api.interceptors.response.use(
 				message: error.message,
 				headers: error.response?.headers,
 			}
-		);
+		); */
 
 		if (error.response?.status === 401) {
 			// Token expired or invalid
