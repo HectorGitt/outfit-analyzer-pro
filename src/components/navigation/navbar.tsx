@@ -23,6 +23,7 @@ import {
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useAuthStore } from "@/stores/authStore";
+import logoImage from "@/assets/logo.png";
 
 const publicNavigation = [{ name: "Home", href: "/", icon: null }];
 
@@ -61,8 +62,15 @@ export function Navbar() {
 					{/* Logo */}
 					<div className="flex items-center">
 						<Link to="/" className="flex items-center space-x-2">
+							<div className="w-8 h-8 rounded-lg overflow-hidden">
+								<img
+									src={logoImage}
+									alt="Closetic AI Logo"
+									className="w-full h-full object-cover"
+								/>
+							</div>
 							<span className="text-xl font-bold text-gradient">
-								FashCheck
+								Closetic AI
 							</span>
 						</Link>
 					</div>

@@ -326,7 +326,7 @@ export default function Profile() {
 					)}
 
 					{/* Debug Info */}
-					{process.env.NODE_ENV === "development" && (
+					{import.meta.env.MODE === "development" && (
 						<div className="mb-4 p-4 bg-gray-100 rounded-lg text-sm">
 							<h3 className="font-bold">Debug Info:</h3>
 							<p>

@@ -26,6 +26,7 @@ import { Leaderboard, FashionIconCard } from "@/components/ui/leaderboard";
 import { fashionAPI } from "@/services/api";
 import { useQuery } from "@tanstack/react-query";
 import heroImage from "@/assets/hero-fashion.jpg";
+import logoImage from "@/assets/logo.png";
 
 import AOS from "aos";
 import "aos/dist/aos.css";
@@ -202,10 +203,11 @@ const Index = () => {
 								Meet Your Fashion Assistant
 							</h2>
 							<p className="text-lg text-muted-foreground">
-								Get instant style advice and fashion tips from our AI assistant
+								Get instant style advice and fashion tips from
+								our AI assistant
 							</p>
 						</div>
-						
+
 						<Card className="card-fashion max-w-2xl mx-auto">
 							<CardContent className="p-8">
 								<div className="flex items-center justify-center mb-6">
@@ -213,10 +215,15 @@ const Index = () => {
 										<Bot className="w-8 h-8 text-primary" />
 									</div>
 								</div>
-								<h3 className="text-xl font-semibold mb-4">Always Ready to Help</h3>
+								<h3 className="text-xl font-semibold mb-4">
+									Always Ready to Help
+								</h3>
 								<p className="text-muted-foreground mb-6 leading-relaxed">
-									Our fashion bot is available 24/7 to answer your style questions, provide outfit suggestions, 
-									and help you make confident fashion choices. Look for the bot icon in the bottom right corner!
+									Our fashion bot is available 24/7 to answer
+									your style questions, provide outfit
+									suggestions, and help you make confident
+									fashion choices. Look for the bot icon in
+									the bottom right corner!
 								</p>
 								<div className="flex items-center justify-center gap-4 text-sm text-muted-foreground">
 									<div className="flex items-center gap-2">
@@ -294,7 +301,8 @@ const Index = () => {
 							Full Wardrobe Analysis
 						</h2>
 						<p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-							Comprehensive analysis of your entire wardrobe based on current trends and personal preferences
+							Comprehensive analysis of your entire wardrobe based
+							on current trends and personal preferences
 						</p>
 					</div>
 
@@ -304,11 +312,15 @@ const Index = () => {
 								<div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center text-primary mb-4 group-hover:scale-110 transition-transform duration-200">
 									<Shirt className="w-6 h-6" />
 								</div>
-								<CardTitle className="text-lg">Wardrobe Insights</CardTitle>
+								<CardTitle className="text-lg">
+									Wardrobe Insights
+								</CardTitle>
 							</CardHeader>
 							<CardContent>
 								<p className="text-muted-foreground">
-									AI-powered analysis of your clothing collection with trend alignment and style coherence scores
+									AI-powered analysis of your clothing
+									collection with trend alignment and style
+									coherence scores
 								</p>
 							</CardContent>
 						</Card>
@@ -318,11 +330,14 @@ const Index = () => {
 								<div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center text-primary mb-4 group-hover:scale-110 transition-transform duration-200">
 									<Palette className="w-6 h-6" />
 								</div>
-								<CardTitle className="text-lg">Style Preferences</CardTitle>
+								<CardTitle className="text-lg">
+									Style Preferences
+								</CardTitle>
 							</CardHeader>
 							<CardContent>
 								<p className="text-muted-foreground">
-									Personalized recommendations based on your unique style preferences and color palette
+									Personalized recommendations based on your
+									unique style preferences and color palette
 								</p>
 							</CardContent>
 						</Card>
@@ -332,11 +347,15 @@ const Index = () => {
 								<div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center text-primary mb-4 group-hover:scale-110 transition-transform duration-200">
 									<BarChart3 className="w-6 h-6" />
 								</div>
-								<CardTitle className="text-lg">Trend Analysis</CardTitle>
+								<CardTitle className="text-lg">
+									Trend Analysis
+								</CardTitle>
 							</CardHeader>
 							<CardContent>
 								<p className="text-muted-foreground">
-									Stay ahead with real-time fashion trend analysis and wardrobe optimization suggestions
+									Stay ahead with real-time fashion trend
+									analysis and wardrobe optimization
+									suggestions
 								</p>
 							</CardContent>
 						</Card>
@@ -352,7 +371,8 @@ const Index = () => {
 							Smart Fashion Scheduling
 						</h2>
 						<p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-							Get personalized outfit recommendations for different events based on your wardrobe items
+							Get personalized outfit recommendations for
+							different events based on your wardrobe items
 						</p>
 					</div>
 
@@ -363,9 +383,13 @@ const Index = () => {
 									<Target className="w-5 h-5" />
 								</div>
 								<div>
-									<h3 className="text-lg font-semibold mb-2">Event-Based Styling</h3>
+									<h3 className="text-lg font-semibold mb-2">
+										Event-Based Styling
+									</h3>
 									<p className="text-muted-foreground">
-										Get outfit suggestions tailored for work meetings, casual outings, formal events, and special occasions
+										Get outfit suggestions tailored for work
+										meetings, casual outings, formal events,
+										and special occasions
 									</p>
 								</div>
 							</div>
@@ -375,9 +399,13 @@ const Index = () => {
 									<Clock className="w-5 h-5" />
 								</div>
 								<div>
-									<h3 className="text-lg font-semibold mb-2">Weekly Planning</h3>
+									<h3 className="text-lg font-semibold mb-2">
+										Weekly Planning
+									</h3>
 									<p className="text-muted-foreground">
-										Plan your outfits for the entire week with smart recommendations that avoid repetition
+										Plan your outfits for the entire week
+										with smart recommendations that avoid
+										repetition
 									</p>
 								</div>
 							</div>
@@ -387,9 +415,12 @@ const Index = () => {
 									<Sparkles className="w-5 h-5" />
 								</div>
 								<div>
-									<h3 className="text-lg font-semibold mb-2">Smart Combinations</h3>
+									<h3 className="text-lg font-semibold mb-2">
+										Smart Combinations
+									</h3>
 									<p className="text-muted-foreground">
-										Discover new outfit combinations from your existing wardrobe items
+										Discover new outfit combinations from
+										your existing wardrobe items
 									</p>
 								</div>
 							</div>
@@ -397,20 +428,36 @@ const Index = () => {
 
 						<div className="grid grid-cols-2 gap-4">
 							<Card className="p-4 text-center">
-								<div className="text-2xl font-bold text-primary">85%</div>
-								<div className="text-sm text-muted-foreground">Outfit Satisfaction</div>
+								<div className="text-2xl font-bold text-primary">
+									85%
+								</div>
+								<div className="text-sm text-muted-foreground">
+									Outfit Satisfaction
+								</div>
 							</Card>
 							<Card className="p-4 text-center">
-								<div className="text-2xl font-bold text-primary">7+</div>
-								<div className="text-sm text-muted-foreground">Days Planned</div>
+								<div className="text-2xl font-bold text-primary">
+									7+
+								</div>
+								<div className="text-sm text-muted-foreground">
+									Days Planned
+								</div>
 							</Card>
 							<Card className="p-4 text-center">
-								<div className="text-2xl font-bold text-primary">50+</div>
-								<div className="text-sm text-muted-foreground">New Combinations</div>
+								<div className="text-2xl font-bold text-primary">
+									50+
+								</div>
+								<div className="text-sm text-muted-foreground">
+									New Combinations
+								</div>
 							</Card>
 							<Card className="p-4 text-center">
-								<div className="text-2xl font-bold text-primary">100%</div>
-								<div className="text-sm text-muted-foreground">Event Matched</div>
+								<div className="text-2xl font-bold text-primary">
+									100%
+								</div>
+								<div className="text-sm text-muted-foreground">
+									Event Matched
+								</div>
 							</Card>
 						</div>
 					</div>
@@ -425,7 +472,8 @@ const Index = () => {
 							Calendar Integration
 						</h2>
 						<p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-							Seamlessly sync with your calendar to plan perfect outfits for every scheduled event
+							Seamlessly sync with your calendar to plan perfect
+							outfits for every scheduled event
 						</p>
 					</div>
 
@@ -437,16 +485,24 @@ const Index = () => {
 										<Calendar className="w-8 h-8 text-white" />
 									</div>
 									<div>
-										<h3 className="text-2xl font-bold mb-4">Never Miss a Style Beat</h3>
+										<h3 className="text-2xl font-bold mb-4">
+											Never Miss a Style Beat
+										</h3>
 										<p className="text-muted-foreground mb-6">
-											Connect your calendar and let AI automatically suggest appropriate outfits for each event, meeting, or occasion.
+											Connect your calendar and let AI
+											automatically suggest appropriate
+											outfits for each event, meeting, or
+											occasion.
 										</p>
-									<Button className="btn-gradient" asChild>
-										<Link to="/calendar-connect">
-											Connect Calendar
-											<ArrowRight className="ml-2 w-4 h-4" />
-										</Link>
-									</Button>
+										<Button
+											className="btn-gradient"
+											asChild
+										>
+											<Link to="/calendar-connect">
+												Connect Calendar
+												<ArrowRight className="ml-2 w-4 h-4" />
+											</Link>
+										</Button>
 									</div>
 								</div>
 
@@ -454,30 +510,48 @@ const Index = () => {
 									<Card className="p-4 border-l-4 border-l-primary/50">
 										<div className="flex items-center justify-between">
 											<div>
-												<h4 className="font-semibold">Team Meeting</h4>
-												<p className="text-sm text-muted-foreground">Today, 2:00 PM</p>
+												<h4 className="font-semibold">
+													Team Meeting
+												</h4>
+												<p className="text-sm text-muted-foreground">
+													Today, 2:00 PM
+												</p>
 											</div>
-											<Badge variant="secondary">Business Casual</Badge>
+											<Badge variant="secondary">
+												Business Casual
+											</Badge>
 										</div>
 									</Card>
 
 									<Card className="p-4 border-l-4 border-l-accent/50">
 										<div className="flex items-center justify-between">
 											<div>
-												<h4 className="font-semibold">Dinner Date</h4>
-												<p className="text-sm text-muted-foreground">Friday, 7:00 PM</p>
+												<h4 className="font-semibold">
+													Dinner Date
+												</h4>
+												<p className="text-sm text-muted-foreground">
+													Friday, 7:00 PM
+												</p>
 											</div>
-											<Badge variant="secondary">Smart Casual</Badge>
+											<Badge variant="secondary">
+												Smart Casual
+											</Badge>
 										</div>
 									</Card>
 
 									<Card className="p-4 border-l-4 border-l-primary/30">
 										<div className="flex items-center justify-between">
 											<div>
-												<h4 className="font-semibold">Weekend Brunch</h4>
-												<p className="text-sm text-muted-foreground">Saturday, 11:00 AM</p>
+												<h4 className="font-semibold">
+													Weekend Brunch
+												</h4>
+												<p className="text-sm text-muted-foreground">
+													Saturday, 11:00 AM
+												</p>
 											</div>
-											<Badge variant="secondary">Casual</Badge>
+											<Badge variant="secondary">
+												Casual
+											</Badge>
 										</div>
 									</Card>
 								</div>
@@ -495,7 +569,8 @@ const Index = () => {
 							Community Champions
 						</h2>
 						<p className="text-xl text-muted-foreground">
-							Celebrate our top fashion enthusiasts and style icons
+							Celebrate our top fashion enthusiasts and style
+							icons
 						</p>
 					</div>
 
@@ -504,7 +579,10 @@ const Index = () => {
 						<div>
 							{leaderboardData?.success && (
 								<Leaderboard
-									users={leaderboardData.data.leaderboard.slice(0, 5)}
+									users={leaderboardData.data.leaderboard.slice(
+										0,
+										5
+									)}
 									title="Top Analyzers"
 								/>
 							)}
@@ -527,7 +605,7 @@ const Index = () => {
 				<div className="container mx-auto px-4">
 					<div className="text-center mb-16">
 						<h2 className="text-4xl font-bold mb-4">
-							How FashCheck Works
+							How Closetic AI Works
 						</h2>
 						<p className="text-xl text-muted-foreground">
 							Simple steps to perfect style
@@ -580,7 +658,7 @@ const Index = () => {
 						</h2>
 						<p className="text-xl opacity-90">
 							Join thousands of users who have elevated their
-							fashion game with FashCheck
+							fashion game with Closetic AI
 						</p>
 						<div className="flex flex-col sm:flex-row gap-4 justify-center">
 							<Button
@@ -612,13 +690,15 @@ const Index = () => {
 				<div className="container mx-auto px-4">
 					<div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
 						<div className="flex items-center space-x-2">
-							<div className="w-8 h-8 bg-gradient-primary rounded-lg flex items-center justify-center">
-								<span className="text-white font-bold text-sm">
-									FC
-								</span>
+							<div className="w-8 h-8 rounded-lg overflow-hidden">
+								<img
+									src={logoImage}
+									alt="Closetic AI Logo"
+									className="w-full h-full object-cover"
+								/>
 							</div>
 							<span className="text-xl font-bold text-gradient">
-								FashCheck
+								Closetic AI
 							</span>
 						</div>
 						<div className="flex items-center space-x-8 text-sm text-muted-foreground">

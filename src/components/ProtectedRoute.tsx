@@ -19,7 +19,7 @@ export const ProtectedRoute = ({
 		return <Navigate to="/login" state={{ from: location }} replace />;
 	}
 
-	if (requireAdmin && user?.email !== "admin@fashcheck.com") {
+	if (requireAdmin && user?.email !== "admin@closetic.com") {
 		// Redirect to dashboard if not admin
 		return <Navigate to="/dashboard" replace />;
 	}
