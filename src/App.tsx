@@ -16,6 +16,8 @@ import Admin from "./pages/Admin";
 import CalendarConnect from "./pages/CalendarConnect";
 import CalendarView from "./pages/CalendarView";
 import Wardrobe from "./pages/Wardrobe";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import TermsOfService from "./pages/TermsOfService";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -96,6 +98,15 @@ const App = () => (
 						element={
 							<ProtectedRoute>
 								<Wardrobe />
+							</ProtectedRoute>
+						}
+					/>
+					<Route path="/privacy-policy" element={<PrivacyPolicy />} />
+					<Route
+						path="/terms-of-service"
+						element={
+							<ProtectedRoute>
+								<TermsOfService />
 							</ProtectedRoute>
 						}
 					/>

@@ -703,13 +703,13 @@ const Index = () => {
 						</div>
 						<div className="flex items-center space-x-8 text-sm text-muted-foreground">
 							<a
-								href="#"
+								href="/privacy-policy"
 								className="hover:text-primary transition-colors"
 							>
 								Privacy
 							</a>
 							<a
-								href="#"
+								href="/terms-of-service"
 								className="hover:text-primary transition-colors"
 							>
 								Terms
