@@ -117,6 +117,21 @@ export const authAPI = {
 				image_upload?: boolean;
 			};
 		}>("GET", "users/pricing-tier"),
+
+	// Get all pricing tiers (public)
+	getAllPricingTiers: () =>
+		apiCall<{
+			success: boolean;
+			data: {
+				pricing_tiers: Array<{
+					name: string;
+					price_monthly: number;
+					features: Record<string, boolean | number | string>;
+				}>;
+				recommended_tier: string;
+			};
+			message: string;
+		}>("GET", "users/pricing-tiers/all"),
 };
 
 // User API endpoints
