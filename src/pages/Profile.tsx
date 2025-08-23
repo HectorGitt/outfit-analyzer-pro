@@ -33,6 +33,7 @@ import { UserPreferences, PersonalStyleGuide } from "@/types";
 import { useAuthStore } from "@/stores/authStore";
 import { Link } from "react-router-dom";
 import { set } from "react-hook-form";
+import { usePricingTier } from "@/hooks/useCalendar";
 
 export default function Profile() {
 	const { user } = useAuthStore();
@@ -41,6 +42,11 @@ export default function Profile() {
 	);
 	const [personal_style_guide, setPersonalStyleGuide] =
 		useState<PersonalStyleGuide | null>(null);
+	const { data: pricingData } = usePricingTier();
+	const isPro = pricingData?.data?.is_pro ?? false;
+	const hasPreferences = Boolean(
+		preferences && Object.keys(preferences).length > 0
+	);
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
 	const [saving, setSaving] = useState(false);
@@ -805,18 +811,56 @@ export default function Profile() {
 									</CardContent>
 								</Card>
 
-								{/* Save Button */}
+								{/* Save / Update Button (gated by preferences existence + Pro tier) */}
 								<div className="flex justify-end">
-									<Button
-										onClick={handleSave}
-										className="btn-gradient"
-										disabled={saving || loading}
-									>
-										<Save className="w-4 h-4 mr-2" />
-										{saving
-											? "Saving..."
-											: "Save Preferences"}
-									</Button>
+									{
+										// Determine if the user already has saved preferences
+										(() => {
+											// If the user has preferences, show the "Update" action only for Pro users
+											if (hasPreferences) {
+												if (isPro) {
+													return (
+														<Button
+															onClick={handleSave}
+															className="btn-gradient"
+															disabled={
+																saving ||
+																loading
+															}
+														>
+															<Save className="w-4 h-4 mr-2" />
+															{saving
+																? "Saving..."
+																: "Update Preferences"}
+														</Button>
+													);
+												} else {
+													// Not Pro: prompt to upgrade instead of showing update action
+													return (
+														<Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-6 py-2">
+															Upgrade to Pro
+														</Button>
+													);
+												}
+											} else {
+												// No existing preferences: allow initial save for all users
+												return (
+													<Button
+														onClick={handleSave}
+														className="btn-gradient"
+														disabled={
+															saving || loading
+														}
+													>
+														<Save className="w-4 h-4 mr-2" />
+														{saving
+															? "Saving..."
+															: "Save Preferences"}
+													</Button>
+												);
+											}
+										})()
+									}
 								</div>
 							</div>
 						</div>
