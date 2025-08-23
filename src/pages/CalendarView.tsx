@@ -235,10 +235,8 @@ const CalendarView = () => {
 
 	// Single event outfit generation
 	const handleGenerateOutfitForEvent = async (event: DisplayEvent) => {
-		if (!isPro) {
-			toast.error(
-				"Outfit generation is only available for Pro users. Please upgrade your account."
-			);
+		if (!isPro && event.hasOutfit) {
+			toast.info("Non-Pro users can only generate one outfit per event.");
 			return;
 		}
 
