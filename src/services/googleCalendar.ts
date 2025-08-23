@@ -100,7 +100,7 @@ class GoogleCalendarService {
 			await new Promise<void>((resolve, reject) => {
 				this.gapi.load("client:auth2", {
 					callback: () => {
-						console.log("Google API libraries loaded successfully");
+						//console.log("Google API libraries loaded successfully");
 						resolve();
 					},
 					onerror: (error: any) => {
@@ -129,7 +129,7 @@ class GoogleCalendarService {
 				scope: GoogleCalendarService.SCOPES,
 			});
 
-			console.log("Google Calendar API initialized successfully");
+			//console.log("Google Calendar API initialized successfully");
 			this.isInitialized = true;
 		} catch (error) {
 			console.error("Google Calendar API initialization failed:", error);
@@ -146,7 +146,7 @@ class GoogleCalendarService {
 	// New method for redirect-based authentication
 	async signInWithRedirect(): Promise<GoogleCalendarToken> {
 		try {
-			console.log("Initiating Google Calendar OAuth redirect...");
+			//console.log("Initiating Google Calendar OAuth redirect...");
 
 			// Check if we're returning from OAuth callback
 			const urlParams = new URLSearchParams(window.location.search);
@@ -200,8 +200,8 @@ class GoogleCalendarService {
 		authUrl.searchParams.set("prompt", "consent");
 		authUrl.searchParams.set("include_granted_scopes", "true");
 
-		console.log("🔗 Redirect URI:", GoogleCalendarService.REDIRECT_URI);
-		console.log("🔗 Full auth URL:", authUrl.toString());
+		//console.log("🔗 Redirect URI:", GoogleCalendarService.REDIRECT_URI);
+		//console.log("🔗 Full auth URL:", authUrl.toString());
 		window.location.href = authUrl.toString();
 	}
 
@@ -210,15 +210,15 @@ class GoogleCalendarService {
 		authCode: string
 	): Promise<GoogleCalendarToken> {
 		try {
-			console.log(
+			/* console.log(
 				"Handling OAuth callback with code:",
 				authCode.substring(0, 20) + "..."
-			);
+			); */
 
 			// Exchange authorization code for access token
 			const tokenResponse = await this.exchangeCodeForToken(authCode);
 
-			console.log("Token exchange successful");
+			//console.log("Token exchange successful");
 
 			// Get user info using the access token
 			//const userInfo = await this.getUserInfo(tokenResponse.access_token);
@@ -230,7 +230,7 @@ class GoogleCalendarService {
 
 			// Send token to backend for server-side integration
 			try {
-				console.log("Sending token to backend...");
+				//console.log("Sending token to backend...");
 				const tokenRequest: GoogleCalendarTokenRequest = {
 					...tokenResponse,
 					user_email: userInfo.email,
@@ -238,9 +238,9 @@ class GoogleCalendarService {
 				};
 
 				await authAPI.sendGoogleCalendarToken(tokenRequest);
-				console.log(
+				/* console.log(
 					"✅ Google Calendar token successfully sent to backend"
-				);
+				); */
 			} catch (error) {
 				console.error(
 					"❌ Failed to send Google Calendar token to backend:",
@@ -369,7 +369,7 @@ class GoogleCalendarService {
 		// Notify backend about disconnection
 		try {
 			await authAPI.disconnectGoogleCalendar();
-			console.log("Google Calendar disconnected from backend");
+			//console.log("Google Calendar disconnected from backend");
 		} catch (error) {
 			console.error(
 				"Failed to disconnect Google Calendar from backend:",
@@ -429,7 +429,7 @@ class GoogleCalendarService {
 			};
 
 			await authAPI.sendGoogleCalendarToken(tokenRequest);
-			console.log("Google Calendar token re-synced with backend");
+			//console.log("Google Calendar token re-synced with backend");
 			return true;
 		} catch (error) {
 			console.error(
