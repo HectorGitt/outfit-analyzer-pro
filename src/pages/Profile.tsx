@@ -6,7 +6,6 @@ import {
 	ShoppingBag,
 	Save,
 	Camera,
-	AlertCircle,
 	Calendar,
 	ArrowRight,
 	Globe,
@@ -25,14 +24,13 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
-import { Alert, AlertDescription } from "@/components/ui/alert";
+import { useToast } from "@/hooks/use-toast";
 import { Navbar } from "@/components/navigation/navbar";
 import { Badge } from "@/components/ui/badge";
 import { userAPI } from "@/services/api";
 import { UserPreferences, PersonalStyleGuide } from "@/types";
 import { useAuthStore } from "@/stores/authStore";
 import { Link } from "react-router-dom";
-import { set } from "react-hook-form";
 import { usePricingTier } from "@/hooks/useCalendar";
 
 export default function Profile() {
@@ -48,9 +46,8 @@ export default function Profile() {
 		preferences && Object.keys(preferences).length > 0
 	);
 	const [loading, setLoading] = useState(false);
-	const [error, setError] = useState<string | null>(null);
 	const [saving, setSaving] = useState(false);
-	const [successMessage, setSuccessMessage] = useState<string | null>(null);
+	const { toast } = useToast();
 
 	const [selectedStyles, setSelectedStyles] = useState<string[]>([]);
 	const [selectedColors, setSelectedColors] = useState<string[]>([]);
@@ -64,7 +61,6 @@ export default function Profile() {
 	useEffect(() => {
 		if (user?.username) {
 			setLoading(true);
-			setError(null);
 
 			userAPI
 				.getPreferences()
@@ -106,7 +102,14 @@ export default function Profile() {
 				})
 				.catch((err) => {
 					console.error("Failed to load preferences:", err);
-					setError(err.message || "Failed to load preferences");
+					toast({
+						title: "Failed to load preferences",
+						description:
+							err instanceof Error
+								? err.message
+								: "Failed to load preferences",
+						variant: "destructive",
+					});
 				})
 				.finally(() => {
 					setLoading(false);
@@ -209,13 +212,15 @@ export default function Profile() {
 
 	const handleSave = async () => {
 		if (!user?.username) {
-			setError("User not authenticated");
+			toast({
+				title: "Not authenticated",
+				description: "Please sign in to save your preferences.",
+				variant: "destructive",
+			});
 			return;
 		}
 
 		setSaving(true);
-		setError(null);
-		setSuccessMessage(null);
 
 		try {
 			const updatedPreferences: UserPreferences = {
@@ -259,25 +264,28 @@ export default function Profile() {
 			}
  */
 			if (styleGuideData) {
-				//console.log("Setting personal style guide:", styleGuideData);
 				setPersonalStyleGuide(styleGuideData);
-				setSuccessMessage(
-					"Preferences saved and personal style guide generated!"
-				);
+				toast({
+					title: "Preferences saved",
+					description:
+						"Preferences saved and personal style guide generated!",
+				});
 			} else {
-				//console.log("No personal style guide found in response");
-				/* console.log(
-					"Available keys:",
-					Object.keys(response.data || response || {})
-				); */
-				setSuccessMessage("Preferences saved successfully!");
+				toast({
+					title: "Preferences saved",
+					description: "Preferences saved successfully!",
+				});
 			}
-
-			// Show success message (you could add a toast here)
-			//console.log("Preferences saved successfully!");
 		} catch (err: any) {
 			console.error("Failed to save preferences:", err);
-			setError(err.message || "Failed to save preferences");
+			toast({
+				title: "Save failed",
+				description:
+					err instanceof Error
+						? err.message
+						: "Failed to save preferences",
+				variant: "destructive",
+			});
 		} finally {
 			setSaving(false);
 		}
@@ -303,24 +311,6 @@ export default function Profile() {
 						</p>
 					</div>
 
-					{/* Error Alert */}
-					{error && (
-						<Alert variant="destructive" className="mb-6">
-							<AlertCircle className="h-4 w-4" />
-							<AlertDescription>{error}</AlertDescription>
-						</Alert>
-					)}
-
-					{/* Success Alert */}
-					{successMessage && (
-						<Alert className="mb-6">
-							<AlertCircle className="h-4 w-4" />
-							<AlertDescription>
-								{successMessage}
-							</AlertDescription>
-						</Alert>
-					)}
-
 					{/* Loading State */}
 					{loading && (
 						<div className="text-center py-8">
@@ -328,33 +318,6 @@ export default function Profile() {
 							<p className="mt-2 text-muted-foreground">
 								Loading preferences...
 							</p>
-						</div>
-					)}
-
-					{/* Debug Info */}
-					{import.meta.env.MODE === "development" && (
-						<div className="mb-4 p-4 bg-gray-100 rounded-lg text-sm">
-							<h3 className="font-bold">Debug Info:</h3>
-							<p>
-								Personal Style Guide State:{" "}
-								{personal_style_guide ? "Present" : "null"}
-							</p>
-							<p>
-								Style Guide Keys:{" "}
-								{personal_style_guide
-									? Object.keys(personal_style_guide).join(
-											", "
-									  )
-									: "none"}
-							</p>
-							{personal_style_guide?.personal_style_guide && (
-								<p>
-									Inner Keys:{" "}
-									{Object.keys(
-										personal_style_guide.personal_style_guide
-									).join(", ")}
-								</p>
-							)}
 						</div>
 					)}
 

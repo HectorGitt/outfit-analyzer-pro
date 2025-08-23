@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Eye, EyeOff, Mail, Lock, ArrowRight, AlertCircle } from "lucide-react";
+import { Eye, EyeOff, Mail, Lock, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Alert, AlertDescription } from "@/components/ui/alert";
+import { useToast } from "@/hooks/use-toast";
 import { ErrorDisplay } from "@/components/ui/error-display";
 import { useAuthStore } from "@/stores/authStore";
 
@@ -19,6 +19,7 @@ export default function Login() {
 	const navigate = useNavigate();
 	const { login, isLoading, error, errorDetails, clearError } =
 		useAuthStore();
+	const { toast } = useToast();
 
 	const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const { name, value } = e.target;
@@ -40,12 +41,24 @@ export default function Login() {
 			});
 
 			if (success) {
+				toast({
+					title: "Signed in",
+					description: `Welcome back${
+						formData.username ? `, ${formData.username}` : ""
+					}!`,
+				});
 				navigate("/profile");
 			}
 			// If not successful, error will be displayed via auth store
-		} catch (error) {
-			// Error is handled by the auth store
-			console.error("Login failed:", error);
+		} catch (err) {
+			// Error is handled by the auth store, but also surface a toast
+			console.error("Login failed:", err);
+			toast({
+				title: "Sign in error",
+				description:
+					err instanceof Error ? err.message : "Failed to sign in",
+				variant: "destructive",
+			});
 		}
 	};
 

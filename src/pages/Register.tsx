@@ -24,6 +24,7 @@ import {
 	SelectValue,
 } from "@/components/ui/select";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { useToast } from "@/hooks/use-toast";
 import { ErrorDisplay } from "@/components/ui/error-display";
 import { useAuthStore } from "@/stores/authStore";
 
@@ -46,6 +47,7 @@ export default function Register() {
 	const navigate = useNavigate();
 	const { register, isLoading, error, errorDetails, clearError } =
 		useAuthStore();
+	const { toast } = useToast();
 
 	const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const { name, value } = e.target;
@@ -101,6 +103,14 @@ export default function Register() {
 		// Validate form
 		const errors = validateForm();
 		if (errors.length > 0) {
+			// Surface validation errors as toasts for immediate feedback
+			errors.forEach((err) =>
+				toast({
+					title: "Validation",
+					description: err,
+					variant: "destructive",
+				})
+			);
 			setValidationErrors(errors);
 			return;
 		}
@@ -117,12 +127,21 @@ export default function Register() {
 			});
 
 			if (success) {
+				toast({
+					title: "Account created",
+					description: "Your account was created successfully.",
+				});
 				navigate("/profile");
 			}
 			// If not successful, error will be displayed via auth store
-		} catch (error) {
-			// Error is handled by the auth store
-			console.error("Registration failed:", error);
+		} catch (err) {
+			console.error("Registration failed:", err);
+			toast({
+				title: "Registration failed",
+				description:
+					err instanceof Error ? err.message : "Failed to register",
+				variant: "destructive",
+			});
 		}
 	};
 
