@@ -418,28 +418,11 @@ const CalendarView = () => {
 						<div className="flex flex-wrap gap-2">
 							<Button
 								onClick={handleGenerateWardrobeSuggestions}
-								disabled={
-									generateOutfits.isPending ||
-									(displayEvents.length > 0 && !isPro)
-								}
-								className={`flex items-center gap-2 ${
-									displayEvents.length > 0 && !isPro
-										? "opacity-60 cursor-not-allowed"
-										: ""
-								}`}
+								disabled={generateOutfits.isPending}
+								className="flex items-center gap-2"
 							>
-								{displayEvents.length > 0 && !isPro ? (
-									<Lock className="w-4 h-4" />
-								) : (
-									<Sparkles className="w-4 h-4" />
-								)}
-								{displayEvents.length === 0
-									? generateOutfits.isPending
-										? "Generating..."
-										: "Generate All Outfits"
-									: !isPro
-									? "Pro Only - Generate All Outfits"
-									: generateOutfits.isPending
+								<Sparkles className="w-4 h-4" />
+								{generateOutfits.isPending
 									? "Generating..."
 									: "Generate All Outfits"}
 							</Button>
