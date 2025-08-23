@@ -1,4 +1,5 @@
 import React from "react";
+import { legalTermsContent } from "./legalTermsContent";
 import { Navbar } from "../components/navigation/navbar";
 import { Card, CardContent } from "../components/ui/card";
 
@@ -48,6 +49,10 @@ const sections = [
 		],
 	},
 	// ... You can continue adding more sections as needed, following the same structure ...
+	{
+		title: "LEGAL TERMS",
+		content: legalTermsContent,
+	},
 ];
 
 const TermsOfService: React.FC = () => {
