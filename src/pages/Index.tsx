@@ -32,6 +32,67 @@ import AOS from "aos";
 import "aos/dist/aos.css";
 import { useEffect } from "react";
 
+import { authAPI } from "@/services/api";
+
+const pricingTiers = {
+	free: {
+		name: "Free",
+		max_upload_analyze: 1,
+		max_outfit_plans_per_month: 5,
+		max_wardrobe_items: 10,
+		ai_calls_per_day: 1,
+		calendar_integration: false,
+		ai_styling_advice: false,
+		weather_integration: false,
+		outfit_alternatives: false,
+		monthly_style_reports: false,
+		priority_support: false,
+		price_monthly: 0,
+	},
+	spotlight: {
+		name: "Spotlight",
+		max_upload_analyze: 5,
+		max_outfit_plans_per_month: 30,
+		max_wardrobe_items: 30,
+		ai_calls_per_day: 10,
+		calendar_integration: true,
+		ai_styling_advice: true,
+		weather_integration: false,
+		outfit_alternatives: true,
+		monthly_style_reports: false,
+		priority_support: false,
+		price_monthly: 9.99,
+	},
+	elite: {
+		name: "Elite",
+		max_upload_analyze: 100,
+		max_outfit_plans_per_month: 100,
+		max_wardrobe_items: 50,
+		ai_calls_per_day: 50,
+		calendar_integration: true,
+		ai_styling_advice: true,
+		weather_integration: true,
+		outfit_alternatives: true,
+		monthly_style_reports: true,
+		priority_support: false,
+		price_monthly: 19.99,
+	},
+	icon: {
+		name: "Icon",
+		max_upload_analyze: -1,
+		max_outfit_plans_per_month: -1,
+		max_wardrobe_items: -1,
+		ai_calls_per_day: -1,
+		calendar_integration: true,
+		ai_styling_advice: true,
+		weather_integration: true,
+		outfit_alternatives: true,
+		monthly_style_reports: true,
+		priority_support: true,
+		price_monthly: 39.99,
+	},
+};
+
 const Index = () => {
 	useEffect(() => {
 		AOS.init({
@@ -105,6 +166,15 @@ const Index = () => {
 			value: "120+",
 		},
 	];
+
+	// Types for pricing tiers
+	type PricingTier = {
+		name: string;
+		price_monthly: number;
+		features: Record<string, string | number | boolean>;
+	};
+
+	const recommendedTier = "elite";
 
 	return (
 		<div className="min-h-screen bg-background" data-aos="fade-in">
@@ -675,11 +745,173 @@ const Index = () => {
 							<Button
 								size="lg"
 								variant="outline"
-								className="text-lg px-8 py-4 border-white text-white hover:bg-white hover:text-primary"
+								className="text-lg px-8 py-4 border-white text-white bg-transparent hover:bg-primary hover:text-white transition-colors"
 								asChild
 							>
 								<Link to="/upload">Try Demo</Link>
 							</Button>
+						</div>
+
+						{/* Pricing summary, feature cards, and sales contact for all tiers */}
+						<div className="mt-6 flex flex-col items-center justify-center gap-6 text-sm text-white">
+							{Object.keys(pricingTiers).length > 0 ? (
+								<>
+									<div className="text-center">
+										<div className="font-semibold text-lg mb-2">
+											Our Plans
+										</div>
+										{recommendedTier && (
+											<div className="text-sm opacity-90 mb-2">
+												<span className="font-bold">
+													Recommended:
+												</span>{" "}
+												{recommendedTier
+													.charAt(0)
+													.toUpperCase() +
+													recommendedTier.slice(1)}
+											</div>
+										)}
+									</div>
+									<div className="w-full flex flex-wrap justify-center gap-6">
+										{Object.entries(pricingTiers).map(
+											([key, tier], idx) => (
+												<Card
+													key={tier.name}
+													className={`bg-white/10 border-white/20 text-white w-80 ${
+														tier.name ===
+														recommendedTier
+															? "ring-2 ring-accent"
+															: ""
+													}`}
+												>
+													<CardHeader>
+														<CardTitle className="flex items-center gap-2 text-2xl">
+															{tier.name
+																.charAt(0)
+																.toUpperCase() +
+																tier.name.slice(
+																	1
+																)}
+															{tier.name ===
+																recommendedTier && (
+																<Badge className="ml-2 bg-accent/20 text-accent border-accent/30 uppercase tracking-wide">
+																	Recommended
+																</Badge>
+															)}
+														</CardTitle>
+														<div className="mt-2 text-3xl font-bold">
+															$
+															{tier.price_monthly.toFixed(
+																2
+															)}
+															<span className="text-base font-normal opacity-80 ml-1">
+																/mo
+															</span>
+														</div>
+													</CardHeader>
+													<CardContent>
+														<ul className="space-y-2 text-left">
+															{Object.entries(
+																tier
+															).map(
+																([
+																	key,
+																	value,
+																]) => {
+																	// Format key for display
+																	const label =
+																		key
+																			.replace(
+																				/_/g,
+																				" "
+																			)
+																			.replace(
+																				/\b\w/g,
+																				(
+																					l
+																				) =>
+																					l.toUpperCase()
+																			);
+																	let display: React.ReactNode;
+																	if (
+																		typeof value ===
+																		"boolean"
+																	) {
+																		display =
+																			value ? (
+																				<span className="text-green-400 font-bold ml-2">
+																					✔
+																				</span>
+																			) : (
+																				<span className="text-red-400 font-bold ml-2">
+																					✖
+																				</span>
+																			);
+																	} else if (
+																		typeof value ===
+																			"number" ||
+																		typeof value ===
+																			"string"
+																	) {
+																		display =
+																			(
+																				<span className="ml-2 font-semibold">
+																					{String(
+																						value
+																					)}
+																				</span>
+																			);
+																	} else {
+																		display =
+																			null;
+																	}
+																	return (
+																		<li
+																			key={
+																				key
+																			}
+																			className="flex items-center justify-between border-b border-white/10 py-1 last:border-b-0"
+																		>
+																			<span>
+																				{
+																					label
+																				}
+																			</span>
+																			{
+																				display
+																			}
+																		</li>
+																	);
+																}
+															)}
+														</ul>
+													</CardContent>
+												</Card>
+											)
+										)}
+									</div>
+									<Button
+										size="lg"
+										variant="outline"
+										className="text-lg px-6 py-3 mt-2 border-white text-white bg-transparent hover:bg-primary hover:text-white transition-colors"
+										asChild
+									>
+										<a
+											href={`mailto:sales@closetic.ai?subject=${encodeURIComponent(
+												"Closetic AI - Pricing Inquiry"
+											)}&body=${encodeURIComponent(
+												`Hello Sales Team,%0D%0A%0D%0AI'd like to discuss pricing and features. Please provide more details about your plans and onboarding.%0D%0A%0D%0AThanks.`
+											)}`}
+										>
+											Talk to Sales
+										</a>
+									</Button>
+								</>
+							) : (
+								<div className="text-center opacity-90">
+									Pricing information unavailable
+								</div>
+							)}
 						</div>
 					</div>
 				</div>
