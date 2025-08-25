@@ -233,7 +233,7 @@ export const useCreateBulkWardrobeItems = () => {
 			wardrobeAPI.createBulkItems(description),
 		onSuccess: (response) => {
 			queryClient.invalidateQueries({ queryKey: ["wardrobe"] });
-			const itemsCreated = response?.data?.items_created || 0;
+			const itemsCreated = response?.data?.count || 0;
 			toast.success(
 				`${itemsCreated} wardrobe items created successfully!`
 			);
