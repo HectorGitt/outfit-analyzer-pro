@@ -1,3 +1,4 @@
+import { useCountryList } from "@/hooks/useCountryList";
 import { useState, useEffect } from "react";
 import {
 	User,
@@ -34,6 +35,7 @@ import { Link } from "react-router-dom";
 import { usePricingTier } from "@/hooks/useCalendar";
 
 export default function Profile() {
+	const countryList = useCountryList();
 	const { user } = useAuthStore();
 	const [preferences, setPreferences] = useState<UserPreferences | null>(
 		null
@@ -381,82 +383,22 @@ export default function Profile() {
 															setCountry
 														}
 													>
-														<SelectTrigger className="pl-10 input-fashion">
+														<SelectTrigger className="input-fashion pl-10">
 															<SelectValue placeholder="Select country" />
 														</SelectTrigger>
-														<SelectContent>
-															<SelectItem value="US">
-																United States
-															</SelectItem>
-															<SelectItem value="CA">
-																Canada
-															</SelectItem>
-															<SelectItem value="GB">
-																United Kingdom
-															</SelectItem>
-															<SelectItem value="AU">
-																Australia
-															</SelectItem>
-															<SelectItem value="DE">
-																Germany
-															</SelectItem>
-															<SelectItem value="FR">
-																France
-															</SelectItem>
-															<SelectItem value="IT">
-																Italy
-															</SelectItem>
-															<SelectItem value="ES">
-																Spain
-															</SelectItem>
-															<SelectItem value="NL">
-																Netherlands
-															</SelectItem>
-															<SelectItem value="SE">
-																Sweden
-															</SelectItem>
-															<SelectItem value="NO">
-																Norway
-															</SelectItem>
-															<SelectItem value="DK">
-																Denmark
-															</SelectItem>
-															<SelectItem value="JP">
-																Japan
-															</SelectItem>
-															<SelectItem value="KR">
-																South Korea
-															</SelectItem>
-															<SelectItem value="CN">
-																China
-															</SelectItem>
-															<SelectItem value="IN">
-																India
-															</SelectItem>
-															<SelectItem value="BR">
-																Brazil
-															</SelectItem>
-															<SelectItem value="MX">
-																Mexico
-															</SelectItem>
-															<SelectItem value="AR">
-																Argentina
-															</SelectItem>
-															<SelectItem value="ZA">
-																South Africa
-															</SelectItem>
-															<SelectItem value="EG">
-																Egypt
-															</SelectItem>
-															<SelectItem value="NG">
-																Nigeria
-															</SelectItem>
-															<SelectItem value="KE">
-																Kenya
-															</SelectItem>
-															<SelectItem value="other">
-																Other
-															</SelectItem>
+														<SelectContent className="max-h-60 overflow-y-auto">
+															{countryList.map(
+																(c) => (
+																	<SelectItem
+																		key={c}
+																		value={
+																			c
+																		}
+																	>
+																		{c}
+																	</SelectItem>
+																)
+															)}
 														</SelectContent>
 													</Select>
 												</div>
@@ -473,7 +415,7 @@ export default function Profile() {
 															setGender
 														}
 													>
-														<SelectTrigger className="pl-10 input-fashion">
+														<SelectTrigger className="input-fashion pl-10">
 															<SelectValue placeholder="Select gender" />
 														</SelectTrigger>
 														<SelectContent>
@@ -486,10 +428,74 @@ export default function Profile() {
 															<SelectItem value="non-binary">
 																Non-binary
 															</SelectItem>
-															<SelectItem value="prefer-not-to-say">
+															<SelectItem value="prefer not to say">
 																Prefer not to
 																say
 															</SelectItem>
+														</SelectContent>
+													</Select>
+												</div>
+											</div>
+											<div>
+												<Label htmlFor="body_type">
+													Body Type
+												</Label>
+												<div className="relative">
+													<Globe className="absolute left-3 top-3 h-4 w-4 text-muted-foreground z-10" />
+													<Select
+														value={bodyType}
+														onValueChange={
+															setBodyType
+														}
+													>
+														<SelectTrigger className="input-fashion pl-10">
+															<SelectValue placeholder="Select body type" />
+														</SelectTrigger>
+														<SelectContent>
+															{bodyTypes.map(
+																(type) => (
+																	<SelectItem
+																		key={
+																			type
+																		}
+																		value={type.toLowerCase()}
+																	>
+																		{type}
+																	</SelectItem>
+																)
+															)}
+														</SelectContent>
+													</Select>
+												</div>
+											</div>
+											<div>
+												<Label htmlFor="budget">
+													Budget Range
+												</Label>
+												<div className="relative">
+													<Users className="absolute left-3 top-3 h-4 w-4 text-muted-foreground z-10" />
+													<Select
+														value={budgetRange}
+														onValueChange={
+															setBudgetRange
+														}
+													>
+														<SelectTrigger className="input-fashion pl-10">
+															<SelectValue placeholder="Select budget range" />
+														</SelectTrigger>
+														<SelectContent>
+															{budgetRanges.map(
+																(range) => (
+																	<SelectItem
+																		key={
+																			range
+																		}
+																		value={range.toLowerCase()}
+																	>
+																		{range}
+																	</SelectItem>
+																)
+															)}
 														</SelectContent>
 													</Select>
 												</div>
