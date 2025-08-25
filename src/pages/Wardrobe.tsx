@@ -508,7 +508,7 @@ const Wardrobe = () => {
 													</Label>
 													<Textarea
 														id="bulkItems"
-														placeholder="Enter your clothing items, one per line:&#10;Blue jeans&#10;White t-shirt&#10;Black sneakers&#10;Red hoodie&#10;..."
+														placeholder="Example&#10;2 brown cotton jeans , 1 white t-shirt, 3 black sneakers, 1 red hoodie with red inscription"
 														value={bulkWardrobeText}
 														onChange={(e) =>
 															setBulkWardrobeText(
@@ -519,9 +519,11 @@ const Wardrobe = () => {
 														className="mt-2"
 													/>
 													<p className="text-xs text-muted-foreground mt-2">
-														Tip: List each clothing
-														item on a separate line
-														for best results
+														Quick way to add
+														multiple items - LLM
+														will parse all the text
+														and generate your
+														wardrobe items.
 													</p>
 												</div>
 												<div className="flex items-center justify-between">
