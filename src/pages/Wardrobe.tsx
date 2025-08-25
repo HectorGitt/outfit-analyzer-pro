@@ -236,7 +236,6 @@ const Wardrobe = () => {
 	const handleDeleteItem = async (itemId: string) => {
 		try {
 			await deleteItem.mutateAsync(itemId);
-			toast.success("Item deleted successfully!");
 		} catch (error) {
 			console.error("Failed to delete item:", error);
 		}
