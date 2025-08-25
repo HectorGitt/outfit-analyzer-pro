@@ -71,6 +71,19 @@ const CalendarView = () => {
 	// Get Pro user status
 	const isPro = pricingData?.data?.is_pro ?? false;
 
+	// Normalize plans length from varying API shapes
+	const plansCount = useMemo(() => {
+		const p: any = plans?.data;
+		if (!p) return 0;
+		// common shapes: { data: { outfit_plans: [...] } } or { outfit_plans: [...] } or nested data.data
+		const candidate =
+			p.data?.outfit_plans ??
+			p.outfit_plans ??
+			p.data?.data?.outfit_plans ??
+			null;
+		return Array.isArray(candidate) ? candidate.length : 0;
+	}, [plans]);
+
 	// Combine Google Calendar events with backend events for display
 	const displayEvents = useMemo<DisplayEvent[]>(() => {
 		////////console.log("Debug - events data:", events);
@@ -192,9 +205,9 @@ const CalendarView = () => {
 
 	// Enhanced outfit generation for all events
 	const handleGenerateWardrobeSuggestions = async () => {
-		if (!isPro) {
+		if (!isPro && plans?.data) {
 			toast.error(
-				"Outfit generation is only available for Pro users. Please upgrade your account."
+				"Outfit regeneration is only available for Pro users. Please upgrade your account."
 			);
 			return;
 		}
@@ -424,6 +437,8 @@ const CalendarView = () => {
 								<Sparkles className="w-4 h-4" />
 								{generateOutfits.isPending
 									? "Generating..."
+									: plansCount > 0
+									? "Regenerate All"
 									: "Generate All Outfits"}
 							</Button>
 							<Button
