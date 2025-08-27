@@ -57,7 +57,11 @@ api.interceptors.response.use(
 			}
 		); */
 
-		if (error.response?.status === 401) {
+		if (
+			error.response?.status === 401 ||
+			(error.response?.status === 403 &&
+				error.response?.data?.detail === "Not authenticated")
+		) {
 			// Token expired or invalid
 			localStorage.removeItem("auth_token");
 			if (window.location.pathname !== "/login") {
