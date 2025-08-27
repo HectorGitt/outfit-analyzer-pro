@@ -7,7 +7,7 @@ const sections = [
 	{
 		title: "AGREEMENT TO OUR LEGAL TERMS",
 		content: [
-			'We are Closetic AI ("Company", "we", "us", or "our"), a company registered in Nigeria at Lagos, Ikeja, Lagos State 200211.',
+			'We are Closetic AI ("Company", "we", "us", or "our"), a company registered in Nigeria at Ibadan, Oyo State 200211.',
 			'We operate the website http://www.closetic.com (the "Site"), as well as any other related products and services that refer or link to these legal terms (the "Legal Terms") (collectively, the "Services").',
 			"Elevate Your Style with AI Fashion Intelligence. Get instant, personalized fashion analysis and style recommendations powered by advanced AI technology. Perfect your look, boost your confidence.",
 			"You can contact us by phone at +2348134989522, email at admin@closetic.com, or by mail to Lagos, Ikeja, Lagos State 200211, Nigeria.",

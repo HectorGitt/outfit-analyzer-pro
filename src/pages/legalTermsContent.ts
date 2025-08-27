@@ -232,11 +232,11 @@ We reserve the right to change, modify, or remove the contents of the Services a
 We cannot guarantee the Services will be available at all times. We may experience hardware, software, or other problems or need to perform maintenance related to the Services, resulting in interruptions, delays, or errors. We reserve the right to change, revise, update, suspend, discontinue, or otherwise modify the Services at any time or for any reason without notice to you. You agree that we have no liability whatsoever for any loss, damage, or inconvenience caused by your inability to access or use the Services during any downtime or discontinuance of the Services. Nothing in these Legal Terms will be construed to obligate us to maintain and support the Services or to supply any corrections, updates, or releases in connection therewith.
 
 16. GOVERNING LAW
-These Legal Terms shall be governed by and defined following the laws of Nigeria. Verinet and yourself irrevocably consent that the courts of Nigeria shall have exclusive jurisdiction to resolve any dispute which may arise in connection with these Legal Terms.
+These Legal Terms shall be governed by and defined following the laws of Nigeria. Closetic and yourself irrevocably consent that the courts of Nigeria shall have exclusive jurisdiction to resolve any dispute which may arise in connection with these Legal Terms.
 
 17. DISPUTE RESOLUTION
 Binding Arbitration
-Any dispute arising out of or in connection with these Legal Terms, including any question regarding its existence, validity, or termination, shall be referred to and finally resolved by the International Commercial Arbitration Court under the European Arbitration Chamber (Belgium, Brussels, Avenue Louise, 146) according to the Rules of this ICAC, which, as a result of referring to it, is considered as the part of this clause. The number of arbitrators shall be three (3). The seat, or legal place, or arbitration shall be Lagos, Nigeria. The language of the proceedings shall be English. The governing law of these Legal Terms shall be substantive law of Nigeria.
+Any dispute arising out of or in connection with these Legal Terms, including any question regarding its existence, validity, or termination, shall be referred to and finally resolved by the International Commercial Arbitration Court under the European Arbitration Chamber (Belgium, Brussels, Avenue Louise, 146) according to the Rules of this ICAC, which, as a result of referring to it, is considered as the part of this clause. The number of arbitrators shall be three (3). The seat, or legal place, or arbitration shall Oyo State, Nigeria. The language of the proceedings shall be English. The governing law of these Legal Terms shall be substantive law of Nigeria.
 
 Restrictions
 The Parties agree that any arbitration shall be limited to the Dispute between the Parties individually. To the full extent permitted by law, (a) no arbitration shall be joined with any other proceeding; (b) there is no right or authority for any Dispute to be arbitrated on a class-action basis or to utilise class action procedures; and (c) there is no right or authority for any Dispute to be brought in a purported representative capacity on behalf of the general public or any other persons.
@@ -271,9 +271,9 @@ These Legal Terms and any policies or operating rules posted by us on the Servic
 26. CONTACT US
 In order to resolve a complaint regarding the Services or to receive further information regarding use of the Services, please contact us at:
 
-Verinet
-Lagos
-Ikeja, Lagos State 200211
+Closetic
+Oyo State
+Ibadan, Oyo State 200211
 Nigeria
 
 Phone: +2348134989522
