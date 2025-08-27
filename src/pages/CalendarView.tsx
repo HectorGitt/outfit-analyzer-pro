@@ -204,7 +204,7 @@ const CalendarView = () => {
 
 	// Enhanced outfit generation for all events
 	const handleGenerateWardrobeSuggestions = async () => {
-		if (!isPro && plans?.data) {
+		if (!isPro && plansCount > 0) {
 			toast.error(
 				"Outfit regeneration is only available for Pro users. Please upgrade your account."
 			);
