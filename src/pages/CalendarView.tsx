@@ -222,23 +222,21 @@ const CalendarView = () => {
 				(event) => new Date(event.startTime) > new Date()
 			);
 
-			for (const event of upcomingEvents.slice(0, 5)) {
-				// Limit to next 5 events
 				await generateOutfits.mutateAsync({
-					eventId: event.id,
-					eventType: event.eventType,
+				eventId: upcomingEvents[0].id,
+				eventType: upcomingEvents[0].eventType,
 					preferences: {
 						colors: [], // Would come from user preferences
 						brands: [], // Would come from user preferences
 					},
 				});
-			}
 
 			toast.success(
-				`Generated outfit suggestions for ${Math.min(
+				/* `Generated outfit suggestions for ${Math.min(
 					upcomingEvents.length,
 					5
-				)} upcoming events`
+				)} upcoming events` */
+				"Generated outfit suggestions for upcoming events"
 			);
 		} catch (error) {
 			console.error("Failed to generate outfit suggestions:", error);

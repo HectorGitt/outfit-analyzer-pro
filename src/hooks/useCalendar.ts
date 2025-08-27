@@ -105,6 +105,7 @@ export const useEvents = (params?: {
 	return useQuery({
 		queryKey: ["events", params],
 		queryFn: () => calendarAPI.getEvents(params),
+		refetchOnWindowFocus: false,
 	});
 };
 
@@ -113,6 +114,7 @@ export const useEvent = (id: string) => {
 		queryKey: ["events", id],
 		queryFn: () => calendarAPI.getEvent(id),
 		enabled: !!id,
+		refetchOnWindowFocus: false,
 	});
 };
 
@@ -197,6 +199,7 @@ export const useWardrobeItems = (params?: {
 	return useQuery({
 		queryKey: ["wardrobe", params],
 		queryFn: () => wardrobeAPI.getItems(params),
+		refetchOnWindowFocus: false,
 	});
 };
 
@@ -205,6 +208,7 @@ export const useWardrobeItem = (id: string) => {
 		queryKey: ["wardrobe", id],
 		queryFn: () => wardrobeAPI.getItem(id),
 		enabled: !!id,
+		refetchOnWindowFocus: false,
 	});
 };
 
@@ -346,6 +350,7 @@ export const useOutfitSuggestions = (params?: {
 	return useQuery({
 		queryKey: ["outfits", params],
 		queryFn: () => outfitAPI.getSuggestions(params),
+		refetchOnWindowFocus: false,
 	});
 };
 
@@ -354,6 +359,7 @@ export const useOutfitSuggestion = (id: string) => {
 		queryKey: ["outfits", id],
 		queryFn: () => outfitAPI.getSuggestion(id),
 		enabled: !!id,
+		refetchOnWindowFocus: false,
 	});
 };
 
@@ -419,6 +425,7 @@ export const useOutfitPlans = (params?: {
 	return useQuery({
 		queryKey: ["plans", params],
 		queryFn: () => planningAPI.getPlans(params),
+		refetchOnWindowFocus: false,
 	});
 };
 
@@ -427,6 +434,7 @@ export const useOutfitPlan = (id: string) => {
 		queryKey: ["plans", id],
 		queryFn: () => planningAPI.getPlan(id),
 		enabled: !!id,
+		refetchOnWindowFocus: false,
 	});
 };
 
@@ -484,6 +492,7 @@ export const useWeather = (params: {
 		queryKey: ["weather", params],
 		queryFn: () => weatherAPI.getWeather(params),
 		enabled: !!(params.location || (params.lat && params.lon)),
+		refetchOnWindowFocus: false,
 	});
 };
 
@@ -495,6 +504,7 @@ export const useOutfitAnalytics = (params?: {
 	return useQuery({
 		queryKey: ["analytics", "outfits", params],
 		queryFn: () => analyticsAPI.getOutfitAnalytics(params),
+		refetchOnWindowFocus: false,
 	});
 };
 
@@ -539,5 +549,6 @@ export const usePricingTier = () => {
 	return useQuery({
 		queryKey: ["pricing-tier"],
 		queryFn: () => authAPI.getPricingTier(),
+		refetchOnWindowFocus: false,
 	});
 };
