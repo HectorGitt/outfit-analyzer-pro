@@ -64,7 +64,6 @@ const CalendarView = () => {
 	// API Hooks
 	const { events, plans, wardrobe, isLoading, isError } =
 		useCalendarDashboard();
-	const syncGoogleEvents = useSyncGoogleCalendarEvents();
 	const generateOutfits = useGenerateOutfitSuggestions();
 	const { data: pricingData } = usePricingTier();
 
@@ -222,14 +221,14 @@ const CalendarView = () => {
 				(event) => new Date(event.startTime) > new Date()
 			);
 
-				await generateOutfits.mutateAsync({
+			await generateOutfits.mutateAsync({
 				eventId: upcomingEvents[0].id,
 				eventType: upcomingEvents[0].eventType,
-					preferences: {
-						colors: [], // Would come from user preferences
-						brands: [], // Would come from user preferences
-					},
-				});
+				preferences: {
+					colors: [], // Would come from user preferences
+					brands: [], // Would come from user preferences
+				},
+			});
 
 			toast.success(
 				/* `Generated outfit suggestions for ${Math.min(
