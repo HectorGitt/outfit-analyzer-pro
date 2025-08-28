@@ -19,14 +19,14 @@ export interface CalendarEvent {
 	endTime: string;
 	location?: string;
 	eventType:
-		| "business"
-		| "casual"
-		| "formal"
-		| "workout"
-		| "date"
-		| "party"
-		| "travel"
-		| "other";
+		| "Business"
+		| "Casual"
+		| "Formal"
+		| "Workout"
+		| "Date"
+		| "Party"
+		| "Travel"
+		| "Other";
 	weatherConsideration?: boolean;
 	userId: string;
 	createdAt: string;
@@ -138,13 +138,16 @@ export interface CreateWardrobeItemRequest {
 }
 
 export interface GenerateOutfitRequest {
-	eventId?: string;
-	eventType: CalendarEvent["eventType"];
+	id: string;
+	title: string;
+	start_time: string;
+	end_time: string;
+	description: string;
 	weather?: WeatherData;
 	preferences?: {
 		colors?: string[];
 		brands?: string[];
-		avoidItems?: string[];
+		avoid_items?: string[];
 	};
 }
 

@@ -275,8 +275,8 @@ export const wardrobeAPI = {
 
 // Outfit Suggestions API endpoints
 export const outfitAPI = {
-	generateSuggestions: (data: GenerateOutfitRequest) =>
-		apiCall<OutfitSuggestion[]>("POST", "/calendar/outfit-plans", data),
+	generateSuggestions: () =>
+		apiCall<OutfitSuggestion[]>("POST", "/calendar/outfit-plans"),
 
 	getSuggestions: (params?: {
 		eventId?: string;
@@ -288,6 +288,13 @@ export const outfitAPI = {
 			"/outfits",
 			undefined,
 			params
+		),
+
+	generateSuggestion: (data: GenerateOutfitRequest) =>
+		apiCall<OutfitSuggestion>(
+			"POST",
+			"/calendar/outfit-plans/single",
+			data
 		),
 
 	getSuggestion: (id: string) =>

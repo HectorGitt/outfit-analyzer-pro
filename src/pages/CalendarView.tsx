@@ -27,6 +27,7 @@ import {
 	useWardrobeItems,
 	useCalendarDashboard,
 	usePricingTier,
+	useGenerateOutfitSuggestion,
 } from "@/hooks/useCalendar";
 import {
 	CalendarEvent as InternalCalendarEvent,
@@ -60,11 +61,15 @@ const CalendarView = () => {
 	const navigate = useNavigate();
 	const [googleEvents, setGoogleEvents] = useState<GoogleCalendarEvent[]>([]);
 	const [isConnected, setIsConnected] = useState(true); // Default to true to show backend data
+	const [generatingEventId, setGeneratingEventId] = useState<string | null>(
+		null
+	);
 
 	// API Hooks
 	const { events, plans, wardrobe, isLoading, isError } =
 		useCalendarDashboard();
 	const generateOutfits = useGenerateOutfitSuggestions();
+	const generateOutfitSingle = useGenerateOutfitSuggestion();
 	const { data: pricingData } = usePricingTier();
 
 	// Get Pro user status
@@ -88,7 +93,6 @@ const CalendarView = () => {
 		title: string
 	): InternalCalendarEvent["eventType"] => {
 		const titleLower = title.toLowerCase();
-		console.log("Classifying event title:", titleLower);
 
 		if (
 			titleLower.includes("meeting") ||
@@ -280,14 +284,7 @@ const CalendarView = () => {
 				(event) => new Date(event.startTime) > new Date()
 			);
 
-			await generateOutfits.mutateAsync({
-				eventId: upcomingEvents[0].id,
-				eventType: upcomingEvents[0].eventType,
-				preferences: {
-					colors: [], // Would come from user preferences
-					brands: [], // Would come from user preferences
-				},
-			});
+			await generateOutfits.mutateAsync();
 
 			toast.success(
 				/* `Generated outfit suggestions for ${Math.min(
@@ -310,15 +307,21 @@ const CalendarView = () => {
 		}
 
 		try {
-			await generateOutfits.mutateAsync({
-				eventId: event.id,
-				eventType: event.eventType,
+			setGeneratingEventId(event.id);
+			await generateOutfitSingle.mutateAsync({
+				id: event.id,
+				title: event.title,
+				start_time: event.startTime,
+				end_time: event.endTime,
+				description: event.description || "",
 			});
 
 			toast.success(`Generated outfit suggestion for "${event.title}"`);
 		} catch (error) {
 			console.error("Failed to generate outfit for event:", error);
 			toast.error("Failed to generate outfit suggestion");
+		} finally {
+			setGeneratingEventId(null);
 		}
 	};
 
@@ -757,7 +760,8 @@ const CalendarView = () => {
 																)
 															}
 															disabled={
-																generateOutfits.isPending ||
+																generatingEventId ===
+																	event.id ||
 																!isPro
 															}
 															className={`flex items-center gap-2 ${
@@ -768,11 +772,17 @@ const CalendarView = () => {
 														>
 															{!isPro ? (
 																<Lock className="w-4 h-4" />
+															) : generatingEventId ===
+															  event.id ? (
+																<RefreshCw className="w-4 h-4 animate-spin" />
 															) : (
 																<RefreshCw className="w-4 h-4" />
 															)}
 															{!isPro
 																? "Pro Only"
+																: generatingEventId ===
+																  event.id
+																? "Regenerating..."
 																: "Regenerate"}
 														</Button>
 													</>
@@ -784,13 +794,15 @@ const CalendarView = () => {
 															)
 														}
 														disabled={
-															generateOutfits.isPending
+															generatingEventId ===
+															event.id
 														}
 														className="flex items-center gap-2 btn-gradient"
 														size="sm"
 													>
 														<Sparkles className="w-4 h-4" />
-														{generateOutfits.isPending
+														{generatingEventId ===
+														event.id
 															? "Generating..."
 															: "Generate Outfit"}
 													</Button>
