@@ -83,6 +83,59 @@ const CalendarView = () => {
 		return Array.isArray(candidate) ? candidate.length : 0;
 	}, [plans]);
 
+	// Classify event type based on title/description
+	const classifyEventType = (
+		title: string
+	): InternalCalendarEvent["eventType"] => {
+		const titleLower = title.toLowerCase();
+		console.log("Classifying event title:", titleLower);
+
+		if (
+			titleLower.includes("meeting") ||
+			titleLower.includes("work") ||
+			titleLower.includes("office")
+		) {
+			return "Business";
+		}
+		if (
+			titleLower.includes("dinner") ||
+			titleLower.includes("date") ||
+			titleLower.includes("romantic")
+		) {
+			return "Date";
+		}
+		if (
+			titleLower.includes("party") ||
+			titleLower.includes("celebration") ||
+			titleLower.includes("birthday")
+		) {
+			return "Party";
+		}
+		if (
+			titleLower.includes("gym") ||
+			titleLower.includes("workout") ||
+			titleLower.includes("fitness")
+		) {
+			return "Workout";
+		}
+		if (
+			titleLower.includes("wedding") ||
+			titleLower.includes("gala") ||
+			titleLower.includes("formal")
+		) {
+			return "Formal";
+		}
+		if (
+			titleLower.includes("travel") ||
+			titleLower.includes("flight") ||
+			titleLower.includes("trip")
+		) {
+			return "Travel";
+		}
+
+		return "Casual";
+	};
+
 	// Combine Google Calendar events with backend events for display
 	const displayEvents = useMemo<DisplayEvent[]>(() => {
 		////////console.log("Debug - events data:", events);
@@ -153,6 +206,7 @@ const CalendarView = () => {
 
 				combinedEvents.push({
 					...event,
+					eventType: classifyEventType(event.title || ""),
 					// Handle field name conversion from snake_case to camelCase
 					startTime: event.startTime || event.start_time,
 					endTime: event.endTime || event.end_time,
@@ -177,6 +231,11 @@ const CalendarView = () => {
 					googleEvent.start.dateTime || googleEvent.start.date || "";
 				const endTime =
 					googleEvent.end.dateTime || googleEvent.end.date || "";
+				console.log(
+					"Processing Google event:",
+					googleEvent.summary,
+					startTime
+				);
 
 				combinedEvents.push({
 					id: `google_${googleEvent.id}`,
@@ -263,58 +322,6 @@ const CalendarView = () => {
 		}
 	};
 
-	// Classify event type based on title/description
-	const classifyEventType = (
-		title: string
-	): InternalCalendarEvent["eventType"] => {
-		const titleLower = title.toLowerCase();
-
-		if (
-			titleLower.includes("meeting") ||
-			titleLower.includes("work") ||
-			titleLower.includes("office")
-		) {
-			return "business";
-		}
-		if (
-			titleLower.includes("dinner") ||
-			titleLower.includes("date") ||
-			titleLower.includes("romantic")
-		) {
-			return "date";
-		}
-		if (
-			titleLower.includes("party") ||
-			titleLower.includes("celebration") ||
-			titleLower.includes("birthday")
-		) {
-			return "party";
-		}
-		if (
-			titleLower.includes("gym") ||
-			titleLower.includes("workout") ||
-			titleLower.includes("fitness")
-		) {
-			return "workout";
-		}
-		if (
-			titleLower.includes("wedding") ||
-			titleLower.includes("gala") ||
-			titleLower.includes("formal")
-		) {
-			return "formal";
-		}
-		if (
-			titleLower.includes("travel") ||
-			titleLower.includes("flight") ||
-			titleLower.includes("trip")
-		) {
-			return "travel";
-		}
-
-		return "casual";
-	};
-
 	// Format event time for display
 	const formatEventTime = (event: DisplayEvent) => {
 		try {
@@ -370,7 +377,10 @@ const CalendarView = () => {
 			travel: "bg-indigo-100 text-indigo-800",
 			other: "bg-gray-100 text-gray-800",
 		};
-		return colors[eventType as keyof typeof colors] || colors.other;
+		return (
+			colors[eventType.toLowerCase() as keyof typeof colors] ||
+			colors.other
+		);
 	};
 
 	// Convert DisplayEvent to CalendarEvent format for FullCalendarModal
@@ -581,11 +591,11 @@ const CalendarView = () => {
 													<Badge
 														className={getEventTypeColor(
 															event.eventType ||
-																"casual"
+																"Casual"
 														)}
 													>
 														{event.eventType ||
-															"casual"}
+															"Casual"}
 													</Badge>
 													{event.hasOutfit && (
 														<Badge
@@ -722,7 +732,7 @@ const CalendarView = () => {
 
 											{/* Action Buttons */}
 											<div className="flex items-center gap-3">
-												{event.hasOutfit && (
+												{event.hasOutfit ? (
 													<>
 														<Button
 															variant="outline"
@@ -766,6 +776,24 @@ const CalendarView = () => {
 																: "Regenerate"}
 														</Button>
 													</>
+												) : (
+													<Button
+														onClick={() =>
+															handleGenerateOutfitForEvent(
+																event
+															)
+														}
+														disabled={
+															generateOutfits.isPending
+														}
+														className="flex items-center gap-2 btn-gradient"
+														size="sm"
+													>
+														<Sparkles className="w-4 h-4" />
+														{generateOutfits.isPending
+															? "Generating..."
+															: "Generate Outfit"}
+													</Button>
 												)}
 											</div>
 										</CardContent>
