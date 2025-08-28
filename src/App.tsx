@@ -19,6 +19,7 @@ import Wardrobe from "./pages/Wardrobe";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsOfService from "./pages/TermsOfService";
 import NotFound from "./pages/NotFound";
+import Pricing from "./pages/Pricing";
 
 const queryClient = new QueryClient();
 
@@ -110,6 +111,7 @@ const App = () => (
 							</ProtectedRoute>
 						}
 					/>
+					<Route path="/pricing" element={<Pricing />} />
 					{/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
 					<Route path="*" element={<NotFound />} />
 				</Routes>
