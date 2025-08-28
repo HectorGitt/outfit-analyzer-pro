@@ -249,7 +249,7 @@ export const wardrobeAPI = {
 	getItem: (id: string) => apiCall<WardrobeItem>("GET", `/wardrobe/${id}`),
 
 	createItem: (data: CreateWardrobeItemRequest) =>
-		apiCall<WardrobeItem>("POST", "calendar/wardrobe", data),
+		apiCall<WardrobeItem>("POST", "calendar/wardrobe/item_add", data),
 
 	createBulkItems: (description: string) =>
 		apiCall<{ success: boolean; count: number; message: string }>(

@@ -92,7 +92,7 @@ const Wardrobe = () => {
 	const tierFeatures = pricingData?.data?.tier_features;
 
 	// Get wardrobe items from API response
-	const wardrobeItems = wardrobeData?.wardrobe || [];
+	const wardrobeItems = wardrobeData?.data?.wardrobe || [];
 	//console.log("Wardrobe items:", wardrobeItems);
 
 	// Filter items based on search and filters
@@ -145,7 +145,7 @@ const Wardrobe = () => {
 					.split(",")
 					.map((tag) => tag.trim())
 					.filter((tag) => tag),
-				is_favorite: newItemForm.is_favorite,
+				favorite: newItemForm.is_favorite,
 				imageUrl: undefined,
 			};
 

@@ -134,6 +134,7 @@ export interface CreateWardrobeItemRequest {
 	occasion: string[];
 	image_url?: string;
 	tags?: string[];
+	favorite?: boolean;
 }
 
 export interface GenerateOutfitRequest {
