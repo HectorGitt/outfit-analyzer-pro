@@ -294,7 +294,7 @@ const RefundPolicy = () => {
 								</p>
 								<div className="flex flex-col sm:flex-row gap-4 justify-center">
 									<Button asChild>
-										<a href="mailto:support@closetic.ai?subject=Refund Request">
+										<a href="mailto:support@closetic.com?subject=Refund Request">
 											Contact Support
 										</a>
 									</Button>

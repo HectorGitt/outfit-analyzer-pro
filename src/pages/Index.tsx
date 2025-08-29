@@ -837,7 +837,7 @@ const Index = () => {
 										asChild
 									>
 										<a
-											href={`mailto:admin@closetic.ai?subject=${encodeURIComponent(
+											href={`mailto:support@closetic.com?subject=${encodeURIComponent(
 												"Closetic AI - Pricing Inquiry"
 											)}&body=${encodeURIComponent(
 												`Hello Sales Team,
@@ -878,30 +878,30 @@ Thanks.`
 							</span>
 						</div>
 						<div className="flex items-center space-x-8 text-sm text-muted-foreground">
-							<a
-								href="/privacy-policy"
+							<Link
+								to="/privacy-policy"
 								className="hover:text-primary transition-colors"
 							>
 								Privacy
-							</a>
-							<a
-								href="/terms-of-service"
+							</Link>
+							<Link
+								to="/terms-of-service"
 								className="hover:text-primary transition-colors"
 							>
 								Terms
-							</a>
+							</Link>
 							<a
-								href="#"
+								href="mailto:support@closetic.com"
 								className="hover:text-primary transition-colors"
 							>
 								Support
 							</a>
-							<a
-								href="/pricing"
+							<Link
+								to="/pricing"
 								className="hover:text-primary transition-colors"
 							>
 								Pricing
-							</a>
+							</Link>
 						</div>
 						<div className="flex items-center space-x-4">
 							<Shield className="w-4 h-4 text-muted-foreground" />

@@ -263,7 +263,7 @@ const Pricing = () => {
 								asChild
 							>
 								<a
-									href={`mailto:admin@closetic.ai?subject=${encodeURIComponent(
+									href={`mailto:support@closetic.com?subject=${encodeURIComponent(
 										"Closetic AI - Pricing Inquiry"
 									)}&body=${encodeURIComponent(
 										`Hello Sales Team,
@@ -290,13 +290,13 @@ Thanks.`
 								<h3 className="font-semibold mb-4">Legal</h3>
 								<div className="space-y-2">
 									<Link
-										to="/terms"
+										to="/terms-of-service"
 										className="block text-sm text-muted-foreground hover:text-primary transition-colors"
 									>
 										Terms of Service
 									</Link>
 									<Link
-										to="/privacy"
+										to="/privacy-policy"
 										className="block text-sm text-muted-foreground hover:text-primary transition-colors"
 									>
 										Privacy Policy
@@ -313,7 +313,7 @@ Thanks.`
 								<h3 className="font-semibold mb-4">Support</h3>
 								<div className="space-y-2">
 									<a
-										href="mailto:support@closetic.ai"
+										href="mailto:support@closetic.com"
 										className="block text-sm text-muted-foreground hover:text-primary transition-colors"
 									>
 										Contact Support
@@ -336,7 +336,7 @@ Thanks.`
 										About Us
 									</Link>
 									<a
-										href="mailto:admin@closetic.ai"
+										href="mailto:support@closetic.com"
 										className="block text-sm text-muted-foreground hover:text-primary transition-colors"
 									>
 										Contact Sales
