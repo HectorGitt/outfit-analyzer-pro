@@ -291,7 +291,7 @@ export default function UserManagement() {
 
 	useEffect(() => {
 		fetchUsers();
-	}, [currentPage, searchTerm, pricingTierFilter, activeFilter]);
+	}, [currentPage, pricingTierFilter, activeFilter]);
 
 	const getTierColor = (tier: string) => {
 		switch (tier) {
@@ -392,7 +392,7 @@ export default function UserManagement() {
 							<div className="grid md:grid-cols-4 gap-4">
 								<div>
 									<Label htmlFor="search">Search</Label>
-									<div className="relative">
+									<div className="relative flex items-center gap-2">
 										<Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
 										<Input
 											id="search"
@@ -403,6 +403,12 @@ export default function UserManagement() {
 											}
 											className="pl-10"
 										/>
+										<Button
+											onClick={fetchUsers}
+											className="ml-2"
+										>
+											Search
+										</Button>
 									</div>
 								</div>
 								<div>
