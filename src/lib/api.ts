@@ -60,7 +60,10 @@ api.interceptors.response.use(
 		if (
 			error.response?.status === 401 ||
 			(error.response?.status === 403 &&
-				error.response?.data?.detail === "Not authenticated")
+				typeof error.response?.data === "object" &&
+				error.response?.data !== null &&
+				"detail" in error.response.data &&
+				(error.response.data as any).detail === "Not authenticated")
 		) {
 			// Token expired or invalid
 			localStorage.removeItem("auth_token");
@@ -101,7 +104,7 @@ api.interceptors.response.use(
 
 // Enhanced API utility function with detailed error handling
 export const apiCall = async <T>(
-	method: "GET" | "POST" | "PUT" | "DELETE",
+	method: "GET" | "POST" | "PUT" | "DELETE" | "PATCH",
 	endpoint: string,
 	data?: any,
 	config?: any
