@@ -1,5 +1,6 @@
 import axios, { AxiosResponse, AxiosError } from "axios";
 import { ApiResponse } from "@/types";
+import { toast } from "sonner";
 
 // Base API configuration
 const API_BASE_URL =
@@ -96,6 +97,44 @@ api.interceptors.response.use(
 					window.location.href = "/calendar-connect";
 				}
 			}
+		}
+
+		// Handle 429 errors (Too Many Requests) - show upgrade toast
+		if (error.response?.status === 429) {
+			const errorData = error.response.data as any;
+
+			// Extract upgrade information from the error response
+			const upgradeInfo = errorData?.detail;
+			const message =
+				upgradeInfo?.message ||
+				"AI usage limit reached. Upgrade for more requests.";
+			const currentUsage = upgradeInfo?.current_usage;
+			const limit = upgradeInfo?.limit;
+			const tierName = upgradeInfo?.tier_name || "Pro";
+			const resetPeriod = upgradeInfo?.reset_period || "monthly";
+			const endpoint = upgradeInfo?.endpoint || "unknown endpoint";
+
+			// Show upgrade toast with detailed information including endpoint
+			toast.error(message, {
+				description: `🚫 Rate limit reached on: ${endpoint}\n\nYou've used ${currentUsage}/${limit} AI requests this ${resetPeriod}.\n\nUpgrade to ${tierName} for unlimited AI access and premium features!`,
+				action: {
+					label: "Upgrade Now",
+					onClick: () => {
+						// Navigate to pricing page for upgrading
+						window.location.href = "/pricing";
+					},
+				},
+				duration: 10000, // Show for 10 seconds
+			});
+
+			console.warn("🚫 429 Rate Limit Error:", {
+				message,
+				currentUsage,
+				limit,
+				tierName,
+				resetPeriod,
+				endpoint: error.config?.url,
+			});
 		}
 
 		return Promise.reject(error);
