@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import { Navbar } from "@/components/navigation/navbar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -154,11 +155,19 @@ const Pricing = () => {
 													: "bg-primary hover:bg-primary/90"
 											}`}
 											size="lg"
+											asChild
 										>
-											{tier.price_monthly === 0
-												? "Get Started Free"
-												: "Choose Plan"}
-											<ArrowRight className="ml-2 w-4 h-4" />
+											{tier.price_monthly === 0 ? (
+												<Link to="/upload">
+													Get Started Free
+													<ArrowRight className="ml-2 w-4 h-4" />
+												</Link>
+											) : (
+												<Link to="/upload">
+													Choose Plan
+													<ArrowRight className="ml-2 w-4 h-4" />
+												</Link>
+											)}
 										</Button>
 									</CardContent>
 								</Card>
@@ -240,16 +249,32 @@ const Pricing = () => {
 								size="lg"
 								variant="secondary"
 								className="text-lg px-8 py-4"
+								asChild
 							>
-								Get Started Free
-								<ArrowRight className="ml-2 w-5 h-5" />
+								<Link to="/upload">
+									Get Started Free
+									<ArrowRight className="ml-2 w-5 h-5" />
+								</Link>
 							</Button>
 							<Button
 								size="lg"
 								variant="outline"
 								className="text-lg px-8 py-4 border-white text-white bg-transparent hover:bg-primary hover:text-white transition-colors"
+								asChild
 							>
-								Contact Sales
+								<a
+									href={`mailto:admin@closetic.ai?subject=${encodeURIComponent(
+										"Closetic AI - Pricing Inquiry"
+									)}&body=${encodeURIComponent(
+										`Hello Sales Team,
+
+I'd like to discuss pricing and features. Please provide more details about your plans and onboarding.
+
+Thanks.`
+									)}`}
+								>
+									Contact Sales
+								</a>
 							</Button>
 						</div>
 					</div>

@@ -837,10 +837,14 @@ const Index = () => {
 										asChild
 									>
 										<a
-											href={`mailto:sales@closetic.ai?subject=${encodeURIComponent(
+											href={`mailto:admin@closetic.ai?subject=${encodeURIComponent(
 												"Closetic AI - Pricing Inquiry"
 											)}&body=${encodeURIComponent(
-												`Hello Sales Team,%0D%0A%0D%0AI'd like to discuss pricing and features. Please provide more details about your plans and onboarding.%0D%0A%0D%0AThanks.`
+												`Hello Sales Team,
+
+I'd like to discuss pricing and features. Please provide more details about your plans and onboarding.
+
+Thanks.`
 											)}`}
 										>
 											Talk to Sales
