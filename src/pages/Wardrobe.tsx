@@ -499,94 +499,89 @@ const Wardrobe = () => {
 										</>
 									) : (
 										<>
-											{/* Free users only get bulk text input */}
-											<div className="space-y-4 mb-6">
-												<div>
-													<Label htmlFor="bulkItems">
-														Your Wardrobe Items
-													</Label>
-													<Textarea
-														id="bulkItems"
-														placeholder="Example&#10;2 brown cotton jeans , 1 white t-shirt, 3 black sneakers, 1 red hoodie with red inscription"
-														value={bulkWardrobeText}
-														onChange={(e) =>
-															setBulkWardrobeText(
-																e.target.value
-															)
-														}
-														rows={6}
-														className="mt-2"
-													/>
-													<p className="text-xs text-muted-foreground mt-2">
-														Quick way to add
-														multiple items - LLM
-														will parse all the text
-														and generate your
-														wardrobe items.
-													</p>
-												</div>
-												<div className="flex items-center justify-between">
-													<Button
-														onClick={
-															handleCreateBulkItems
-														}
-														disabled={
-															createBulkItems.isPending
-														}
-														className="flex items-center gap-2"
-													>
-														<Plus className="w-4 h-4" />
-														{createBulkItems.isPending
-															? "Processing..."
-															: "Add All Items"}
-													</Button>
-													<div className="text-sm text-muted-foreground">
+											{/* Free users get blurred LLM section and detailed form */}
+											<div className="space-y-6">
+												{/* Blurred LLM section for free users */}
+												<div className="relative">
+													<div className="space-y-4 p-4 border rounded-lg bg-muted/30">
+														<div className="flex items-center gap-2">
+															<div className="h-px bg-border flex-1" />
+															<Badge
+																variant="outline"
+																className="text-xs"
+															>
+																AI Bulk Add (Pro
+																Only)
+															</Badge>
+															<div className="h-px bg-border flex-1" />
+														</div>
+														<div>
+															<Label htmlFor="bulkItemsBlurred">
+																Add Multiple
+																Items (AI)
+															</Label>
+															<Textarea
+																id="bulkItemsBlurred"
+																placeholder="Example&#10;2 brown cotton jeans , 1 white t-shirt, 3 black sneakers, 1 red hoodie with red inscription"
+																value=""
+																rows={4}
+																className="mt-2"
+																disabled
+															/>
+															<p className="text-xs text-muted-foreground mt-2">
+																AI-powered bulk
+																addition
+																available with
+																Pro subscription
+															</p>
+														</div>
 														<Button
-															variant="link"
-															className="p-0 h-auto text-purple-600 hover:text-purple-700"
-															onClick={() =>
-																navigate(
-																	"/profile"
-																)
-															}
+															disabled
+															className="flex items-center gap-2 opacity-50 cursor-not-allowed"
+															variant="outline"
 														>
+															<Plus className="w-4 h-4" />
 															Upgrade to Pro
-														</Button>{" "}
-														for detailed item
-														management
+														</Button>
 													</div>
+													{/* Blur overlay */}
+													<div className="absolute inset-0 bg-background/60 backdrop-blur-[2px] rounded-lg flex items-center justify-center">
+														<div className="text-center p-4">
+															<Lock className="w-8 h-8 text-muted-foreground mx-auto mb-2" />
+															<Badge className="bg-gradient-to-r from-purple-500 to-pink-500 text-white mb-2">
+																Pro Feature
+															</Badge>
+															<p className="text-sm text-muted-foreground">
+																AI bulk addition
+																requires Pro
+																subscription
+															</p>
+														</div>
+													</div>
+												</div>
+
+												{/* Divider */}
+												<div className="flex items-center gap-2">
+													<div className="h-px bg-border flex-1" />
+													<Badge
+														variant="secondary"
+														className="text-xs"
+													>
+														Detailed Item Management
+													</Badge>
+													<div className="h-px bg-border flex-1" />
 												</div>
 											</div>
 										</>
 									)}
 
-									{/* Detailed form - always shown for Pro, disabled overlay for free users */}
-									<div
-										className={`relative ${
-											!isPro
-												? "opacity-50 pointer-events-none"
-												: ""
-										}`}
-									>
-										{!isPro && (
-											<div className="absolute inset-0 bg-background/80 backdrop-blur-[1px] z-10 rounded-lg flex items-center justify-center">
-												<div className="text-center p-6">
-													<Badge className="bg-gradient-to-r from-purple-500 to-pink-500 text-white mb-3">
-														Pro Feature
-													</Badge>
-													<p className="text-sm text-muted-foreground">
-														Detailed item management
-														available with Pro
-													</p>
-												</div>
-											</div>
-										)}
-
-										{/* Detailed form - always shown but disabled for free users */}
+									{/* Detailed form - always shown and functional for all users */}
+									<div className="space-y-4">
+										{/* Detailed form fields - enabled for all users */}
 										<div className="grid grid-cols-1 md:grid-cols-3 gap-4">
 											<div>
 												<Label htmlFor="description">
-													Item Description
+													Item Description *
 												</Label>
 												<Input
 													id="description"
@@ -604,12 +599,11 @@ const Wardrobe = () => {
 															})
 														)
 													}
-													disabled={!isPro}
 												/>
 											</div>
 											<div>
 												<Label htmlFor="category">
-													Category
+													Category *
 												</Label>
 												<Select
 													value={newItemForm.category}
@@ -621,7 +615,6 @@ const Wardrobe = () => {
 															})
 														)
 													}
-													disabled={!isPro}
 												>
 													<SelectTrigger>
 														<SelectValue placeholder="Select category" />
@@ -653,7 +646,7 @@ const Wardrobe = () => {
 											</div>
 											<div>
 												<Label htmlFor="color">
-													Primary Color
+													Primary Color *
 												</Label>
 												<Input
 													id="color"
@@ -671,7 +664,6 @@ const Wardrobe = () => {
 															})
 														)
 													}
-													disabled={!isPro}
 												/>
 											</div>
 											<div>
@@ -691,7 +683,6 @@ const Wardrobe = () => {
 															})
 														)
 													}
-													disabled={!isPro}
 												/>
 											</div>
 											<div>
@@ -708,7 +699,6 @@ const Wardrobe = () => {
 															})
 														)
 													}
-													disabled={!isPro}
 												>
 													<SelectTrigger>
 														<SelectValue placeholder="Select season" />
@@ -746,7 +736,6 @@ const Wardrobe = () => {
 															})
 														)
 													}
-													disabled={!isPro}
 												>
 													<SelectTrigger>
 														<SelectValue placeholder="Select occasion" />
@@ -789,7 +778,6 @@ const Wardrobe = () => {
 															})
 														)
 													}
-													disabled={!isPro}
 												/>
 												<Label
 													htmlFor="is_favorite"
@@ -802,7 +790,9 @@ const Wardrobe = () => {
 												onClick={handleCreateTextItem}
 												disabled={
 													createItem.isPending ||
-													!isPro
+													!newItemForm.description.trim() ||
+													!newItemForm.category ||
+													!newItemForm.color_primary.trim()
 												}
 												className="flex items-center gap-2"
 											>
@@ -811,6 +801,21 @@ const Wardrobe = () => {
 													? "Adding..."
 													: "Add Item"}
 											</Button>
+											{!isPro && (
+												<p className="text-xs text-muted-foreground">
+													<Button
+														variant="link"
+														className="p-0 h-auto text-purple-600 hover:text-purple-700"
+														onClick={() =>
+															navigate("/profile")
+														}
+													>
+														Upgrade to Pro
+													</Button>{" "}
+													for AI bulk addition and
+													advanced features
+												</p>
+											)}
 										</div>
 									</div>
 								</CardContent>
