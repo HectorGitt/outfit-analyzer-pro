@@ -32,6 +32,7 @@ const authenticatedNavigation = [
 	{ name: "Home", href: "/", icon: null },
 	{ name: "Upload Analysis", href: "/upload", icon: Upload },
 	{ name: "Live Camera", href: "/camera", icon: Camera },
+	{ name: "Calendar", href: "/calendar-view", icon: Calendar },
 	{ name: "Wardrobe", href: "/wardrobe", icon: Shirt },
 	{ name: "Profile", href: "/profile", icon: User },
 	{ name: "Dashboard", href: "/dashboard", icon: BarChart3 },
