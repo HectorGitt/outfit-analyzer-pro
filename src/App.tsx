@@ -13,6 +13,7 @@ import Camera from "./pages/Camera";
 import Profile from "./pages/Profile";
 import Dashboard from "./pages/Dashboard";
 import Admin from "./pages/Admin";
+import UserManagement from "./pages/UserManagement";
 import CalendarConnect from "./pages/CalendarConnect";
 import CalendarView from "./pages/CalendarView";
 import Wardrobe from "./pages/Wardrobe";
@@ -75,6 +76,14 @@ const App = () => (
 						element={
 							<ProtectedRoute requireAdmin>
 								<Admin />
+							</ProtectedRoute>
+						}
+					/>
+					<Route
+						path="/admin/users"
+						element={
+							<ProtectedRoute requireAdmin>
+								<UserManagement />
 							</ProtectedRoute>
 						}
 					/>

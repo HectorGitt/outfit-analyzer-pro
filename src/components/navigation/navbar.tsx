@@ -11,6 +11,7 @@ import {
 	Shield,
 	Calendar,
 	Shirt,
+	Users,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -173,16 +174,27 @@ export function Navbar() {
 											Calendar
 										</Link>
 									</DropdownMenuItem>
-									{user.role === "admin" && (
-										<DropdownMenuItem asChild>
-											<Link
-												to="/admin"
-												className="cursor-pointer"
-											>
-												<Shield className="mr-2 h-4 w-4" />
-												Admin Panel
-											</Link>
-										</DropdownMenuItem>
+									{user.email === "admin@closetic.com" && (
+										<>
+											<DropdownMenuItem asChild>
+												<Link
+													to="/admin"
+													className="cursor-pointer"
+												>
+													<Shield className="mr-2 h-4 w-4" />
+													Admin Panel
+												</Link>
+											</DropdownMenuItem>
+											<DropdownMenuItem asChild>
+												<Link
+													to="/admin/users"
+													className="cursor-pointer"
+												>
+													<Users className="mr-2 h-4 w-4" />
+													User Management
+												</Link>
+											</DropdownMenuItem>
+										</>
 									)}
 									<DropdownMenuSeparator />
 									<DropdownMenuItem

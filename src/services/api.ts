@@ -180,10 +180,214 @@ export const adminAPI = {
 
 	getTrends: () => apiCall<any>("GET", "/admin/trends"),
 
-	getUsers: (page = 1, limit = 20) =>
-		apiCall<any>("GET", `/admin/users?page=${page}&limit=${limit}`),
+	getUsers: (params?: {
+		page?: number;
+		per_page?: number;
+		search?: string;
+		pricing_tier?: string;
+		is_active?: boolean;
+	}) =>
+		apiCall<{
+			users: Array<{
+				id: number;
+				username: string;
+				email: string;
+				full_name?: string;
+				is_active: boolean;
+				pricing_tier: string;
+				subscription_status: string;
+				style_preference?: string;
+				color_preferences?: string;
+				body_type?: string;
+				occasion_types?: string;
+				budget_range?: string;
+				gender?: string;
+				country?: string;
+				created_at: string;
+				updated_at?: string;
+				average_fashion_score: number;
+				total_scored_analyses: number;
+			}>;
+			total: number;
+			page: number;
+			per_page: number;
+		}>("GET", "/admin/users", undefined, params),
 
-	getUserById: (id: string) => apiCall<any>("GET", `/admin/users/${id}`),
+	getUserById: (id: string) =>
+		apiCall<{
+			id: number;
+			username: string;
+			email: string;
+			full_name?: string;
+			is_active: boolean;
+			pricing_tier: string;
+			subscription_status: string;
+			style_preference?: string;
+			color_preferences?: string;
+			body_type?: string;
+			occasion_types?: string;
+			budget_range?: string;
+			gender?: string;
+			country?: string;
+			created_at: string;
+			updated_at?: string;
+			average_fashion_score: number;
+			total_scored_analyses: number;
+		}>("GET", `/admin/users/${id}`),
+
+	createUser: (userData: {
+		username: string;
+		email: string;
+		full_name?: string;
+		pricing_tier?: string;
+		is_active?: boolean;
+		style_preference?: string;
+		color_preferences?: string;
+		body_type?: string;
+		occasion_types?: string;
+		budget_range?: string;
+		gender?: string;
+		country?: string;
+	}) =>
+		apiCall<{
+			id: number;
+			username: string;
+			email: string;
+			full_name?: string;
+			is_active: boolean;
+			pricing_tier: string;
+			subscription_status: string;
+			style_preference?: string;
+			color_preferences?: string;
+			body_type?: string;
+			occasion_types?: string;
+			budget_range?: string;
+			gender?: string;
+			country?: string;
+			created_at: string;
+			updated_at?: string;
+			average_fashion_score: number;
+			total_scored_analyses: number;
+		}>("POST", "/admin/users", userData),
+
+	updateUser: (
+		id: string,
+		userData: {
+			full_name?: string;
+			pricing_tier?: string;
+			is_active?: boolean;
+			style_preference?: string;
+			color_preferences?: string;
+			body_type?: string;
+			occasion_types?: string;
+			budget_range?: string;
+			gender?: string;
+			country?: string;
+		}
+	) =>
+		apiCall<{
+			id: number;
+			username: string;
+			email: string;
+			full_name?: string;
+			is_active: boolean;
+			pricing_tier: string;
+			subscription_status: string;
+			style_preference?: string;
+			color_preferences?: string;
+			body_type?: string;
+			occasion_types?: string;
+			budget_range?: string;
+			gender?: string;
+			country?: string;
+			created_at: string;
+			updated_at?: string;
+			average_fashion_score: number;
+			total_scored_analyses: number;
+		}>("PUT", `/admin/users/${id}`, userData),
+
+	deleteUser: (id: string) =>
+		apiCall<{ message: string }>("DELETE", `/admin/users/${id}`),
+
+	updateUserStatus: (id: string, is_active: boolean) =>
+		apiCall<{ message: string }>("PATCH", `/admin/users/${id}/status`, {
+			is_active,
+		}),
+
+	getActivities: (params?: {
+		page?: number;
+		per_page?: number;
+		user_id?: number;
+		activity_type?: string;
+		start_date?: string;
+		end_date?: string;
+	}) =>
+		apiCall<{
+			activities: Array<{
+				id: number;
+				user_id: number;
+				activity_type: string;
+				activity_data?: string;
+				timestamp: string;
+				ip_address?: string;
+				user_agent?: string;
+				username: string;
+			}>;
+			total: number;
+			page: number;
+			per_page: number;
+		}>("GET", "/admin/activities", undefined, params),
+
+	getUserActivities: (
+		userId: string,
+		params?: {
+			page?: number;
+			per_page?: number;
+			activity_type?: string;
+			start_date?: string;
+			end_date?: string;
+		}
+	) =>
+		apiCall<{
+			activities: Array<{
+				id: number;
+				user_id: number;
+				activity_type: string;
+				activity_data?: string;
+				timestamp: string;
+				ip_address?: string;
+				user_agent?: string;
+				username: string;
+			}>;
+			total: number;
+			page: number;
+			per_page: number;
+		}>("GET", `/admin/users/${userId}/activities`, undefined, params),
+
+	getUserStats: (userId: string) =>
+		apiCall<{
+			user_id: number;
+			username: string;
+			total_activities: number;
+			activity_breakdown: Record<string, number>;
+			fashion_analyses: number;
+			wardrobe_items: number;
+			outfit_plans: number;
+			recent_activities: Array<{
+				activity_type: string;
+				timestamp: string;
+				data?: string;
+			}>;
+		}>("GET", `/admin/users/${userId}/stats`),
+
+	// New admin endpoints for the dashboard
+	getAdminAnalytics: () => apiCall<any>("GET", "/admin/analytics"),
+
+	getAdminTrends: () => apiCall<any>("GET", "/admin/trends"),
+
+	getStyleDatabase: () => apiCall<any>("GET", "/admin/style-database"),
+
+	getUserInsights: () => apiCall<any>("GET", "/admin/user-insights"),
 };
 
 // Calendar Events API endpoints
