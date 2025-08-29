@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import FashionChatbot from "@/components/ui/fashion-chatbot";
+import ScrollToTop from "@/components/ScrollToTop";
 import Index from "./pages/Index";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
@@ -36,6 +37,7 @@ const App = () => (
 					v7_relativeSplatPath: true,
 				}}
 			>
+				<ScrollToTop />
 				<Routes>
 					<Route path="/" element={<Index />} />
 					<Route path="/login" element={<Login />} />
@@ -115,11 +117,7 @@ const App = () => (
 					<Route path="/privacy-policy" element={<PrivacyPolicy />} />
 					<Route
 						path="/terms-of-service"
-						element={
-							<ProtectedRoute>
-								<TermsOfService />
-							</ProtectedRoute>
-						}
+						element={<TermsOfService />}
 					/>
 					<Route path="/pricing" element={<Pricing />} />
 					<Route path="/refund-policy" element={<RefundPolicy />} />
