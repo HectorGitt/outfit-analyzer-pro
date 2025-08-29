@@ -186,8 +186,19 @@ export const adminAPI = {
 		search?: string;
 		pricing_tier?: string;
 		is_active?: boolean;
-	}) =>
-		apiCall<{
+	}) => {
+		const queryParams = new URLSearchParams();
+
+		if (params?.page) queryParams.append("page", params.page.toString());
+		if (params?.per_page)
+			queryParams.append("per_page", params.per_page.toString());
+		if (params?.search) queryParams.append("search", params.search);
+		if (params?.pricing_tier)
+			queryParams.append("pricing_tier", params.pricing_tier);
+		if (params?.is_active !== undefined)
+			queryParams.append("is_active", params.is_active.toString());
+
+		return apiCall<{
 			users: Array<{
 				id: number;
 				username: string;
@@ -211,7 +222,8 @@ export const adminAPI = {
 			total: number;
 			page: number;
 			per_page: number;
-		}>("GET", "/admin/users", undefined, params),
+		}>("GET", `/admin/users?${queryParams.toString()}`);
+	},
 
 	getUserById: (id: string) =>
 		apiCall<{
