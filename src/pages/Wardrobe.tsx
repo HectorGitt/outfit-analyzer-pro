@@ -14,6 +14,8 @@ import {
 	Lock,
 	Heart,
 	CheckCircle,
+	Footprints,
+	Watch,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -282,6 +284,21 @@ const Wardrobe = () => {
 			colors[category as keyof typeof colors] ||
 			"bg-gray-100 text-gray-800"
 		);
+	};
+
+	// Get category icon for items without images
+	const getCategoryIcon = (category: string) => {
+		const icons = {
+			top: Shirt,
+			shirt: Shirt,
+			pants: Shirt, // Using Shirt as fallback since Underwear doesn't exist
+			shoes: Footprints,
+			accessories: Watch,
+			outerwear: Shirt, // Using Shirt as fallback since Coat doesn't exist
+			dresses: Shirt, // Using Shirt as fallback since Dress doesn't exist
+			suits: Shirt, // Using Shirt as fallback
+		};
+		return icons[category as keyof typeof icons] || Shirt;
 	};
 
 	return (
@@ -893,7 +910,15 @@ const Wardrobe = () => {
 												>
 													<div className="flex items-center gap-4">
 														<div className="w-12 h-12 bg-muted rounded-lg flex items-center justify-center">
-															<Shirt className="w-6 h-6 text-muted-foreground" />
+															{(() => {
+																const IconComponent =
+																	getCategoryIcon(
+																		item.category
+																	);
+																return (
+																	<IconComponent className="w-6 h-6 text-muted-foreground" />
+																);
+															})()}
 														</div>
 														<div>
 															<h4 className="font-medium">
@@ -1218,7 +1243,15 @@ const Wardrobe = () => {
 																className="w-full h-full object-cover"
 															/>
 														) : (
-															<Shirt className="w-8 h-8 text-muted-foreground" />
+															(() => {
+																const IconComponent =
+																	getCategoryIcon(
+																		item.category
+																	);
+																return (
+																	<IconComponent className="w-8 h-8 text-muted-foreground" />
+																);
+															})()
 														)}
 													</div>
 													<div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center">
