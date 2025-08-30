@@ -281,25 +281,7 @@ const CalendarView = () => {
 			toast.info("No events found to generate outfit suggestions for");
 			return;
 		}
-
-		try {
-			const upcomingEvents = displayEvents.filter(
-				(event) => new Date(event.startTime) > new Date()
-			);
-
-			await generateOutfits.mutateAsync();
-
-			toast.success(
-				/* `Generated outfit suggestions for ${Math.min(
-					upcomingEvents.length,
-					5
-				)} upcoming events` */
-				"Generated outfit suggestions for upcoming events"
-			);
-		} catch (error) {
-			console.error("Failed to generate outfit suggestions:", error);
-			toast.error("Failed to generate outfit suggestions");
-		}
+		await generateOutfits.mutateAsync();
 	};
 
 	// Single event outfit generation
@@ -318,11 +300,7 @@ const CalendarView = () => {
 				end_time: event.endTime,
 				description: event.description || "",
 			});
-
-			toast.success(`Generated outfit suggestion for "${event.title}"`);
 		} catch (error) {
-			console.error("Failed to generate outfit for event:", error);
-			toast.error("Failed to generate outfit suggestion");
 		} finally {
 			setGeneratingEventId(null);
 		}

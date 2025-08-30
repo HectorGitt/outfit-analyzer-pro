@@ -22,6 +22,16 @@ import {
 	PlanOutfitRequest,
 } from "@/types/api";
 
+// Helper function to extract error detail
+const getErrorDetail = (error: any): string => {
+	return (
+		error?.response?.data?.detail ||
+		error?.detail ||
+		error?.message ||
+		"An error occurred"
+	);
+};
+
 // Google Calendar Connection Hooks
 export const useGoogleCalendarStatus = () => {
 	return useQuery({
@@ -44,8 +54,7 @@ export const useGoogleCalendarConnect = () => {
 			toast.success("Google Calendar connected successfully!");
 		},
 		onError: (error: any) => {
-			console.error("Google Calendar connection failed:", error);
-			toast.error("Failed to connect Google Calendar. Please try again.");
+			toast.error(getErrorDetail(error));
 		},
 	});
 };
@@ -62,10 +71,7 @@ export const useGoogleCalendarDisconnect = () => {
 			toast.success("Google Calendar disconnected successfully!");
 		},
 		onError: (error: any) => {
-			console.error("Google Calendar disconnection failed:", error);
-			toast.error(
-				"Failed to disconnect Google Calendar. Please try again."
-			);
+			toast.error(getErrorDetail(error));
 		},
 	});
 };
@@ -88,8 +94,7 @@ export const useGoogleCalendarSync = () => {
 			}
 		},
 		onError: (error: any) => {
-			console.error("Google Calendar sync failed:", error);
-			toast.error("Failed to sync Google Calendar. Please try again.");
+			toast.error(getErrorDetail(error));
 		},
 	});
 };
@@ -127,8 +132,7 @@ export const useCreateEvent = () => {
 			toast.success("Event created successfully!");
 		},
 		onError: (error: any) => {
-			console.error("Failed to create event:", error);
-			toast.error("Failed to create event. Please try again.");
+			toast.error(getErrorDetail(error));
 		},
 	});
 };
@@ -144,8 +148,7 @@ export const useUpdateEvent = () => {
 			toast.success("Event updated successfully!");
 		},
 		onError: (error: any) => {
-			console.error("Failed to update event:", error);
-			toast.error("Failed to update event. Please try again.");
+			toast.error(getErrorDetail(error));
 		},
 	});
 };
@@ -160,8 +163,7 @@ export const useDeleteEvent = () => {
 			toast.success("Event deleted successfully!");
 		},
 		onError: (error: any) => {
-			console.error("Failed to delete event:", error);
-			toast.error("Failed to delete event. Please try again.");
+			toast.error(getErrorDetail(error));
 		},
 	});
 };
@@ -175,10 +177,7 @@ export const useSyncGoogleCalendarEvents = () => {
 			toast.success("Google Calendar events synced successfully!");
 		},
 		onError: (error: any) => {
-			console.error("Failed to sync Google Calendar events:", error);
-			toast.error(
-				"Failed to sync Google Calendar events. Please try again."
-			);
+			toast.error(getErrorDetail(error));
 		},
 	});
 };
@@ -218,8 +217,7 @@ export const useCreateWardrobeItem = () => {
 			toast.success("Wardrobe item created successfully!");
 		},
 		onError: (error: any) => {
-			console.error("Failed to create wardrobe item:", error);
-			toast.error("Failed to create wardrobe item. Please try again.");
+			toast.error(getErrorDetail(error));
 		},
 	});
 };
@@ -238,8 +236,7 @@ export const useCreateBulkWardrobeItems = () => {
 			);
 		},
 		onError: (error: any) => {
-			console.error("Failed to create bulk wardrobe items:", error);
-			toast.error("Failed to create wardrobe items. Please try again.");
+			toast.error(getErrorDetail(error));
 		},
 	});
 };
@@ -261,8 +258,7 @@ export const useUpdateWardrobeItem = () => {
 			toast.success("Wardrobe item updated successfully!");
 		},
 		onError: (error: any) => {
-			console.error("Failed to update wardrobe item:", error);
-			toast.error("Failed to update wardrobe item. Please try again.");
+			toast.error(getErrorDetail(error));
 		},
 	});
 };
@@ -277,8 +273,7 @@ export const useDeleteWardrobeItem = () => {
 			toast.success("Wardrobe item deleted successfully!");
 		},
 		onError: (error: any) => {
-			console.error("Failed to delete wardrobe item:", error);
-			toast.error("Failed to delete wardrobe item. Please try again.");
+			toast.error(getErrorDetail(error));
 		},
 	});
 };
@@ -302,8 +297,7 @@ export const useMarkItemWorn = (options?: {
 			// Remove default toast - let component handle it
 		},
 		onError: (error: any) => {
-			console.error("Failed to mark item as worn:", error);
-			toast.error("Failed to toggle item status. Please try again.");
+			toast.error(getErrorDetail(error));
 		},
 	});
 };
@@ -319,8 +313,7 @@ export const useUploadItemImage = () => {
 			toast.success("Item image uploaded successfully!");
 		},
 		onError: (error: any) => {
-			console.error("Failed to upload item image:", error);
-			toast.error("Failed to upload item image. Please try again.");
+			toast.error(getErrorDetail(error));
 		},
 	});
 };
@@ -336,10 +329,7 @@ export const useGenerateOutfitSuggestions = () => {
 			toast.success("Outfit suggestions generated successfully!");
 		},
 		onError: (error: any) => {
-			console.error("Failed to generate outfit suggestions:", error);
-			toast.error(
-				"Failed to generate outfit suggestions. Please try again."
-			);
+			toast.error(getErrorDetail(error));
 		},
 	});
 };
@@ -355,10 +345,7 @@ export const useGenerateOutfitSuggestion = () => {
 			toast.success("Outfit suggestion generated successfully!");
 		},
 		onError: (error: any) => {
-			console.error("Failed to generate outfit suggestion:", error);
-			toast.error(
-				"Failed to generate outfit suggestion. Please try again."
-			);
+			toast.error(getErrorDetail(error));
 		},
 	});
 };
@@ -393,8 +380,7 @@ export const useSaveOutfitSuggestion = () => {
 			toast.success("Outfit suggestion saved!");
 		},
 		onError: (error: any) => {
-			console.error("Failed to save outfit suggestion:", error);
-			toast.error("Failed to save outfit suggestion. Please try again.");
+			toast.error(getErrorDetail(error));
 		},
 	});
 };
@@ -409,10 +395,7 @@ export const useDeleteOutfitSuggestion = () => {
 			toast.success("Outfit suggestion deleted!");
 		},
 		onError: (error: any) => {
-			console.error("Failed to delete outfit suggestion:", error);
-			toast.error(
-				"Failed to delete outfit suggestion. Please try again."
-			);
+			toast.error(getErrorDetail(error));
 		},
 	});
 };
@@ -428,8 +411,7 @@ export const usePlanOutfit = () => {
 			toast.success("Outfit planned successfully!");
 		},
 		onError: (error: any) => {
-			console.error("Failed to plan outfit:", error);
-			toast.error("Failed to plan outfit. Please try again.");
+			toast.error(getErrorDetail(error));
 		},
 	});
 };
@@ -478,8 +460,7 @@ export const useUpdateOutfitPlan = () => {
 			toast.success("Outfit plan updated successfully!");
 		},
 		onError: (error: any) => {
-			console.error("Failed to update outfit plan:", error);
-			toast.error("Failed to update outfit plan. Please try again.");
+			toast.error(getErrorDetail(error));
 		},
 	});
 };
@@ -494,8 +475,7 @@ export const useDeleteOutfitPlan = () => {
 			toast.success("Outfit plan deleted successfully!");
 		},
 		onError: (error: any) => {
-			console.error("Failed to delete outfit plan:", error);
-			toast.error("Failed to delete outfit plan. Please try again.");
+			toast.error(getErrorDetail(error));
 		},
 	});
 };
