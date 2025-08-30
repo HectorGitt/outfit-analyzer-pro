@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
+import { useQueryClient } from "@tanstack/react-query";
 import {
 	Calendar,
 	Clock,
@@ -59,6 +60,7 @@ interface DisplayEvent extends InternalCalendarEvent {
 }
 const CalendarView = () => {
 	const navigate = useNavigate();
+	const queryClient = useQueryClient();
 	const [googleEvents, setGoogleEvents] = useState<GoogleCalendarEvent[]>([]);
 	const [isConnected, setIsConnected] = useState(true); // Default to true to show backend data
 	const [generatingEventId, setGeneratingEventId] = useState<string | null>(
@@ -70,6 +72,7 @@ const CalendarView = () => {
 		useCalendarDashboard();
 	const generateOutfits = useGenerateOutfitSuggestions();
 	const generateOutfitSingle = useGenerateOutfitSuggestion();
+	const syncGoogleEvents = useSyncGoogleCalendarEvents();
 	const { data: pricingData } = usePricingTier();
 
 	// Get Pro user status
@@ -404,10 +407,9 @@ const CalendarView = () => {
 		}));
 	};
 
-	// Refresh calendar data
+	// Sync calendar data with Google Calendar
 	const refreshCalendar = async () => {
-		// Force refresh of backend data by invalidating queries
-		window.location.reload(); // Simple refresh for now
+		await syncGoogleEvents.mutateAsync();
 	};
 
 	return (
@@ -454,11 +456,21 @@ const CalendarView = () => {
 							<Button
 								onClick={refreshCalendar}
 								variant="outline"
-								disabled={!isConnected}
+								disabled={
+									!isConnected || syncGoogleEvents.isPending
+								}
 								className="flex items-center gap-2"
 							>
-								<RefreshCw className="w-4 h-4" />
-								Refresh Calendar
+								<RefreshCw
+									className={`w-4 h-4 ${
+										syncGoogleEvents.isPending
+											? "animate-spin"
+											: ""
+									}`}
+								/>
+								{syncGoogleEvents.isPending
+									? "Syncing..."
+									: "Sync Calendar"}
 							</Button>
 						</div>
 					</div>
@@ -829,10 +841,23 @@ const CalendarView = () => {
 											<Button
 												onClick={refreshCalendar}
 												variant="outline"
-												disabled={!isConnected}
+												disabled={
+													!isConnected ||
+													syncGoogleEvents.isPending
+												}
+												className="flex items-center gap-2"
 											>
-												{isConnected
-													? "Refresh Calendar"
+												<RefreshCw
+													className={`w-4 h-4 ${
+														syncGoogleEvents.isPending
+															? "animate-spin"
+															: ""
+													}`}
+												/>
+												{syncGoogleEvents.isPending
+													? "Syncing..."
+													: isConnected
+													? "Sync Calendar"
 													: "Connect Calendar"}
 											</Button>
 											{!isConnected && (

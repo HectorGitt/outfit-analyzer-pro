@@ -105,6 +105,7 @@ export const useEvents = (params?: {
 	return useQuery({
 		queryKey: ["events", params],
 		queryFn: () => calendarAPI.getEvents(params),
+		refetchOnWindowFocus: false,
 	});
 };
 
@@ -169,11 +170,8 @@ export const useSyncGoogleCalendarEvents = () => {
 	const queryClient = useQueryClient();
 
 	return useMutation({
-		mutationFn: (
-			events: Parameters<typeof calendarAPI.syncGoogleCalendarEvents>[0]
-		) => calendarAPI.syncGoogleCalendarEvents(events),
+		mutationFn: () => calendarAPI.getEvents(),
 		onSuccess: () => {
-			queryClient.invalidateQueries({ queryKey: ["events"] });
 			toast.success("Google Calendar events synced successfully!");
 		},
 		onError: (error: any) => {
@@ -197,6 +195,7 @@ export const useWardrobeItems = (params?: {
 	return useQuery({
 		queryKey: ["wardrobe", params],
 		queryFn: () => wardrobeAPI.getItems(params),
+		refetchOnWindowFocus: false,
 	});
 };
 
@@ -372,6 +371,7 @@ export const useOutfitSuggestions = (params?: {
 	return useQuery({
 		queryKey: ["outfits", params],
 		queryFn: () => outfitAPI.getSuggestions(params),
+		refetchOnWindowFocus: false,
 	});
 };
 
@@ -445,6 +445,7 @@ export const useOutfitPlans = (params?: {
 	return useQuery({
 		queryKey: ["plans", params],
 		queryFn: () => planningAPI.getPlans(params),
+		refetchOnWindowFocus: false,
 	});
 };
 
@@ -565,5 +566,6 @@ export const usePricingTier = () => {
 	return useQuery({
 		queryKey: ["pricing-tier"],
 		queryFn: () => authAPI.getPricingTier(),
+		refetchOnWindowFocus: false,
 	});
 };
