@@ -1,5 +1,10 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import {
+	Link,
+	useNavigate,
+	useLocation,
+	useSearchParams,
+} from "react-router-dom";
 import { Eye, EyeOff, Mail, Lock, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -17,6 +22,9 @@ export default function Login() {
 	});
 
 	const navigate = useNavigate();
+	const location = useLocation();
+	const [searchParams] = useSearchParams();
+
 	const { login, isLoading, error, errorDetails, clearError } =
 		useAuthStore();
 	const { toast } = useToast();
@@ -47,7 +55,14 @@ export default function Login() {
 						formData.username ? `, ${formData.username}` : ""
 					}!`,
 				});
-				navigate("/profile");
+
+				// Check for next parameter in URL or from state
+				const nextParam = searchParams.get("next");
+				const fromLocation = location.state?.from?.pathname;
+
+				// Redirect to the intended page or default to profile
+				const redirectTo = nextParam || fromLocation || "/profile";
+				navigate(redirectTo, { replace: true });
 			}
 			// If not successful, error will be displayed via auth store
 		} catch (err) {

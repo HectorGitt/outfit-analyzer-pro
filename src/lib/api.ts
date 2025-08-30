@@ -2,6 +2,44 @@ import axios, { AxiosResponse, AxiosError } from "axios";
 import { ApiResponse } from "@/types";
 import { toast } from "sonner";
 
+// Import React Router navigation for SPA redirects
+let navigateFunction: ((path: string) => void) | null = null;
+
+// Function to set the navigate function from the app
+export const setNavigateFunction = (navigate: (path: string) => void) => {
+	navigateFunction = navigate;
+};
+
+// Helper function for SPA navigation
+const navigateTo = (path: string) => {
+	if (navigateFunction) {
+		navigateFunction(path);
+	} else {
+		// Fallback to window.location if navigate function not set
+		window.location.href = path;
+	}
+};
+
+// Utility function for redirects with next parameter
+export const redirectToLogin = (currentPath?: string) => {
+	const path =
+		currentPath || window.location.pathname + window.location.search;
+	const loginUrl = `/login?next=${encodeURIComponent(path)}`;
+	navigateTo(loginUrl);
+};
+
+export const redirectToPricing = () => {
+	navigateTo("/pricing");
+};
+
+export const redirectToProfile = () => {
+	navigateTo("/profile");
+};
+
+export const redirectToDashboard = () => {
+	navigateTo("/dashboard");
+};
+
 // Base API configuration
 const API_BASE_URL =
 	import.meta.env.VITE_API_BASE_URL || "http://localhost:8000";
@@ -31,6 +69,19 @@ api.interceptors.request.use(
 // Enhanced error logging with more details
 api.interceptors.response.use(
 	(response: AxiosResponse) => {
+		// Handle HTTP redirects (3xx status codes)
+		if (response.status >= 300 && response.status < 400) {
+			const redirectUrl =
+				response.headers.location || response.headers["location"];
+			if (redirectUrl) {
+				console.log(
+					`🔄 HTTP Redirect ${response.status}: ${response.config.url} → ${redirectUrl}`
+				);
+				// For SPA, we might want to handle redirects differently
+				// For now, let axios handle the redirect automatically
+			}
+		}
+
 		// Log successful responses for debugging
 		/* console.log(
 			`✅ ${response.config.method?.toUpperCase()} ${
@@ -69,7 +120,13 @@ api.interceptors.response.use(
 			// Token expired or invalid
 			localStorage.removeItem("auth_token");
 			if (window.location.pathname !== "/login") {
-				window.location.href = "/login";
+				// Use SPA navigation with next parameter
+				const currentPath =
+					window.location.pathname + window.location.search;
+				const loginUrl = `/login?next=${encodeURIComponent(
+					currentPath
+				)}`;
+				navigateTo(loginUrl);
 			}
 		}
 
@@ -94,7 +151,7 @@ api.interceptors.response.use(
 				// Redirect to calendar connect page to re-authenticate
 				if (window.location.pathname !== "/calendar-connect") {
 					//console.log("� Redirecting to calendar connect page");
-					window.location.href = "/calendar-connect";
+					navigateTo("/calendar-connect");
 				}
 			}
 		}
@@ -121,7 +178,7 @@ api.interceptors.response.use(
 					label: "Upgrade Now",
 					onClick: () => {
 						// Navigate to pricing page for upgrading
-						window.location.href = "/pricing";
+						navigateTo("/pricing");
 					},
 				},
 				duration: 10000, // Show for 10 seconds
@@ -135,6 +192,38 @@ api.interceptors.response.use(
 				resetPeriod,
 				endpoint: error.config?.url,
 			});
+		}
+
+		// Handle 503 Service Unavailable - redirect to maintenance page
+		if (error.response?.status === 503) {
+			const errorData = error.response.data as any;
+			const isMaintenance =
+				errorData?.maintenance ||
+				errorData?.detail?.includes("maintenance");
+
+			if (isMaintenance && window.location.pathname !== "/maintenance") {
+				console.warn("🔧 Service under maintenance, redirecting...");
+				toast.error("Service temporarily unavailable", {
+					description:
+						"We're performing maintenance. Please try again later.",
+					duration: 5000,
+				});
+				navigateTo("/maintenance");
+			}
+		}
+
+		// Handle 502/504 Gateway errors - redirect to error page
+		if (error.response?.status === 502 || error.response?.status === 504) {
+			console.error(
+				`🌐 Gateway Error ${error.response.status}:`,
+				error.config?.url
+			);
+			toast.error("Service temporarily unavailable", {
+				description: "Please try again in a few moments.",
+				duration: 5000,
+			});
+			// Could redirect to an error page if needed
+			// navigateTo("/error");
 		}
 
 		return Promise.reject(error);

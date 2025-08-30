@@ -57,6 +57,12 @@ export function Navbar() {
 		setMobileMenuOpen(false);
 	};
 
+	// Generate login URL with current page as next parameter
+	const getLoginUrl = () => {
+		const currentPath = location.pathname + location.search;
+		return `/login?next=${encodeURIComponent(currentPath)}`;
+	};
+
 	return (
 		<nav className="bg-transparent backdrop-blur-md border-b-0 sticky top-0 z-50">
 			<div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -210,7 +216,7 @@ export function Navbar() {
 						) : (
 							<>
 								<Button variant="ghost" asChild>
-									<Link to="/login">Login</Link>
+									<Link to={getLoginUrl()}>Login</Link>
 								</Button>
 								<Button className="btn-gradient" asChild>
 									<Link to="/register">Get Started</Link>
@@ -301,7 +307,7 @@ export function Navbar() {
 										asChild
 									>
 										<Link
-											to="/login"
+											to={getLoginUrl()}
 											onClick={() =>
 												setMobileMenuOpen(false)
 											}

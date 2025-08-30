@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import {
 	Eye,
 	EyeOff,
@@ -45,9 +45,16 @@ export default function Register() {
 	const [validationErrors, setValidationErrors] = useState<string[]>([]);
 
 	const navigate = useNavigate();
+	const location = useLocation();
 	const { register, isLoading, error, errorDetails, clearError } =
 		useAuthStore();
 	const { toast } = useToast();
+
+	// Generate login URL with current page as next parameter
+	const getLoginUrl = () => {
+		const currentPath = location.pathname + location.search;
+		return `/login?next=${encodeURIComponent(currentPath)}`;
+	};
 
 	const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const { name, value } = e.target;
@@ -563,7 +570,7 @@ export default function Register() {
 									<p className="text-sm text-muted-foreground">
 										Already have an account?{" "}
 										<Link
-											to="/login"
+											to={getLoginUrl()}
 											className="text-primary hover:underline font-medium"
 										>
 											Sign in
