@@ -13,6 +13,7 @@ import {
 	Tag,
 	Lock,
 	Heart,
+	CheckCircle,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -42,6 +43,7 @@ import {
 	useDeleteWardrobeItem,
 	useUploadItemImage,
 	usePricingTier,
+	useMarkItemWorn,
 } from "@/hooks/useCalendar";
 
 const Wardrobe = () => {
@@ -84,6 +86,7 @@ const Wardrobe = () => {
 	const createBulkItems = useCreateBulkWardrobeItems();
 	const updateItem = useUpdateWardrobeItem();
 	const deleteItem = useDeleteWardrobeItem();
+	const markItemWorn = useMarkItemWorn();
 	const uploadImage = useUploadItemImage();
 	const { data: pricingData, isLoading: pricingLoading } = usePricingTier();
 
@@ -146,7 +149,6 @@ const Wardrobe = () => {
 					.map((tag) => tag.trim())
 					.filter((tag) => tag),
 				favorite: newItemForm.is_favorite,
-				imageUrl: undefined,
 			};
 
 			await createItem.mutateAsync(itemData);
@@ -166,7 +168,7 @@ const Wardrobe = () => {
 				is_favorite: false,
 			});
 
-			toast.success("Wardrobe item added successfully!");
+			// Toast is handled by the hook
 		} catch (error) {
 			console.error("Failed to create wardrobe item:", error);
 		}
@@ -226,7 +228,7 @@ const Wardrobe = () => {
 			setUploadedImage(null);
 			setImageDescription("");
 
-			toast.success("Wardrobe item added with image successfully!");
+			// Toasts are handled by the hooks
 		} catch (error) {
 			console.error("Failed to create wardrobe item with image:", error);
 		}
@@ -238,6 +240,27 @@ const Wardrobe = () => {
 			await deleteItem.mutateAsync(itemId);
 		} catch (error) {
 			console.error("Failed to delete item:", error);
+		}
+	};
+
+	// Handle mark as worn toggle (backend handles the toggle logic)
+	const handleMarkAsWorn = async (itemId: string) => {
+		try {
+			// Find the current item to determine its state before toggle
+			const currentItem = wardrobeItems.find(
+				(item) => item.id.toString() === itemId
+			);
+			const now = new Date().toISOString(); // Get full timestamp in ISO format
+			await markItemWorn.mutateAsync({ id: itemId, date: now });
+
+			// Show appropriate toast based on the item's previous state
+			if (currentItem?.is_available) {
+				toast.success("Item marked as worn and sent to laundry!");
+			} else {
+				toast.success("Item marked as ready to wear!");
+			}
+		} catch (error) {
+			console.error("Failed to toggle item worn status:", error);
 		}
 	};
 
@@ -905,6 +928,22 @@ const Wardrobe = () => {
 																		}
 																	</Badge>
 																)}
+																<Badge
+																	variant={
+																		item.is_available
+																			? "default"
+																			: "secondary"
+																	}
+																	className={`text-xs ${
+																		item.is_available
+																			? "bg-green-100 text-green-800"
+																			: "bg-orange-100 text-orange-800"
+																	}`}
+																>
+																	{item.is_available
+																		? "Ready to Wear"
+																		: "In Laundry"}
+																</Badge>
 															</div>
 															{item.tags &&
 																item.tags
@@ -919,12 +958,57 @@ const Wardrobe = () => {
 																		</span>
 																	</div>
 																)}
+															{item.last_worn_date && (
+																<div className="flex items-center gap-1 mt-1">
+																	<CheckCircle className="w-3 h-3 text-green-600" />
+																	<span className="text-xs text-muted-foreground">
+																		Worn{" "}
+																		{new Date(
+																			item.last_worn_date
+																		).toLocaleString(
+																			undefined,
+																			{
+																				year: "numeric",
+																				month: "short",
+																				day: "numeric",
+																				hour: "2-digit",
+																				minute: "2-digit",
+																				timeZoneName:
+																					"short",
+																			}
+																		)}
+																	</span>
+																</div>
+															)}
 														</div>
 													</div>
 													<div className="flex items-center gap-2">
 														{item.is_favorite && (
 															<Heart className="w-4 h-4 text-red-500 fill-red-500" />
 														)}
+														<Button
+															variant="outline"
+															size="sm"
+															onClick={() =>
+																handleMarkAsWorn(
+																	item.id.toString()
+																)
+															}
+															disabled={
+																markItemWorn.isPending
+															}
+															className={
+																item.is_available
+																	? "text-green-600 hover:text-green-700 hover:bg-green-50"
+																	: "text-orange-600 hover:text-orange-700 hover:bg-orange-50"
+															}
+															title="Toggle worn status"
+														>
+															<CheckCircle className="w-4 h-4 mr-1" />
+															{item.is_available
+																? "Mark as Worn"
+																: "Mark as Clean"}
+														</Button>
 														<Button
 															variant="outline"
 															size="sm"
@@ -1150,8 +1234,67 @@ const Wardrobe = () => {
 																		item.color_primary
 																	}
 																</Badge>
+																<Badge
+																	className={`text-xs ${
+																		item.is_available
+																			? "bg-green-500"
+																			: "bg-orange-500"
+																	}`}
+																>
+																	{item.is_available
+																		? "Ready to Wear"
+																		: "In Laundry"}
+																</Badge>
 															</div>
+															{item.last_worn_date && (
+																<p className="text-xs mt-1 opacity-90">
+																	Worn{" "}
+																	{new Date(
+																		item.last_worn_date
+																	).toLocaleString(
+																		undefined,
+																		{
+																			year: "numeric",
+																			month: "short",
+																			day: "numeric",
+																			hour: "2-digit",
+																			minute: "2-digit",
+																			timeZoneName:
+																				"short",
+																		}
+																	)}{" "}
+																	•{" "}
+																	{item.is_available
+																		? "Ready"
+																		: "Laundry"}
+																</p>
+															)}
 														</div>
+													</div>
+													<div className="absolute top-2 left-2 opacity-0 group-hover:opacity-100 transition-opacity">
+														<Button
+															variant="secondary"
+															size="sm"
+															onClick={() =>
+																handleMarkAsWorn(
+																	item.id.toString()
+																)
+															}
+															disabled={
+																markItemWorn.isPending
+															}
+															className={`h-8 px-2 text-xs ${
+																item.is_available
+																	? "bg-green-600 hover:bg-green-700 text-white"
+																	: "bg-orange-600 hover:bg-orange-700 text-white"
+															}`}
+															title="Toggle worn status"
+														>
+															<CheckCircle className="w-3 h-3 mr-1" />
+															{item.is_available
+																? "Mark as Worn"
+																: "Mark as Clean"}
+														</Button>
 													</div>
 													<Button
 														variant="destructive"

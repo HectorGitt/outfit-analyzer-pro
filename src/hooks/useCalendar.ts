@@ -284,19 +284,27 @@ export const useDeleteWardrobeItem = () => {
 	});
 };
 
-export const useMarkItemWorn = () => {
+export const useMarkItemWorn = (options?: {
+	onSuccess?: (wasAvailable: boolean) => void;
+}) => {
 	const queryClient = useQueryClient();
 
 	return useMutation({
 		mutationFn: ({ id, date }: { id: string; date: string }) =>
 			wardrobeAPI.markItemWorn(id, date),
-		onSuccess: () => {
+		onSuccess: (data, variables) => {
 			queryClient.invalidateQueries({ queryKey: ["wardrobe"] });
-			toast.success("Item marked as worn!");
+
+			// Call the success callback if provided
+			if (options?.onSuccess) {
+				options.onSuccess(true);
+			}
+
+			// Remove default toast - let component handle it
 		},
 		onError: (error: any) => {
 			console.error("Failed to mark item as worn:", error);
-			toast.error("Failed to mark item as worn. Please try again.");
+			toast.error("Failed to toggle item status. Please try again.");
 		},
 	});
 };

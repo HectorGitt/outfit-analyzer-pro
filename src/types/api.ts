@@ -56,6 +56,8 @@ export interface WardrobeItem {
 	tags: string[];
 	is_favorite: boolean;
 	created_at: string;
+	last_worn_date?: string; // NEW: Last time item was worn
+	is_available: boolean; // NEW: Whether item is available for use
 }
 
 export interface WardrobeResponse {
