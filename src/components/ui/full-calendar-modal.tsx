@@ -52,7 +52,9 @@ export function FullCalendarModal({
 	onRetryOutfit,
 	children,
 }: FullCalendarModalProps) {
-	const [selectedDate, setSelectedDate] = useState<Date | undefined>();
+	const [selectedDate, setSelectedDate] = useState<Date | undefined>(
+		new Date()
+	);
 	const [isOpen, setIsOpen] = useState(false);
 
 	const getEventTypeColor = (type: string) => {
