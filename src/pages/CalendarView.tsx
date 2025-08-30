@@ -550,6 +550,8 @@ const CalendarView = () => {
 										if (event)
 											handleGenerateOutfitForEvent(event);
 									}}
+									generatingEventId={generatingEventId}
+									isPro={isPro}
 								>
 									<Button
 										variant="outline"

@@ -16,6 +16,9 @@ import {
 	MapPin,
 	Shirt,
 	X,
+	Sparkles,
+	RefreshCw,
+	Lock,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -42,6 +45,8 @@ interface FullCalendarModalProps {
 	onPopulateOutfit: (eventId: string, eventTitle: string) => void;
 	onSaveOutfit: (eventId: string, eventTitle: string) => void;
 	onRetryOutfit: (eventId: string, eventTitle: string) => void;
+	generatingEventId?: string | null;
+	isPro?: boolean;
 	children: React.ReactNode;
 }
 
@@ -50,6 +55,8 @@ export function FullCalendarModal({
 	onPopulateOutfit,
 	onSaveOutfit,
 	onRetryOutfit,
+	generatingEventId,
+	isPro = false,
 	children,
 }: FullCalendarModalProps) {
 	const [selectedDate, setSelectedDate] = useState<Date | undefined>(
@@ -233,49 +240,77 @@ export function FullCalendarModal({
 															<Button
 																variant="default"
 																size="sm"
-																onClick={() =>
-																	onPopulateOutfit(
-																		event.id,
-																		event.summary
-																	)
+																onClick={() => {
+																	if (
+																		event.hasOutfit
+																	) {
+																		onSaveOutfit(
+																			event.id,
+																			event.summary
+																		);
+																	} else {
+																		onPopulateOutfit(
+																			event.id,
+																			event.summary
+																		);
+																	}
+																}}
+																disabled={
+																	generatingEventId ===
+																	event.id
 																}
 																className="w-full text-xs h-8"
 															>
-																<Shirt className="w-3 h-3 mr-1" />
-																{event.hasOutfit
+																{generatingEventId ===
+																event.id ? (
+																	<RefreshCw className="w-3 h-3 mr-1 animate-spin" />
+																) : (
+																	<Shirt className="w-3 h-3 mr-1" />
+																)}
+																{generatingEventId ===
+																event.id
+																	? "Generating..."
+																	: event.hasOutfit
 																	? "View Outfit"
 																	: "Generate"}
 															</Button>
 
 															{event.hasOutfit && (
-																<div className="flex gap-1">
-																	<Button
-																		variant="outline"
-																		size="sm"
-																		onClick={() =>
-																			onSaveOutfit(
-																				event.id,
-																				event.summary
-																			)
-																		}
-																		className="flex-1 text-xs h-7"
-																	>
-																		Save
-																	</Button>
-																	<Button
-																		variant="outline"
-																		size="sm"
-																		onClick={() =>
-																			onRetryOutfit(
-																				event.id,
-																				event.summary
-																			)
-																		}
-																		className="flex-1 text-xs h-7"
-																	>
-																		Retry
-																	</Button>
-																</div>
+																<Button
+																	variant="outline"
+																	size="sm"
+																	onClick={() =>
+																		onRetryOutfit(
+																			event.id,
+																			event.summary
+																		)
+																	}
+																	disabled={
+																		generatingEventId ===
+																			event.id ||
+																		!isPro
+																	}
+																	className={`w-full text-xs h-7 ${
+																		!isPro
+																			? "opacity-60 cursor-not-allowed"
+																			: ""
+																	}`}
+																>
+																	{!isPro ? (
+																		<Lock className="w-3 h-3" />
+																	) : generatingEventId ===
+																	  event.id ? (
+																		<RefreshCw className="w-3 h-3 animate-spin" />
+																	) : (
+																		<RefreshCw className="w-3 h-3" />
+																	)}
+																	{!isPro
+																		? "Pro Only"
+																		: generatingEventId ===
+																		  event.id
+																		? "Regenerating..."
+																		: "Retry"}
+																</Button>
 															)}
 														</div>
 													</CardContent>
