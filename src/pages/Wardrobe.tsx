@@ -1093,7 +1093,11 @@ const Wardrobe = () => {
 													<ImageUpload
 														onUpload={(file) =>
 															setUploadedImage(
-																file
+																Array.isArray(
+																	file
+																)
+																	? file[0]
+																	: file
 															)
 														}
 														className="mt-2"
