@@ -44,9 +44,13 @@ import {
 	useUpdateWardrobeItem,
 	useDeleteWardrobeItem,
 	useUploadItemImage,
-	usePricingTier,
 	useMarkItemWorn,
 } from "@/hooks/useCalendar";
+import {
+	useUserPricingTier,
+	useFeatureAccess,
+	useFeatureLimit,
+} from "@/hooks/usePricing";
 
 const Wardrobe = () => {
 	const navigate = useNavigate();
@@ -90,11 +94,13 @@ const Wardrobe = () => {
 	const deleteItem = useDeleteWardrobeItem();
 	const markItemWorn = useMarkItemWorn();
 	const uploadImage = useUploadItemImage();
-	const { data: pricingData, isLoading: pricingLoading } = usePricingTier();
+	const { data: userTier, isLoading: pricingLoading } = useUserPricingTier();
 
-	// Get pricing tier information
-	const isPro = pricingData?.data?.is_pro || false;
-	const tierFeatures = pricingData?.data?.tier_features;
+	// Get pricing tier information and feature access
+	const isPro = userTier?.tier !== "free";
+	const canUploadImages = userTier?.tier === "icon"; // Only Icon tier gets image upload
+	const maxWardrobeItems = useFeatureLimit("max_wardrobe_items");
+	const canUseBulkAdd = userTier?.tier !== "free"; // Paid tiers get bulk add
 
 	// Get wardrobe items from API response
 	const wardrobeItems = wardrobeData?.data?.wardrobe || [];
@@ -194,7 +200,7 @@ const Wardrobe = () => {
 
 	// Handle image upload and item creation
 	const handleCreateImageItem = async () => {
-		if (!isPro) {
+		if (!canUploadImages) {
 			toast.error(
 				"Image upload is only available for Pro users. Please upgrade your account."
 			);
@@ -326,8 +332,7 @@ const Wardrobe = () => {
 												: ""
 										}
 									>
-										{tierFeatures?.name ||
-											(isPro ? "Pro" : "Free")}
+										{userTier?.name || "Free"}
 									</Badge>
 								)}
 							</div>
@@ -340,10 +345,10 @@ const Wardrobe = () => {
 						<div className="flex items-center gap-2">
 							<span className="text-sm text-muted-foreground">
 								{wardrobeItems.length} items
-								{tierFeatures?.max_wardrobe_items && (
+								{maxWardrobeItems > 0 && (
 									<span className="text-xs">
 										{" "}
-										/ {tierFeatures.max_wardrobe_items} max
+										/ {maxWardrobeItems} max
 									</span>
 								)}
 							</span>
@@ -439,7 +444,8 @@ const Wardrobe = () => {
 								className="flex items-center gap-2"
 							>
 								<ImageIcon className="w-4 h-4" />
-								Image View {!isPro && "(Upload Locked)"}
+								Image View{" "}
+								{!canUploadImages && "(Upload Locked)"}
 							</TabsTrigger>
 						</TabsList>
 
@@ -463,7 +469,7 @@ const Wardrobe = () => {
 								</CardHeader>
 								<CardContent>
 									{/* Show bulk text input for all users, but prioritize Pro features */}
-									{isPro ? (
+									{canUseBulkAdd ? (
 										<>
 											{/* Pro users get both options */}
 											<div className="space-y-6">
@@ -841,7 +847,7 @@ const Wardrobe = () => {
 													? "Adding..."
 													: "Add Item"}
 											</Button>
-											{!isPro && (
+											{!canUseBulkAdd && (
 												<p className="text-xs text-muted-foreground">
 													<Button
 														variant="link"
@@ -1065,7 +1071,7 @@ const Wardrobe = () => {
 									<CardTitle className="flex items-center gap-2">
 										<Upload className="w-5 h-5" />
 										Add New Item (Image)
-										{!isPro && (
+										{!canUploadImages && (
 											<Badge
 												variant="outline"
 												className="ml-2"
@@ -1074,7 +1080,7 @@ const Wardrobe = () => {
 											</Badge>
 										)}
 									</CardTitle>
-									{!isPro && (
+									{!canUploadImages && (
 										<p className="text-sm text-muted-foreground">
 											Image upload is available with our
 											Pro plan. Upgrade to add items with
@@ -1089,7 +1095,7 @@ const Wardrobe = () => {
 												Upload Image
 											</Label>
 											<div className="relative">
-												{isPro ? (
+												{canUploadImages ? (
 													<ImageUpload
 														onUpload={(file) =>
 															setUploadedImage(
@@ -1145,10 +1151,10 @@ const Wardrobe = () => {
 														)
 													}
 													rows={3}
-													disabled={!isPro}
+													disabled={!canUploadImages}
 													className="mt-2"
 												/>
-												{!isPro && (
+												{!canUploadImages && (
 													<div className="absolute inset-0 bg-background/80 backdrop-blur-sm rounded-lg flex items-center justify-center">
 														<div className="text-center">
 															<Lock className="w-6 h-6 text-muted-foreground mx-auto mb-1" />
@@ -1164,7 +1170,7 @@ const Wardrobe = () => {
 											<Button
 												onClick={handleCreateImageItem}
 												disabled={
-													!isPro ||
+													!canUploadImages ||
 													createItem.isPending ||
 													uploadImage.isPending ||
 													!uploadedImage ||
@@ -1176,11 +1182,11 @@ const Wardrobe = () => {
 												{createItem.isPending ||
 												uploadImage.isPending
 													? "Adding..."
-													: !isPro
+													: !canUploadImages
 													? "Upgrade to Add Images"
 													: "Add Item with Image"}
 											</Button>
-											{!isPro && (
+											{!canUploadImages && (
 												<Button
 													size="sm"
 													variant="outline"
@@ -1202,7 +1208,7 @@ const Wardrobe = () => {
 								<CardHeader>
 									<CardTitle>Wardrobe Gallery</CardTitle>
 									<p className="text-sm text-muted-foreground">
-										{!isPro &&
+										{!canUploadImages &&
 											"Items added through text view or Pro image uploads will appear here"}
 									</p>
 								</CardHeader>
@@ -1223,7 +1229,7 @@ const Wardrobe = () => {
 												No items to display
 											</h3>
 											<p className="text-muted-foreground">
-												{isPro
+												{canUploadImages
 													? "Add items with images to see them in the gallery"
 													: "Add items from the Summary/Text view to populate your gallery"}
 											</p>

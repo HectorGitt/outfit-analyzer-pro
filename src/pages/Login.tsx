@@ -13,6 +13,8 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { ErrorDisplay } from "@/components/ui/error-display";
 import { useAuthStore } from "@/stores/authStore";
+import { useQueryClient } from "@tanstack/react-query";
+import { pricingQueryKeys } from "@/hooks/usePricing";
 
 export default function Login() {
 	const [showPassword, setShowPassword] = useState(false);
@@ -28,6 +30,7 @@ export default function Login() {
 	const { login, isLoading, error, errorDetails, clearError } =
 		useAuthStore();
 	const { toast } = useToast();
+	const queryClient = useQueryClient();
 
 	const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const { name, value } = e.target;
@@ -54,6 +57,11 @@ export default function Login() {
 					description: `Welcome back${
 						formData.username ? `, ${formData.username}` : ""
 					}!`,
+				});
+
+				// Invalidate pricing query to refetch user's current tier
+				queryClient.invalidateQueries({
+					queryKey: pricingQueryKeys.userTier(),
 				});
 
 				// Check for next parameter in URL or from state

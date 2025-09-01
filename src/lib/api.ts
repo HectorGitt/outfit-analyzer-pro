@@ -1,7 +1,6 @@
 import axios, { AxiosResponse, AxiosError } from "axios";
 import { ApiResponse } from "@/types";
 import { toast } from "sonner";
-import { useAuthStore } from "@/stores/authStore";
 
 // Import React Router navigation for SPA redirects
 let navigateFunction: ((path: string) => void) | null = null;
@@ -13,10 +12,18 @@ export const setNavigateFunction = (navigate: (path: string) => void) => {
 
 // Helper function for SPA navigation
 const navigateTo = (path: string) => {
-	if (navigateFunction) {
-		navigateFunction(path);
-	} else {
-		// Fallback to window.location if navigate function not set
+	try {
+		if (navigateFunction) {
+			console.log(`🔄 SPA Navigation: ${path}`);
+			navigateFunction(path);
+		} else {
+			console.log(`🔄 Fallback Navigation: ${path}`);
+			// Fallback to window.location if navigate function not set
+			window.location.href = path;
+		}
+	} catch (error) {
+		console.error(`❌ Navigation failed: ${path}`, error);
+		// Final fallback
 		window.location.href = path;
 	}
 };
@@ -118,11 +125,11 @@ api.interceptors.response.use(
 				"detail" in error.response.data &&
 				(error.response.data as any).detail === "Not authenticated")
 		) {
-			// Token expired or invalid
-			localStorage.removeItem("auth_token");
-			const authStore = useAuthStore();
-			authStore.logout();
+			// Don't use hooks in interceptors - handle logout through navigation
 			const url = error.config?.url || "";
+			console.log(
+				`🔐 Auth error on ${url}, navigateFunction set: ${!!navigateFunction}`
+			);
 			if (
 				window.location.pathname !== "/login" &&
 				!url.includes("pricing")
@@ -133,6 +140,7 @@ api.interceptors.response.use(
 				const loginUrl = `/login?next=${encodeURIComponent(
 					currentPath
 				)}`;
+				console.log(`🚪 Redirecting to: ${loginUrl}`);
 				navigateTo(loginUrl);
 			}
 		}

@@ -8,6 +8,8 @@ import {
 	Token,
 } from "@/types";
 import { authAPI } from "@/services/api";
+import { pricingTiers } from "@/lib/pricingTiers";
+import { apiCall } from "@/lib/api";
 
 interface AuthState {
 	user: AuthUser | null;
@@ -21,6 +23,7 @@ interface AuthState {
 		timestamp?: string;
 		details?: any;
 	} | null;
+	pricingTier: keyof typeof pricingTiers;
 }
 
 interface AuthActions {
@@ -29,6 +32,8 @@ interface AuthActions {
 	logout: () => void;
 	clearError: () => void;
 	updateUser: (userData: Partial<User>) => void;
+	updatePricingTier: (tier: keyof typeof pricingTiers) => void;
+	fetchUserPricingTier: () => Promise<void>;
 }
 
 export const useAuthStore = create<AuthState & AuthActions>()(
@@ -39,6 +44,27 @@ export const useAuthStore = create<AuthState & AuthActions>()(
 			isLoading: false,
 			error: null,
 			errorDetails: null,
+			pricingTier: "free" as keyof typeof pricingTiers,
+
+			// Helper function to fetch user's pricing tier
+			fetchUserPricingTier: async () => {
+				try {
+					const response = await apiCall(
+						"GET",
+						"/users/pricing-tier"
+					);
+					const data = response.data as any;
+					const tierKey = data.pricing_tier || "free";
+					set({ pricingTier: tierKey as keyof typeof pricingTiers });
+					console.log("✅ User pricing tier loaded:", tierKey);
+				} catch (error) {
+					console.warn(
+						"⚠️ Failed to fetch user pricing tier, keeping default 'free' tier:",
+						error
+					);
+					// Keep default 'free' tier if API fails
+				}
+			},
 
 			login: async (credentials: LoginCredentials) => {
 				set({ isLoading: true, error: null, errorDetails: null });
@@ -102,6 +128,9 @@ export const useAuthStore = create<AuthState & AuthActions>()(
 						error: null,
 						errorDetails: null,
 					});
+
+					// Fetch user's pricing tier after successful login
+					get().fetchUserPricingTier();
 
 					return true; // Success
 				} catch (error: any) {
@@ -195,6 +224,9 @@ export const useAuthStore = create<AuthState & AuthActions>()(
 						errorDetails: null,
 					});
 
+					// Fetch user's pricing tier after successful registration
+					get().fetchUserPricingTier();
+
 					return true; // Success
 				} catch (error: any) {
 					const errorDetails = {
@@ -224,6 +256,7 @@ export const useAuthStore = create<AuthState & AuthActions>()(
 				set({
 					user: null,
 					isAuthenticated: false,
+					pricingTier: "free" as keyof typeof pricingTiers,
 					error: null,
 					errorDetails: null,
 				});
@@ -244,12 +277,17 @@ export const useAuthStore = create<AuthState & AuthActions>()(
 					});
 				}
 			},
+
+			updatePricingTier: (tier: keyof typeof pricingTiers) => {
+				set({ pricingTier: tier });
+			},
 		}),
 		{
 			name: "auth-storage",
 			partialize: (state) => ({
 				user: state.user,
 				isAuthenticated: state.isAuthenticated,
+				pricingTier: state.pricingTier,
 			}),
 		}
 	)

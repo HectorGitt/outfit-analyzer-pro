@@ -27,6 +27,8 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useToast } from "@/hooks/use-toast";
 import { ErrorDisplay } from "@/components/ui/error-display";
 import { useAuthStore } from "@/stores/authStore";
+import { useQueryClient } from "@tanstack/react-query";
+import { pricingQueryKeys } from "@/hooks/usePricing";
 
 export default function Register() {
 	const [showPassword, setShowPassword] = useState(false);
@@ -49,6 +51,7 @@ export default function Register() {
 	const { register, isLoading, error, errorDetails, clearError } =
 		useAuthStore();
 	const { toast } = useToast();
+	const queryClient = useQueryClient();
 
 	// Generate login URL with current page as next parameter
 	const getLoginUrl = () => {
@@ -138,6 +141,12 @@ export default function Register() {
 					title: "Account created",
 					description: "Your account was created successfully.",
 				});
+
+				// Invalidate pricing query to refetch user's current tier
+				queryClient.invalidateQueries({
+					queryKey: pricingQueryKeys.userTier(),
+				});
+
 				navigate("/profile");
 			}
 			// If not successful, error will be displayed via auth store

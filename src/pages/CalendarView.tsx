@@ -27,9 +27,14 @@ import {
 	useGenerateOutfitSuggestions,
 	useWardrobeItems,
 	useCalendarDashboard,
-	usePricingTier,
 	useGenerateOutfitSuggestion,
 } from "@/hooks/useCalendar";
+import {
+	useUserPricingTier,
+	useFeatureAccess,
+	useFeatureLimit,
+	pricingQueryKeys,
+} from "@/hooks/usePricing";
 import {
 	CalendarEvent as InternalCalendarEvent,
 	GoogleCalendarEvent,
@@ -73,10 +78,12 @@ const CalendarView = () => {
 	const generateOutfits = useGenerateOutfitSuggestions();
 	const generateOutfitSingle = useGenerateOutfitSuggestion();
 	const syncGoogleEvents = useSyncGoogleCalendarEvents();
-	const { data: pricingData } = usePricingTier();
+	const { data: userTier, isLoading: pricingLoading } = useUserPricingTier();
 
-	// Get Pro user status
-	const isPro = pricingData?.data?.is_pro ?? false;
+	// Get Pro user status and feature access
+	const isPro = userTier?.tier !== "free";
+	const canRegenerateOutfits = useFeatureAccess("outfit_alternatives");
+	const maxOutfitsPerMonth = useFeatureLimit("max_outfit_plans_per_month");
 
 	// Normalize plans length from varying API shapes
 	const plansCount = useMemo(() => {
@@ -270,7 +277,7 @@ const CalendarView = () => {
 
 	// Enhanced outfit generation for all events
 	const handleGenerateWardrobeSuggestions = async () => {
-		if (!isPro && plansCount > 0) {
+		if (!canRegenerateOutfits && plansCount > 0) {
 			toast.error(
 				"Outfit regeneration is only available for Pro users. Please upgrade your account."
 			);
@@ -286,7 +293,7 @@ const CalendarView = () => {
 
 	// Single event outfit generation
 	const handleGenerateOutfitForEvent = async (event: DisplayEvent) => {
-		if (!isPro && event.hasOutfit) {
+		if (!canRegenerateOutfits && event.hasOutfit) {
 			toast.info("Non-Pro users can only generate one outfit per event.");
 			return;
 		}
@@ -402,20 +409,27 @@ const CalendarView = () => {
 								<h1 className="text-3xl font-bold">
 									Calendar & Outfits
 								</h1>
-								{!isPro && (
+								{pricingLoading ? (
+									<Skeleton className="h-6 w-16 rounded-full" />
+								) : (
 									<Badge
-										variant="outline"
-										className="text-blue-600 border-blue-200"
+										variant={
+											isPro ? "default" : "secondary"
+										}
+										className={
+											isPro
+												? "bg-gradient-to-r from-purple-500 to-pink-500 text-white"
+												: ""
+										}
 									>
-										<Lock className="w-3 h-3 mr-1" />
-										Pro Feature
+										{userTier?.name || "Free"}
 									</Badge>
 								)}
 							</div>
 							<p className="text-muted-foreground mt-1">
 								{isPro
 									? "AI-powered outfit suggestions for your upcoming events"
-									: "AI-powered outfit suggestions for your upcoming events • Upgrade to Pro to generate outfits"}
+									: "AI-powered outfit suggestions for your upcoming events • Upgrade to Pro to regenerate outfits"}
 							</p>
 						</div>
 						<div className="flex flex-wrap gap-2">
@@ -754,15 +768,18 @@ const CalendarView = () => {
 															disabled={
 																generatingEventId ===
 																	event.id ||
-																!isPro
+																(!canRegenerateOutfits &&
+																	event.hasOutfit)
 															}
 															className={`flex items-center gap-2 ${
-																!isPro
+																!canRegenerateOutfits &&
+																event.hasOutfit
 																	? "opacity-60 cursor-not-allowed"
 																	: ""
 															}`}
 														>
-															{!isPro ? (
+															{!canRegenerateOutfits &&
+															event.hasOutfit ? (
 																<Lock className="w-4 h-4" />
 															) : generatingEventId ===
 															  event.id ? (
@@ -770,7 +787,8 @@ const CalendarView = () => {
 															) : (
 																<RefreshCw className="w-4 h-4" />
 															)}
-															{!isPro
+															{!canRegenerateOutfits &&
+															event.hasOutfit
 																? "Pro Only"
 																: generatingEventId ===
 																  event.id

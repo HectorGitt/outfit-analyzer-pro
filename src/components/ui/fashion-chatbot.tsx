@@ -45,6 +45,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useChatbotStore, type Message } from "@/stores/chatbotStore";
 import { useAuthStore } from "@/stores/authStore";
 import { usePricingTier } from "@/hooks/useCalendar";
+import { useUserPricingTier, useFeatureAccess } from "@/hooks/usePricing";
 import { tool, RealtimeAgent, RealtimeSession } from "@openai/agents-realtime";
 import { z } from "zod";
 
@@ -449,8 +450,9 @@ const LoginRequiredMessage = ({
 const FashionChatbot = () => {
 	// Check authentication status
 	const { isAuthenticated } = useAuthStore();
-	const { data: pricingData } = usePricingTier();
-	const isPro = pricingData?.data?.is_pro ?? false;
+	const { data: userTier } = useUserPricingTier();
+	const isPro = userTier?.tier !== "free";
+	const hasVoiceAccess = useFeatureAccess("voice_integration");
 	const navigate = useNavigate();
 
 	// Zustand store state and actions
@@ -843,11 +845,12 @@ Say: “Thanks for your patience—I’m connecting you with a specialist now.�
 		}
 
 		// Check if user is pro before allowing voice functionality
-		if (!isPro) {
+		if (!hasVoiceAccess) {
 			toast({
-				title: "Pro Feature",
-				description:
-					"Voice chat is available for Pro users only. Upgrade to access this feature!",
+				title: "Premium Feature",
+				description: `Voice chat is available for ${
+					userTier?.name || "Pro"
+				} users only. Upgrade to access this feature!`,
 				variant: "default",
 				action: (
 					<Button
@@ -966,7 +969,13 @@ Say: “Thanks for your patience—I’m connecting you with a specialist now.�
 							{isAuthenticated && !isPro && (
 								<span className="text-xs text-amber-600 dark:text-amber-400 truncate flex items-center gap-1">
 									<Zap className="h-3 w-3" />
-									Pro features available
+									{userTier?.name || "Free"}
+								</span>
+							)}
+							{isAuthenticated && isPro && (
+								<span className="text-xs text-green-600 dark:text-green-400 truncate flex items-center gap-1">
+									<Zap className="h-3 w-3" />
+									{userTier?.name || "Pro"}
 								</span>
 							)}
 						</div>
@@ -1175,7 +1184,8 @@ Say: “Thanks for your patience—I’m connecting you with a specialist now.�
 								<span className="sm:hidden">Tap to send</span>
 								{!isPro && (
 									<span className="ml-2 text-amber-600 dark:text-amber-400">
-										• Voice chat: Pro only
+										• Voice chat: {userTier?.name || "Free"}{" "}
+										only
 									</span>
 								)}
 							</>
@@ -1212,18 +1222,22 @@ Say: “Thanks for your patience—I’m connecting you with a specialist now.�
 								isVoiceMode
 									? "bg-blue-500 hover:bg-blue-600"
 									: "",
-								!isPro && "opacity-60 hover:opacity-80"
+								!hasVoiceAccess && "opacity-60 hover:opacity-80"
 							)}
 							title={
-								!isPro
-									? "Voice chat is a Pro feature"
+								!hasVoiceAccess
+									? `Voice chat requires ${
+											userTier?.name || "Pro"
+									  } plan`
 									: isVoiceMode
 									? "Switch to text mode"
 									: "Switch to voice mode"
 							}
 							aria-label={
-								!isPro
-									? "Voice chat is a Pro feature"
+								!hasVoiceAccess
+									? `Voice chat requires ${
+											userTier?.name || "Pro"
+									  } plan`
 									: isVoiceMode
 									? "Switch to text mode"
 									: "Switch to voice mode"
@@ -1231,7 +1245,7 @@ Say: “Thanks for your patience—I’m connecting you with a specialist now.�
 						>
 							{isVoiceLoading ? (
 								<Loader2 className="h-4 w-4 animate-spin" />
-							) : !isPro ? (
+							) : !hasVoiceAccess ? (
 								<div className="relative">
 									<Mic className="h-4 w-4" />
 								</div>
