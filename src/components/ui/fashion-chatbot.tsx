@@ -290,6 +290,47 @@ const createOutfitPlan = tool({
 	},
 });
 
+// Add the end_call tool
+const endCall = tool({
+	name: "end_call",
+	description:
+		"End the current voice call when the conversation is complete, the user requests it, or when it's appropriate to disconnect.",
+	parameters: z.object({
+		reason: z
+			.string()
+			.describe(
+				"Reason for ending the call (conversation_complete, user_request, technical_issue, no_response, etc.)"
+			),
+		message: z
+			.string()
+			.nullable()
+			.describe(
+				"Optional message to convey to the user before ending the call"
+			),
+	}),
+	async execute({ reason, message }) {
+		console.log(`Agent requested to end call: ${reason}`);
+
+		// Instead of just returning, we'll emit a custom event to trigger hangup
+		// This ensures the hangup happens immediately when the agent calls the tool
+		setTimeout(() => {
+			console.log("Agent end call timeout triggered - hanging up call");
+			if (
+				typeof window !== "undefined" &&
+				(window as any).triggerAgentHangup
+			) {
+				(window as any).triggerAgentHangup(reason, message);
+			}
+		}, 100);
+
+		return {
+			success: true,
+			reason,
+			message: message || "Thank you for chatting! Call ended.",
+		};
+	},
+});
+
 // Generate login URL with current page as next parameter
 const getLoginUrl = () => {
 	const currentPath = location.pathname + location.search;
@@ -485,6 +526,96 @@ const FashionChatbot = () => {
 	const [realtimeSession, setRealtimeSession] = useState<any>(null);
 	const [isVoiceLoading, setIsVoiceLoading] = useState(false);
 	const [isFullscreen, setIsFullscreen] = useState(false);
+
+	// Define hangupCall before useEffect so it's in scope
+	const hangupCall = async () => {
+		console.log("Hanging up call...", realtimeSession);
+		console.log("Is voice mode:", isVoiceMode);
+		console.log("Session exists:", !!realtimeSession);
+
+		// Always update the UI state first
+		setIsVoiceMode(false);
+		setIsVoiceLoading(false);
+
+		if (realtimeSession) {
+			try {
+				console.log("Attempting to close realtime session...");
+
+				// Try multiple ways to close the session
+				if (typeof realtimeSession.close === "function") {
+					const closeResult = realtimeSession.close();
+					// Handle both Promise and non-Promise returns
+					if (closeResult && typeof closeResult.then === "function") {
+						await closeResult;
+					}
+					console.log("Session closed successfully via close()");
+				} else if (typeof realtimeSession.disconnect === "function") {
+					const disconnectResult = realtimeSession.disconnect();
+					// Handle both Promise and non-Promise returns
+					if (
+						disconnectResult &&
+						typeof disconnectResult.then === "function"
+					) {
+						await disconnectResult;
+					}
+					console.log(
+						"Session disconnected successfully via disconnect()"
+					);
+				} else {
+					console.log(
+						"No close/disconnect method found, forcing cleanup"
+					);
+				}
+
+				// Clear the session reference
+				setRealtimeSession(null);
+			} catch (error) {
+				console.error("Error disconnecting realtime session:", error);
+				// Even if close fails, clear the session
+				setRealtimeSession(null);
+			}
+		} else {
+			console.log("No realtime session to close");
+		}
+
+		// Always show the disconnect message
+		toast({
+			title: "Call Ended",
+			description: "Voice session has been disconnected.",
+			variant: "default",
+		});
+	};
+
+	// Make hangup function globally available for the agent tool
+	useEffect(() => {
+		if (typeof window !== "undefined") {
+			(window as any).triggerAgentHangup = (
+				reason: string,
+				message?: string
+			) => {
+				console.log(
+					"Global hangup triggered by agent:",
+					reason,
+					message
+				);
+				toast({
+					title: "Call Ended by Assistant",
+					description:
+						message || "The fashion assistant has ended the call.",
+					variant: "default",
+				});
+				setTimeout(() => {
+					hangupCall();
+				}, 5000); // Give time for the agent to finish speaking
+			};
+		}
+
+		return () => {
+			if (typeof window !== "undefined") {
+				delete (window as any).triggerAgentHangup;
+			}
+		};
+	}, []);
 
 	const scrollToBottom = () => {
 		messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -711,6 +842,22 @@ const FashionChatbot = () => {
 	};
 
 	// Voice functionality functions
+	const handleAgentEndCall = (result: any) => {
+		console.log("Agent requested to end call:", result);
+
+		toast({
+			title: "Call Ended by Assistant",
+			description:
+				result.message || "The fashion assistant has ended the call.",
+			variant: "default",
+		});
+
+		// End the call after a brief delay to allow the agent to finish speaking
+		setTimeout(() => {
+			hangupCall();
+		}, 2000);
+	};
+
 	const initializeRealtimeSession = async () => {
 		try {
 			setIsVoiceLoading(true);
@@ -721,12 +868,15 @@ const FashionChatbot = () => {
 
 			const agent = new RealtimeAgent({
 				name: "Fashion Assistant",
-
+				voice: "shimmer",
 				instructions: `
 # Role & Objective
 You are a helpful fashion assistant. Help users with outfit suggestions, styling tips, and fashion advice. 
 You can access the user's calendar events, wardrobe items, preferences, and outfit plans to provide personalized recommendations. 
 Success means providing clear, stylish, and practical guidance tailored to the user.
+
+# Welcome Message
+- You must say the welcome message first, which is: "Hi there! I'm your fashion assistant. How can I help you today?"
 
 # Personality & Tone
 - Friendly, confident, approachable
@@ -754,8 +904,21 @@ Success means providing clear, stylish, and practical guidance tailored to the u
 - Provide varied suggestions, not identical repeats
 - Keep suggestions practical: weather, season, event, and user preferences matter
 
+# Call Management
+- Use the end_call tool when:
+  - The conversation is naturally complete (user says goodbye, thanks, etc.)
+  - The user explicitly requests to end the call ("goodbye", "hang up", "that's all", etc.)
+  - Try to call the user's attention at least 3 times before ending the call at about 4-7 seconds intervals.
+  - You've provided a complete outfit suggestion and the user seems satisfied
+  - The user has been silent for an extended period (use your judgment) but should be about 10seconds
+  - There are technical issues preventing proper assistance
+  - The user expresses they don't need further help
+- Always provide a polite closing message before ending the call
+- You should finish speaking before using the end_call tool
+
 # Conversation Flow
-Greeting → Discover (event/occasion) → Outfit Suggestion → Confirm → Adjust (if needed) → Close
+Your greeting Greeting → Discover (event/occasion) → Outfit Suggestion → Confirm → Adjust (if needed) → Close
+Do not force the user to follow this flow
 
 Greeting Examples:
 - “Hi, ready to plan your look for today?”
@@ -792,15 +955,20 @@ Say: “Thanks for your patience—I’m connecting you with a specialist now.�
 					generateOutfitSuggestion,
 					getOutfitPlans,
 					createOutfitPlan,
+					endCall,
 				],
 			});
 
 			const session = new RealtimeSession(agent);
+			console.log("Created realtime session:", session);
+
 			await session.connect({
 				apiKey: clientSecret,
 			});
 
+			console.log("Realtime session connected successfully");
 			setRealtimeSession(session);
+			console.log("Realtime session set in state");
 			return session;
 		} catch (error) {
 			console.error("Failed to initialize realtime session:", error);
@@ -816,27 +984,16 @@ Say: “Thanks for your patience—I’m connecting you with a specialist now.�
 		}
 	};
 
-	const hangupCall = async () => {
-		if (realtimeSession) {
-			try {
-				await realtimeSession.close();
-				setRealtimeSession(null);
-				setIsVoiceMode(false);
-				setIsVoiceLoading(false);
-				toast({
-					title: "Call Ended",
-					description: "Voice session has been disconnected.",
-					variant: "default",
-				});
-			} catch (error) {
-				console.error("Error disconnecting realtime session:", error);
-				toast({
-					title: "Disconnect Failed",
-					description: "Could not properly end the voice session.",
-					variant: "destructive",
-				});
-			}
-		}
+	const forceDisconnect = () => {
+		console.log("Force disconnecting...");
+		setRealtimeSession(null);
+		setIsVoiceMode(false);
+		setIsVoiceLoading(false);
+		toast({
+			title: "Call Ended",
+			description: "Voice session has been disconnected.",
+			variant: "default",
+		});
 	};
 
 	const toggleVoiceMode = async () => {
@@ -882,21 +1039,54 @@ Say: “Thanks for your patience—I’m connecting you with a specialist now.�
 		}
 	};
 
-	// Cleanup on unmount
+	// Cleanup on unmount or voice mode change
 	useEffect(() => {
 		return () => {
 			if (realtimeSession) {
+				console.log("Cleaning up realtime session on unmount...");
 				try {
-					realtimeSession.close();
+					// Don't await here since this is a cleanup effect
+					const closeResult = realtimeSession.close();
+					// Only call catch if it's a Promise
+					if (
+						closeResult &&
+						typeof closeResult.catch === "function"
+					) {
+						closeResult.catch((error) => {
+							console.error("Error during cleanup:", error);
+						});
+					}
 				} catch (error) {
 					console.error(
-						"Error disconnecting realtime session:",
+						"Error disconnecting realtime session during cleanup:",
 						error
 					);
 				}
 			}
 		};
 	}, [realtimeSession]);
+
+	// Additional cleanup when voice mode changes
+	useEffect(() => {
+		if (!isVoiceMode && realtimeSession) {
+			console.log("Voice mode disabled, cleaning up session...");
+			const cleanup = async () => {
+				try {
+					const closeResult = realtimeSession.close();
+					// Handle both Promise and non-Promise returns
+					if (closeResult && typeof closeResult.then === "function") {
+						await closeResult;
+					}
+					setRealtimeSession(null);
+					console.log("Session cleaned up after voice mode change");
+				} catch (error) {
+					console.error("Error during voice mode cleanup:", error);
+					setRealtimeSession(null);
+				}
+			};
+			cleanup();
+		}
+	}, [isVoiceMode, realtimeSession]);
 
 	if (!isOpen) {
 		return (
@@ -1268,7 +1458,19 @@ Say: “Thanks for your patience—I’m connecting you with a specialist now.�
 								</div>
 							</div>
 							<Button
-								onClick={hangupCall}
+								onClick={() => {
+									console.log("Hangup button clicked");
+									hangupCall();
+									// Fallback: force disconnect after 3 seconds if hangup doesn't work
+									setTimeout(() => {
+										if (isVoiceMode) {
+											console.log(
+												"Hangup timeout reached, forcing disconnect"
+											);
+											forceDisconnect();
+										}
+									}, 3000);
+								}}
 								size="icon"
 								variant="destructive"
 								className="transition-all duration-200 hover:scale-105 active:scale-95"
