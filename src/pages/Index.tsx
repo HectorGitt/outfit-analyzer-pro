@@ -269,6 +269,103 @@ const Index = () => {
 				</div>
 			</section>
 
+			{/* Calendar Integration Section */}
+			<section className="py-20 bg-gradient-secondary/30">
+				<div className="container mx-auto px-4">
+					<div className="text-center mb-16">
+						<h2 className="text-4xl font-bold mb-4">
+							Calendar Integration
+						</h2>
+						<p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+							Seamlessly sync with your calendar to plan perfect
+							outfits for every scheduled event
+						</p>
+					</div>
+
+					<div className="max-w-4xl mx-auto">
+						<Card className="p-8 card-fashion">
+							<div className="grid md:grid-cols-2 gap-8 items-center">
+								<div className="space-y-6">
+									<div className="w-16 h-16 bg-gradient-primary rounded-2xl flex items-center justify-center">
+										<Calendar className="w-8 h-8 text-white" />
+									</div>
+									<div>
+										<h3 className="text-2xl font-bold mb-4">
+											Never Miss a Style Beat
+										</h3>
+										<p className="text-muted-foreground mb-6">
+											Connect your calendar and let AI
+											automatically suggest appropriate
+											outfits for each event, meeting, or
+											occasion.
+										</p>
+										<Button
+											className="btn-gradient"
+											asChild
+										>
+											<Link to="/calendar-connect">
+												Connect Calendar
+												<ArrowRight className="ml-2 w-4 h-4" />
+											</Link>
+										</Button>
+									</div>
+								</div>
+
+								<div className="space-y-4">
+									<Card className="p-4 border-l-4 border-l-primary/50">
+										<div className="flex items-center justify-between">
+											<div>
+												<h4 className="font-semibold">
+													Team Meeting
+												</h4>
+												<p className="text-sm text-muted-foreground">
+													Today, 2:00 PM
+												</p>
+											</div>
+											<Badge variant="secondary">
+												Business Casual
+											</Badge>
+										</div>
+									</Card>
+
+									<Card className="p-4 border-l-4 border-l-accent/50">
+										<div className="flex items-center justify-between">
+											<div>
+												<h4 className="font-semibold">
+													Dinner Date
+												</h4>
+												<p className="text-sm text-muted-foreground">
+													Friday, 7:00 PM
+												</p>
+											</div>
+											<Badge variant="secondary">
+												Smart Casual
+											</Badge>
+										</div>
+									</Card>
+
+									<Card className="p-4 border-l-4 border-l-primary/30">
+										<div className="flex items-center justify-between">
+											<div>
+												<h4 className="font-semibold">
+													Weekend Brunch
+												</h4>
+												<p className="text-sm text-muted-foreground">
+													Saturday, 11:00 AM
+												</p>
+											</div>
+											<Badge variant="secondary">
+												Casual
+											</Badge>
+										</div>
+									</Card>
+								</div>
+							</div>
+						</Card>
+					</div>
+				</div>
+			</section>
+
 			{/* AI Chatbot Features - Enhanced */}
 			<section className="py-24 bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-blue-950/20 dark:via-gray-900 dark:to-purple-950/20">
 				<div className="container mx-auto px-4">
