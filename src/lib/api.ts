@@ -1,6 +1,7 @@
 import axios, { AxiosResponse, AxiosError } from "axios";
 import { ApiResponse } from "@/types";
 import { toast } from "sonner";
+import { useAuthStore } from "@/stores/authStore";
 
 // Import React Router navigation for SPA redirects
 let navigateFunction: ((path: string) => void) | null = null;
@@ -119,7 +120,13 @@ api.interceptors.response.use(
 		) {
 			// Token expired or invalid
 			localStorage.removeItem("auth_token");
-			if (window.location.pathname !== "/login") {
+			const authStore = useAuthStore();
+			authStore.logout();
+			const url = error.config?.url || "";
+			if (
+				window.location.pathname !== "/login" &&
+				!url.includes("pricing")
+			) {
 				// Use SPA navigation with next parameter
 				const currentPath =
 					window.location.pathname + window.location.search;
