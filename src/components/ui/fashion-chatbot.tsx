@@ -21,6 +21,15 @@ import {
 	VolumeX,
 	PhoneOff,
 	Lock,
+	Maximize2,
+	Minimize2,
+	Sparkles,
+	Settings,
+	ThumbsUp,
+	ThumbsDown,
+	HelpCircle,
+	Heart,
+	Zap,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { fashionAPI } from "@/services/api";
@@ -286,7 +295,7 @@ const getLoginUrl = () => {
 	return `/login?next=${encodeURIComponent(currentPath)}`;
 };
 
-// Typing indicator component
+// Enhanced typing indicator with better design
 const TypingIndicator = () => {
 	const [dots, setDots] = useState("");
 
@@ -299,51 +308,99 @@ const TypingIndicator = () => {
 
 	return (
 		<div className="flex justify-start">
-			<div className="bg-muted rounded-lg p-3 text-sm flex items-center gap-2">
-				<Loader2 className="h-4 w-4 animate-spin" />
-				<span>Thinking{dots}</span>
+			<div className="bg-gradient-to-r from-primary/10 to-accent/10 rounded-2xl p-4 text-sm flex items-center gap-3 border border-primary/20 shadow-sm">
+				<div className="relative">
+					<Bot className="h-5 w-5 text-primary animate-pulse" />
+					<div className="absolute -top-1 -right-1 w-3 h-3 bg-primary/30 rounded-full animate-ping"></div>
+				</div>
+				<div className="flex items-center gap-1">
+					<span className="text-primary font-medium">Thinking</span>
+					<span className="text-primary/70">{dots}</span>
+				</div>
 			</div>
 		</div>
 	);
 };
 
-// Welcome message component
+// Welcome message component with enhanced design
 const WelcomeMessage = ({
 	onSuggestionClick,
 }: {
 	onSuggestionClick: (text: string) => void;
 }) => {
-	const suggestions = [
-		"What should I wear to a wedding?",
-		"Help me style this outfit",
-		"What's trending this season?",
-		"How to mix patterns?",
+	const quickActions = [
+		{
+			text: "What should I wear to a wedding?",
+			icon: Heart,
+			color: "from-pink-500 to-rose-500",
+		},
+		{
+			text: "Help me style this outfit",
+			icon: Sparkles,
+			color: "from-purple-500 to-indigo-500",
+		},
+		{
+			text: "What's trending this season?",
+			icon: Zap,
+			color: "from-yellow-500 to-orange-500",
+		},
+		{
+			text: "How to mix patterns?",
+			icon: Settings,
+			color: "from-blue-500 to-cyan-500",
+		},
 	];
 
 	return (
 		<div className="flex justify-start">
-			<div className="max-w-[80%] bg-muted rounded-lg p-4 text-sm space-y-3">
-				<div className="flex items-center gap-2 mb-2">
-					<Bot className="h-4 w-4 text-primary" />
-					<span className="font-medium">Fashion Assistant</span>
+			<div className="max-w-[90%] bg-gradient-to-br from-primary/5 via-accent/5 to-primary/10 rounded-2xl p-6 text-sm space-y-4 border border-primary/20 shadow-lg">
+				<div className="flex items-center gap-3 mb-4">
+					<div className="w-12 h-12 bg-gradient-to-br from-primary to-accent rounded-2xl flex items-center justify-center shadow-lg">
+						<Bot className="h-6 w-6 text-white" />
+					</div>
+					<div>
+						<h4 className="font-bold text-base bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+							Fashion Assistant
+						</h4>
+						<p className="text-xs text-muted-foreground">
+							Ready to help with your style!
+						</p>
+					</div>
 				</div>
-				<p className="text-muted-foreground">
-					Hi! I'm your fashion assistant. I can help you with outfit
-					suggestions, styling tips, and fashion advice. Try asking me
-					about:
-				</p>
-				<div className="space-y-2">
-					{suggestions.map((suggestion, index) => (
-						<Button
-							key={index}
-							variant="outline"
-							size="sm"
-							className="w-full justify-start text-xs h-8"
-							onClick={() => onSuggestionClick(suggestion)}
-						>
-							{suggestion}
-						</Button>
-					))}
+
+				<div className="space-y-3">
+					<p className="text-muted-foreground leading-relaxed">
+						Hi there! 👋 I'm your personal fashion stylist. I can
+						help you with outfit suggestions, styling tips, trend
+						advice, and much more. What would you like to explore
+						today?
+					</p>
+
+					<div className="grid grid-cols-1 gap-2">
+						{quickActions.map((action, index) => (
+							<Button
+								key={index}
+								variant="outline"
+								size="sm"
+								className="w-full justify-start text-xs h-10 border-2 hover:border-primary/50 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
+								onClick={() => onSuggestionClick(action.text)}
+							>
+								<div
+									className={`w-6 h-6 rounded-lg bg-gradient-to-r ${action.color} flex items-center justify-center mr-3 flex-shrink-0`}
+								>
+									<action.icon className="h-3 w-3 text-white" />
+								</div>
+								<span className="truncate">{action.text}</span>
+							</Button>
+						))}
+					</div>
+
+					<div className="pt-2 border-t border-border/50">
+						<p className="text-xs text-muted-foreground/70 text-center">
+							Try asking about your wardrobe, upcoming events, or
+							fashion trends!
+						</p>
+					</div>
 				</div>
 			</div>
 		</div>
@@ -425,6 +482,7 @@ const FashionChatbot = () => {
 	const [isVoiceMode, setIsVoiceMode] = useState(false);
 	const [realtimeSession, setRealtimeSession] = useState<any>(null);
 	const [isVoiceLoading, setIsVoiceLoading] = useState(false);
+	const [isFullscreen, setIsFullscreen] = useState(false);
 
 	const scrollToBottom = () => {
 		messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -625,11 +683,27 @@ const FashionChatbot = () => {
 		}
 	};
 
+	const handleMessageReaction = async (
+		messageId: string,
+		reaction: "thumbs_up" | "thumbs_down"
+	) => {
+		// Here you could implement message feedback functionality
+		toast({
+			title:
+				reaction === "thumbs_up"
+					? "Thanks for the feedback!"
+					: "We'll work on improving!",
+			description: "Your feedback helps us get better.",
+			variant: "default",
+		});
+	};
+
 	const handleClearChat = () => {
 		resetConversation();
+		setShowWelcome(true);
 		toast({
 			title: "Chat Cleared",
-			description: "Your conversation history has been cleared.",
+			description: "Your conversation has been cleared.",
 			variant: "default",
 		});
 	};
@@ -645,6 +719,7 @@ const FashionChatbot = () => {
 
 			const agent = new RealtimeAgent({
 				name: "Fashion Assistant",
+
 				instructions: `
 # Role & Objective
 You are a helpful fashion assistant. Help users with outfit suggestions, styling tips, and fashion advice. 
@@ -790,7 +865,6 @@ Say: “Thanks for your patience—I’m connecting you with a specialist now.�
 		if (!isVoiceMode) {
 			// Switching to voice mode
 			const session = await initializeRealtimeSession();
-			console.log("Realtime session started:", session);
 			if (session) {
 				setIsVoiceMode(true);
 				toast({
@@ -835,73 +909,120 @@ Say: “Thanks for your patience—I’m connecting you with a specialist now.�
 	}
 
 	return (
-		<div className="fixed right-4 bottom-4 sm:right-6 sm:bottom-6 w-[calc(100vw-2rem)] sm:w-80 h-[calc(100vh-8rem)] sm:h-96 bg-background border border-border rounded-lg shadow-xl z-50 flex flex-col animate-in slide-in-from-bottom-4 duration-300 max-w-sm">
-			{/* Header */}
-			<div className="flex items-center justify-between p-3 sm:p-4 border-b border-border bg-gradient-to-r from-primary/5 to-transparent">
-				<div className="flex items-center gap-2">
+		<div
+			className={cn(
+				"fixed z-50 flex flex-col animate-in slide-in-from-bottom-4 duration-300",
+				isFullscreen
+					? "inset-4 w-auto h-auto bg-background/95 backdrop-blur-xl border border-border/50 rounded-2xl shadow-2xl"
+					: "right-4 bottom-4 sm:right-6 sm:bottom-6 w-[calc(100vw-2rem)] sm:w-80 h-[calc(100vh-8rem)] sm:h-96 bg-background border border-border rounded-xl shadow-xl max-w-sm"
+			)}
+		>
+			{/* Header with enhanced design */}
+			<div className="flex items-center justify-between p-4 border-b border-border/50 bg-gradient-to-r from-primary/5 via-accent/5 to-primary/5 backdrop-blur-sm">
+				<div className="flex items-center gap-3">
 					<div className="relative">
-						<Bot className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
+						<div className="w-10 h-10 bg-gradient-to-br from-primary to-accent rounded-xl flex items-center justify-center shadow-lg">
+							{isVoiceMode ? (
+								<Mic className="h-5 w-5 text-white" />
+							) : (
+								<Bot className="h-5 w-5 text-white" />
+							)}
+						</div>
 						{isAuthenticated && (
-							<div className="absolute -top-1 -right-1 h-2 w-2 bg-green-500 rounded-full animate-pulse"></div>
+							<div className="absolute -top-1 -right-1 h-3 w-3 bg-green-500 rounded-full animate-pulse border-2 border-background"></div>
+						)}
+						{isVoiceMode && (
+							<div className="absolute -bottom-1 -right-1 h-3 w-3 bg-blue-500 rounded-full animate-pulse border-2 border-background">
+								<div className="w-full h-full bg-blue-400 rounded-full animate-ping"></div>
+							</div>
 						)}
 					</div>
 					<div className="flex flex-col min-w-0 flex-1">
-						<h3 className="font-semibold text-xs sm:text-sm truncate">
-							Fashion Assistant
+						<h3 className="font-bold text-sm sm:text-base truncate bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+							{isVoiceMode
+								? "Voice Assistant"
+								: "Fashion Assistant"}
 						</h3>
-						{isAuthenticated && remainingMessages !== null && (
-							<span
-								className={cn(
-									"text-xs truncate",
-									remainingMessages <= 3
-										? "text-orange-600"
-										: "text-muted-foreground"
-								)}
-							>
-								{remainingMessages} messages left
-							</span>
-						)}
-						{!isAuthenticated && (
-							<span className="text-xs text-blue-600 dark:text-blue-400 truncate">
-								Login required
-							</span>
-						)}
-						{isAuthenticated && !isPro && (
-							<span className="text-xs text-amber-600 dark:text-amber-400 truncate flex items-center gap-1">
-								<Lock className="h-3 w-3" />
-								Pro features available
-							</span>
-						)}
+						<div className="flex items-center gap-2">
+							{isAuthenticated && remainingMessages !== null && (
+								<span
+									className={cn(
+										"text-xs truncate flex items-center gap-1",
+										remainingMessages <= 3
+											? "text-orange-600"
+											: "text-muted-foreground"
+									)}
+								>
+									<Sparkles className="h-3 w-3" />
+									{remainingMessages} messages left
+								</span>
+							)}
+							{!isAuthenticated && (
+								<span className="text-xs text-blue-600 dark:text-blue-400 truncate flex items-center gap-1">
+									<Lock className="h-3 w-3" />
+									Login required
+								</span>
+							)}
+							{isAuthenticated && !isPro && (
+								<span className="text-xs text-amber-600 dark:text-amber-400 truncate flex items-center gap-1">
+									<Zap className="h-3 w-3" />
+									Pro features available
+								</span>
+							)}
+						</div>
 					</div>
 				</div>
 				<div className="flex items-center gap-1 flex-shrink-0">
+					{/* Fullscreen toggle button */}
+					<Button
+						variant="ghost"
+						size="icon"
+						onClick={() => setIsFullscreen(!isFullscreen)}
+						className="h-8 w-8 hover:bg-primary/10 transition-colors"
+						title={
+							isFullscreen
+								? "Exit fullscreen"
+								: "Enter fullscreen"
+						}
+						aria-label={
+							isFullscreen
+								? "Exit fullscreen"
+								: "Enter fullscreen"
+						}
+					>
+						{isFullscreen ? (
+							<Minimize2 className="h-4 w-4" />
+						) : (
+							<Maximize2 className="h-4 w-4" />
+						)}
+					</Button>
 					{isAuthenticated && (
 						<Button
 							variant="ghost"
 							size="icon"
 							onClick={handleClearChat}
-							className="h-6 w-6 hover:bg-red-50 hover:text-red-600 transition-colors"
+							className="h-8 w-8 hover:bg-red-50 hover:text-red-600 transition-colors"
 							title="Clear conversation"
 							aria-label="Clear conversation"
 						>
-							<Trash2 className="h-3 w-3" />
+							<Trash2 className="h-4 w-4" />
 						</Button>
 					)}
 					<Button
 						variant="ghost"
 						size="icon"
 						onClick={() => setIsOpen(false)}
-						className="h-6 w-6 hover:bg-gray-100 transition-colors"
+						className="h-8 w-8 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
 						title="Close chat"
 						aria-label="Close chat"
 					>
-						<X className="h-3 w-3 sm:h-4 sm:w-4" />
+						<X className="h-4 w-4" />
 					</Button>
 				</div>
 			</div>
 
-			{/* Messages */}
-			<ScrollArea className="flex-1 p-4">
+			{/* Messages with enhanced design */}
+			<ScrollArea className={cn("flex-1 p-4", isFullscreen ? "p-6" : "")}>
 				<div className="space-y-4">
 					{showLoginRequired && (
 						<LoginRequiredMessage onLoginClick={handleLoginClick} />
@@ -924,72 +1045,110 @@ Say: “Thanks for your patience—I’m connecting you with a specialist now.�
 										: "justify-start"
 								)}
 							>
-								<div className="max-w-[85%] space-y-1">
+								<div
+									className={cn(
+										"max-w-[85%] space-y-2",
+										isFullscreen ? "max-w-[90%]" : ""
+									)}
+								>
 									<div
 										className={cn(
-											"rounded-lg p-3 text-sm relative group",
+											"rounded-2xl p-4 text-sm relative group shadow-sm border transition-all duration-200",
 											message.sender === "user"
-												? "bg-primary text-primary-foreground"
+												? "bg-gradient-to-r from-primary to-accent text-white border-primary/20"
 												: message.isError
 												? "bg-red-50 text-red-700 border border-red-200 dark:bg-red-900/20 dark:text-red-300 dark:border-red-800"
-												: "bg-muted text-muted-foreground"
+												: "bg-gradient-to-r from-muted/50 to-muted/30 text-foreground border-muted/50"
 										)}
 									>
 										{message.isError && (
-											<div className="flex items-center gap-2 mb-1">
-												<AlertCircle className="h-3 w-3" />
+											<div className="flex items-center gap-2 mb-2">
+												<AlertCircle className="h-4 w-4" />
 												<span className="text-xs font-medium">
 													Error
 												</span>
 											</div>
 										)}
-										{message.text}
+										<div className="whitespace-pre-wrap leading-relaxed">
+											{message.text}
+										</div>
 
-										{/* Copy button for bot messages */}
-										{message.sender === "bot" &&
-											!message.isError && (
+										{/* Enhanced action buttons */}
+										<div className="flex items-center gap-1 mt-3 opacity-0 group-hover:opacity-100 transition-opacity">
+											{message.sender === "bot" &&
+												!message.isError && (
+													<>
+														<Button
+															variant="ghost"
+															size="icon"
+															className="h-6 w-6 hover:bg-white/20"
+															onClick={() =>
+																handleCopyMessage(
+																	message.text
+																)
+															}
+															title="Copy message"
+														>
+															<Copy className="h-3 w-3" />
+														</Button>
+														<Button
+															variant="ghost"
+															size="icon"
+															className="h-6 w-6 hover:bg-green-500/20 hover:text-green-600"
+															onClick={() =>
+																handleMessageReaction(
+																	message.id,
+																	"thumbs_up"
+																)
+															}
+															title="Helpful"
+														>
+															<ThumbsUp className="h-3 w-3" />
+														</Button>
+														<Button
+															variant="ghost"
+															size="icon"
+															className="h-6 w-6 hover:bg-red-500/20 hover:text-red-600"
+															onClick={() =>
+																handleMessageReaction(
+																	message.id,
+																	"thumbs_down"
+																)
+															}
+															title="Not helpful"
+														>
+															<ThumbsDown className="h-3 w-3" />
+														</Button>
+													</>
+												)}
+											{message.sender === "user" && (
 												<Button
 													variant="ghost"
 													size="icon"
-													className="absolute top-1 right-1 h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
+													className="h-6 w-6 hover:bg-white/20"
 													onClick={() =>
-														handleCopyMessage(
-															message.text
+														handleRetryMessage(
+															message.id
 														)
 													}
-													title="Copy message"
+													title="Retry message"
 												>
-													<Copy className="h-3 w-3" />
+													<RotateCcw className="h-3 w-3" />
 												</Button>
 											)}
-
-										{/* Retry button for user messages */}
-										{message.sender === "user" && (
-											<Button
-												variant="ghost"
-												size="icon"
-												className="absolute top-1 right-1 h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
-												onClick={() =>
-													handleRetryMessage(
-														message.id
-													)
-												}
-												title="Retry message"
-											>
-												<RotateCcw className="h-3 w-3" />
-											</Button>
-										)}
+										</div>
 									</div>
 
-									{/* Timestamp */}
+									{/* Enhanced timestamp */}
 									<div
 										className={cn(
-											"text-xs text-muted-foreground px-1",
+											"text-xs text-muted-foreground/70 px-2 flex items-center gap-1",
 											message.sender === "user"
-												? "text-right"
-												: "text-left"
+												? "justify-end"
+												: "justify-start"
 										)}
 									>
+										<div className="w-1 h-1 bg-current rounded-full opacity-50"></div>
 										{formatTimestamp(message.timestamp)}
 									</div>
 								</div>
