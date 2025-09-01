@@ -88,29 +88,6 @@ const Index = () => {
 		},
 	];
 
-	const stats = [
-		{
-			icon: <Users className="w-5 h-5" />,
-			label: "Active Users",
-			value: "50K+",
-		},
-		{
-			icon: <Star className="w-5 h-5" />,
-			label: "Accuracy Rate",
-			value: "95%",
-		},
-		{
-			icon: <Zap className="w-5 h-5" />,
-			label: "Analyses Done",
-			value: "1M+",
-		},
-		{
-			icon: <Globe className="w-5 h-5" />,
-			label: "Countries",
-			value: "120+",
-		},
-	];
-
 	// Types for pricing tiers
 	type PricingTier = {
 		name: string;
@@ -171,26 +148,6 @@ const Index = () => {
 										Try Live Camera
 									</Link>
 								</Button>
-							</div>
-
-							{/* Enhanced Stats with better visual design */}
-							<div className="grid grid-cols-2 lg:grid-cols-4 gap-6 pt-8">
-								{stats.map((stat, index) => (
-									<div
-										key={index}
-										className="text-center space-y-3 p-4 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10"
-									>
-										<div className="flex items-center justify-center text-primary text-2xl">
-											{stat.icon}
-										</div>
-										<div className="text-3xl font-bold text-white">
-											{stat.value}
-										</div>
-										<div className="text-sm text-white/80 font-medium">
-											{stat.label}
-										</div>
-									</div>
-								))}
 							</div>
 						</div>
 
