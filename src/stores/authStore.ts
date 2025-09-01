@@ -62,6 +62,11 @@ export const useAuthStore = create<AuthState & AuthActions>()(
 						"⚠️ Failed to fetch user pricing tier, keeping default 'free' tier:",
 						error
 					);
+					if (error.response?.status === 401) {
+						//logout
+						get().logout();
+						console.log("🔒 Logged out due to unauthorized access");
+					}
 					// Keep default 'free' tier if API fails
 				}
 			},

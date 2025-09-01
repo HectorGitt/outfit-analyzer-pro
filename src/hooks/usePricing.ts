@@ -1,6 +1,8 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiCall } from "@/lib/api";
 import { pricingTiers } from "@/lib/pricingTiers";
+import { useAuthStore } from "@/stores/authStore";
+import { toast } from "sonner";
 
 export interface UserPricingTier {
 	tier: keyof typeof pricingTiers;
@@ -45,6 +47,10 @@ export const useUserPricingTier = () => {
 					"Failed to fetch user pricing tier, using free tier as default:",
 					error
 				);
+				if (error.response?.status === 401) {
+					useAuthStore.getState().logout();
+					toast.error("Session expired. Please log in again.");
+				}
 				return {
 					tier: "free" as keyof typeof pricingTiers,
 					name: "Free",
