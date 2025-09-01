@@ -164,10 +164,32 @@ const Pricing = () => {
 													<ArrowRight className="ml-2 w-4 h-4" />
 												</Link>
 											) : (
-												<Link to="/upload">
+												<a
+													href={`mailto:sales@closetic.com?subject=${encodeURIComponent(
+														`Closetic AI - ${tier.name} Plan Inquiry`
+													)}&body=${encodeURIComponent(
+														`Hello Sales Team,
+
+I'm interested in the ${
+															tier.name
+														} plan. Please provide more details and help me get started.
+
+Plan Details:
+- Plan: ${tier.name}
+- Price: $${tier.price_monthly}/month
+
+Key Features:
+${Object.entries(tier)
+	.filter(([k]) => k !== "name" && k !== "price_monthly")
+	.map(([key, value]) => `- ${formatFeatureName(key)}: ${value}`)
+	.join("\n")}
+
+Thanks!`
+													)}`}
+												>
 													Choose Plan
 													<ArrowRight className="ml-2 w-4 h-4" />
-												</Link>
+												</a>
 											)}
 										</Button>
 									</CardContent>
@@ -252,10 +274,20 @@ const Pricing = () => {
 								className="text-lg px-8 py-4"
 								asChild
 							>
-								<Link to="/upload">
+								<a
+									href={`mailto:sales@closetic.com?subject=${encodeURIComponent(
+										"Closetic AI - Free Plan Signup"
+									)}&body=${encodeURIComponent(
+										`Hello Sales Team,
+
+I'm interested in getting started with Closetic AI. Please help me sign up for the free plan and guide me through the onboarding process.
+
+Thanks!`
+									)}`}
+								>
 									Get Started Free
 									<ArrowRight className="ml-2 w-5 h-5" />
-								</Link>
+								</a>
 							</Button>
 							<Button
 								size="lg"
@@ -264,7 +296,7 @@ const Pricing = () => {
 								asChild
 							>
 								<a
-									href={`mailto:support@closetic.com?subject=${encodeURIComponent(
+									href={`mailto:sales@closetic.com?subject=${encodeURIComponent(
 										"Closetic AI - Pricing Inquiry"
 									)}&body=${encodeURIComponent(
 										`Hello Sales Team,

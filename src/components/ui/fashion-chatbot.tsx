@@ -855,7 +855,7 @@ Say: “Thanks for your patience—I’m connecting you with a specialist now.�
 					<Button
 						variant="outline"
 						size="sm"
-						onClick={() => navigate("/profile")}
+						onClick={() => navigate("/pricing")}
 					>
 						Upgrade
 					</Button>

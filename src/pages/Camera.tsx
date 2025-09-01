@@ -779,7 +779,7 @@ export default function Camera() {
 										{!isPro && (
 											<Button
 												onClick={() =>
-													navigate("/profile")
+													navigate("/pricing")
 												}
 												className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600"
 											>
@@ -814,7 +814,7 @@ export default function Camera() {
 															<Button
 																onClick={() =>
 																	navigate(
-																		"/profile"
+																		"/pricing"
 																	)
 																}
 																className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600"
@@ -944,7 +944,7 @@ export default function Camera() {
 													variant="link"
 													className="p-0 h-auto ml-1 text-primary"
 													onClick={() =>
-														navigate("/profile")
+														navigate("/pricing")
 													}
 												>
 													Upgrade to Pro

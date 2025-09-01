@@ -853,7 +853,7 @@ const Wardrobe = () => {
 														variant="link"
 														className="p-0 h-auto text-purple-600 hover:text-purple-700"
 														onClick={() =>
-															navigate("/profile")
+															navigate("/pricing")
 														}
 													>
 														Upgrade to Pro
@@ -1191,7 +1191,7 @@ const Wardrobe = () => {
 													size="sm"
 													variant="outline"
 													onClick={() =>
-														navigate("/profile")
+														navigate("/pricing")
 													}
 													className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white border-0"
 												>
