@@ -98,7 +98,7 @@ const Index = () => {
 	const recommendedTier = "elite";
 
 	return (
-		<div className="min-h-screen bg-background" data-aos="fade-in">
+		<div className="min-h-screen bg-background overflow-x-hidden" data-aos="fade-in">
 			<Navbar />
 
 			{/* Hero Section - Enhanced with better value proposition */}
@@ -106,7 +106,7 @@ const Index = () => {
 				className="relative py-24 bg-gradient-hero overflow-hidden"
 				data-aos="fade-up"
 			>
-				<div className="container mx-auto px-4">
+				<div className="container mx-auto px-4 max-w-full overflow-hidden">
 					<div className="grid lg:grid-cols-2 gap-12 items-center">
 						<div className="space-y-8" data-aos="fade-right">
 							<div className="space-y-6">
@@ -182,7 +182,7 @@ const Index = () => {
 					<div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-purple-500 rounded-full blur-3xl"></div>
 				</div>
 
-				<div className="container mx-auto px-4 relative z-10">
+				<div className="container mx-auto px-4 relative z-10 max-w-full overflow-hidden">
 					<div className="text-center mb-24">
 						<div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-6 py-3 rounded-full text-sm font-semibold mb-8 border border-primary/20">
 							<Sparkles className="w-4 h-4" />
@@ -870,7 +870,7 @@ const Index = () => {
 
 			{/* Voice Agent Section */}
 			<section className="py-24 bg-gradient-to-br from-purple-50 via-white to-blue-50 dark:from-purple-950/20 dark:via-gray-900 dark:to-blue-950/20">
-				<div className="container mx-auto px-4">
+				<div className="container mx-auto px-4 max-w-full overflow-hidden">
 					<div className="text-center mb-20">
 						<h2 className="text-4xl lg:text-5xl font-bold mb-6">
 							Conversational Fashion Intelligence
@@ -1142,7 +1142,7 @@ const Index = () => {
 
 			{/* How It Works - Simplified and more visual */}
 			<section className="py-24 bg-white dark:bg-gray-900">
-				<div className="container mx-auto px-4">
+				<div className="container mx-auto px-4 max-w-full overflow-hidden">
 					<div className="text-center mb-20">
 						<h2 className="text-4xl lg:text-5xl font-bold mb-6">
 							How It Works
@@ -1212,7 +1212,7 @@ const Index = () => {
 
 			{/* Pricing Section - Professional and comprehensive */}
 			<section className="py-24 bg-gradient-to-br from-gray-50 via-white to-blue-50 dark:from-gray-900 dark:via-gray-800 dark:to-blue-950/20">
-				<div className="container mx-auto px-4">
+				<div className="container mx-auto px-4 max-w-full overflow-hidden">
 					<div className="text-center mb-20">
 						<h2 className="text-4xl lg:text-5xl font-bold mb-6">
 							Choose Your Style Journey
@@ -1835,7 +1835,7 @@ const Index = () => {
 
 			{/* Community & Social Proof */}
 			<section className="py-24 bg-gradient-to-r from-primary/5 via-accent/5 to-primary/5">
-				<div className="container mx-auto px-4">
+				<div className="container mx-auto px-4 max-w-full overflow-hidden">
 					<div className="text-center mb-20">
 						<h2 className="text-4xl lg:text-5xl font-bold mb-6">
 							Join Our Fashion Community
@@ -1905,7 +1905,7 @@ const Index = () => {
 			{/* CTA Section - Simplified and focused */}
 			<section className="py-24 bg-gradient-to-r from-primary via-accent to-primary text-white relative overflow-hidden">
 				<div className="absolute inset-0 bg-black/20"></div>
-				<div className="container mx-auto px-4 text-center relative z-10">
+				<div className="container mx-auto px-4 text-center relative z-10 max-w-full overflow-hidden">
 					<div className="max-w-4xl mx-auto space-y-8">
 						<div className="space-y-4">
 							<h2 className="text-4xl lg:text-6xl font-bold mb-6">
