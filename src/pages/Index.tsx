@@ -17,6 +17,9 @@ import {
 	Palette,
 	BarChart3,
 	Bot,
+	MessageCircle,
+	Mic,
+	Volume2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -120,46 +123,46 @@ const Index = () => {
 		<div className="min-h-screen bg-background" data-aos="fade-in">
 			<Navbar />
 
-			{/* Hero Section */}
+			{/* Hero Section - Enhanced with better value proposition */}
 			<section
-				className="relative py-20 bg-gradient-hero overflow-hidden"
+				className="relative py-24 bg-gradient-hero overflow-hidden"
 				data-aos="fade-up"
 			>
 				<div className="container mx-auto px-4">
 					<div className="grid lg:grid-cols-2 gap-12 items-center">
 						<div className="space-y-8" data-aos="fade-right">
-							<div className="space-y-4">
-								<Badge className="bg-primary/10 text-primary border-primary/20">
-									<Sparkles className="w-3 h-3 mr-1" />
-									AI-Powered Fashion Analysis
+							<div className="space-y-6">
+								<Badge className="bg-primary/10 text-primary border-primary/20 px-4 py-2">
+									<Sparkles className="w-4 h-4 mr-2" />
+									AI-Powered Fashion Intelligence
 								</Badge>
-								<h1 className="text-5xl lg:text-6xl font-bold leading-tight">
-									Elevate Your Style with{" "}
-									<span className="text-gradient">
-										AI Fashion Intelligence
+								<h1 className="text-5xl lg:text-7xl font-bold leading-tight">
+									Transform Your Style with{" "}
+									<span className="text-gradient block">
+										AI Fashion Analysis
 									</span>
 								</h1>
-								<p className="text-xl text-muted-foreground leading-relaxed">
+								<p className="text-xl text-muted-foreground leading-relaxed max-w-lg">
 									Get instant, personalized fashion analysis
-									and style recommendations powered by
-									advanced AI technology. Perfect your look,
-									boost your confidence.
+									and expert recommendations powered by
+									advanced AI. Elevate your wardrobe game with
+									intelligent insights.
 								</p>
 							</div>
 
 							<div className="flex flex-col sm:flex-row gap-4">
 								<Button
-									className="btn-gradient text-lg px-8 py-4"
+									className="btn-gradient text-lg px-8 py-6 shadow-fashion hover:shadow-xl transition-all duration-300"
 									asChild
 								>
 									<Link to="/upload">
-										Start Analysis
+										Start Free Analysis
 										<ArrowRight className="ml-2 w-5 h-5" />
 									</Link>
 								</Button>
 								<Button
 									variant="outline"
-									className="text-lg px-8 py-4"
+									className="text-lg px-8 py-6 border-2 hover:bg-primary hover:text-white transition-all duration-300"
 									asChild
 								>
 									<Link to="/camera">
@@ -169,20 +172,20 @@ const Index = () => {
 								</Button>
 							</div>
 
-							{/* Stats */}
-							<div className="grid grid-cols-2 sm:grid-cols-4 gap-6 pt-8">
+							{/* Enhanced Stats with better visual design */}
+							<div className="grid grid-cols-2 lg:grid-cols-4 gap-6 pt-8">
 								{stats.map((stat, index) => (
 									<div
 										key={index}
-										className="text-center space-y-2"
+										className="text-center space-y-3 p-4 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10"
 									>
-										<div className="flex items-center justify-center text-primary">
+										<div className="flex items-center justify-center text-primary text-2xl">
 											{stat.icon}
 										</div>
-										<div className="text-2xl font-bold">
+										<div className="text-3xl font-bold text-white">
 											{stat.value}
 										</div>
-										<div className="text-sm text-muted-foreground">
+										<div className="text-sm text-white/80 font-medium">
 											{stat.label}
 										</div>
 									</div>
@@ -190,81 +193,39 @@ const Index = () => {
 							</div>
 						</div>
 
-						<div className="relative lg:block hidden">
+						<div
+							className="relative lg:block hidden"
+							data-aos="fade-left"
+						>
 							<div className="relative animate-float">
 								<img
 									src={heroImage}
 									alt="Fashion Analysis Demo"
-									className="w-full h-auto rounded-2xl shadow-fashion"
+									className="w-full h-auto rounded-3xl shadow-2xl"
 								/>
-								<div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent rounded-2xl" />
+								<div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent rounded-3xl" />
+								<div className="absolute -bottom-6 -right-6 w-32 h-32 bg-gradient-to-br from-primary/20 to-accent/20 rounded-full blur-xl" />
 							</div>
 						</div>
 					</div>
 				</div>
+
+				{/* Floating elements for visual interest */}
+				<div className="absolute top-20 left-10 w-20 h-20 bg-primary/10 rounded-full blur-xl animate-pulse" />
+				<div className="absolute bottom-20 right-10 w-32 h-32 bg-accent/10 rounded-full blur-xl animate-pulse" />
 			</section>
 
-			{/* Fashion Bot Feature Showcase */}
-			<section className="py-16 bg-gradient-secondary/30">
+			{/* Core Features - Simplified and more focused */}
+			<section className="py-24 bg-white dark:bg-gray-900">
 				<div className="container mx-auto px-4">
-					<div className="max-w-4xl mx-auto text-center">
-						<div className="mb-8">
-							<h2 className="text-3xl font-bold mb-4">
-								Meet Your Fashion Assistant
-							</h2>
-							<p className="text-lg text-muted-foreground">
-								Get instant style advice and fashion tips from
-								our AI assistant
-							</p>
-						</div>
-
-						<Card className="card-fashion max-w-2xl mx-auto">
-							<CardContent className="p-8">
-								<div className="flex items-center justify-center mb-6">
-									<div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center">
-										<Bot className="w-8 h-8 text-primary" />
-									</div>
-								</div>
-								<h3 className="text-xl font-semibold mb-4">
-									Always Ready to Help
-								</h3>
-								<p className="text-muted-foreground mb-6 leading-relaxed">
-									Our fashion bot is available 24/7 to answer
-									your style questions, provide outfit
-									suggestions, and help you make confident
-									fashion choices. Look for the bot icon in
-									the bottom right corner!
-								</p>
-								<div className="flex items-center justify-center gap-4 text-sm text-muted-foreground">
-									<div className="flex items-center gap-2">
-										<Sparkles className="w-4 h-4 text-accent" />
-										<span>Style Tips</span>
-									</div>
-									<div className="flex items-center gap-2">
-										<Palette className="w-4 h-4 text-accent" />
-										<span>Color Advice</span>
-									</div>
-									<div className="flex items-center gap-2">
-										<TrendingUp className="w-4 h-4 text-accent" />
-										<span>Trend Updates</span>
-									</div>
-								</div>
-							</CardContent>
-						</Card>
-					</div>
-				</div>
-			</section>
-
-			{/* Features Section */}
-			<section className="py-20">
-				<div className="container mx-auto px-4">
-					<div className="text-center mb-16 animate-fade-up">
-						<h2 className="text-4xl font-bold mb-4">
-							Powerful Features for Perfect Style
+					<div className="text-center mb-20">
+						<h2 className="text-4xl lg:text-5xl font-bold mb-6">
+							Everything You Need for Perfect Style
 						</h2>
-						<p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-							Everything you need to analyze, understand, and
-							improve your fashion choices
+						<p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+							From instant analysis to personalized
+							recommendations, discover the complete fashion
+							toolkit powered by AI
 						</p>
 					</div>
 
@@ -272,27 +233,32 @@ const Index = () => {
 						{features.map((feature, index) => (
 							<Card
 								key={index}
-								className="card-fashion group hover:shadow-fashion transition-all duration-300"
+								className="card-fashion group hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 border-0 shadow-lg"
+								data-aos="fade-up"
+								data-aos-delay={index * 100}
 							>
-								<CardHeader>
-									<div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center text-primary mb-4 group-hover:scale-110 transition-transform duration-200">
+								<CardHeader className="pb-4">
+									<div className="w-14 h-14 bg-gradient-to-br from-primary/20 to-accent/20 rounded-xl flex items-center justify-center text-primary mb-4 group-hover:scale-110 group-hover:rotate-6 transition-all duration-300">
 										{feature.icon}
 									</div>
-									<CardTitle className="text-xl">
+									<CardTitle className="text-xl font-bold">
 										{feature.title}
 									</CardTitle>
 								</CardHeader>
 								<CardContent>
-									<p className="text-muted-foreground mb-4">
+									<p className="text-muted-foreground mb-6 leading-relaxed">
 										{feature.description}
 									</p>
 									<Button
 										variant="ghost"
-										className="group-hover:text-primary"
+										className="group-hover:text-primary group-hover:translate-x-2 transition-all duration-300 p-0 h-auto font-semibold py-3"
 										asChild
 									>
-										<Link to={feature.href}>
-											Try Now{" "}
+										<Link
+											to={feature.href}
+											className="flex items-center"
+										>
+											Explore Feature
 											<ArrowRight className="ml-2 w-4 h-4" />
 										</Link>
 									</Button>
@@ -303,611 +269,1372 @@ const Index = () => {
 				</div>
 			</section>
 
-			{/* Wardrobe Analysis Section */}
-			<section className="py-20 bg-gradient-secondary/50">
+			{/* AI Chatbot Features - Enhanced */}
+			<section className="py-24 bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-blue-950/20 dark:via-gray-900 dark:to-purple-950/20">
 				<div className="container mx-auto px-4">
-					<div className="text-center mb-16">
-						<h2 className="text-4xl font-bold mb-4">
-							Full Wardrobe Analysis
+					<div className="text-center mb-20">
+						<h2 className="text-4xl lg:text-5xl font-bold mb-6">
+							Your Personal Fashion Assistant
 						</h2>
-						<p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-							Comprehensive analysis of your entire wardrobe based
-							on current trends and personal preferences
+						<p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+							Meet your AI fashion expert - available 24/7 to
+							answer questions, provide styling advice, and help
+							you make confident fashion choices
 						</p>
 					</div>
 
-					<div className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
-						<Card className="card-fashion group hover:shadow-fashion transition-all duration-300">
-							<CardHeader>
-								<div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center text-primary mb-4 group-hover:scale-110 transition-transform duration-200">
-									<Shirt className="w-6 h-6" />
+					<div className="grid lg:grid-cols-2 gap-16 items-center max-w-7xl mx-auto">
+						<div className="space-y-8">
+							<div className="space-y-8">
+								<div className="flex items-start space-x-6">
+									<div className="w-14 h-14 bg-gradient-to-br from-blue-500 to-purple-500 rounded-xl flex items-center justify-center text-white flex-shrink-0 shadow-lg">
+										<MessageCircle className="w-7 h-7" />
+									</div>
+									<div className="space-y-2">
+										<h3 className="text-2xl font-bold">
+											Intelligent Conversations
+										</h3>
+										<p className="text-muted-foreground text-lg leading-relaxed">
+											Ask natural questions about fashion,
+											style, and outfit combinations. Our
+											AI understands context and provides
+											relevant, personalized advice
+											tailored to your wardrobe.
+										</p>
+									</div>
 								</div>
-								<CardTitle className="text-lg">
-									Wardrobe Insights
-								</CardTitle>
-							</CardHeader>
-							<CardContent>
-								<p className="text-muted-foreground">
-									AI-powered analysis of your clothing
-									collection with trend alignment and style
-									coherence scores
-								</p>
-							</CardContent>
-						</Card>
 
-						<Card className="card-fashion group hover:shadow-fashion transition-all duration-300">
-							<CardHeader>
-								<div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center text-primary mb-4 group-hover:scale-110 transition-transform duration-200">
-									<Palette className="w-6 h-6" />
+								<div className="flex items-start space-x-6">
+									<div className="w-14 h-14 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl flex items-center justify-center text-white flex-shrink-0 shadow-lg">
+										<Shirt className="w-7 h-7" />
+									</div>
+									<div className="space-y-2">
+										<h3 className="text-2xl font-bold">
+											Wardrobe Integration
+										</h3>
+										<p className="text-muted-foreground text-lg leading-relaxed">
+											The chatbot knows your wardrobe
+											items and suggests outfits based on
+											what you actually own, avoiding
+											generic recommendations and ensuring
+											practicality.
+										</p>
+									</div>
 								</div>
-								<CardTitle className="text-lg">
-									Style Preferences
-								</CardTitle>
-							</CardHeader>
-							<CardContent>
-								<p className="text-muted-foreground">
-									Personalized recommendations based on your
-									unique style preferences and color palette
-								</p>
-							</CardContent>
-						</Card>
 
-						<Card className="card-fashion group hover:shadow-fashion transition-all duration-300">
-							<CardHeader>
-								<div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center text-primary mb-4 group-hover:scale-110 transition-transform duration-200">
-									<BarChart3 className="w-6 h-6" />
-								</div>
-								<CardTitle className="text-lg">
-									Trend Analysis
-								</CardTitle>
-							</CardHeader>
-							<CardContent>
-								<p className="text-muted-foreground">
-									Stay ahead with real-time fashion trend
-									analysis and wardrobe optimization
-									suggestions
-								</p>
-							</CardContent>
-						</Card>
-					</div>
-				</div>
-			</section>
-
-			{/* Fashion Scheduling Section */}
-			<section className="py-20">
-				<div className="container mx-auto px-4">
-					<div className="text-center mb-16">
-						<h2 className="text-4xl font-bold mb-4">
-							Smart Fashion Scheduling
-						</h2>
-						<p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-							Get personalized outfit recommendations for
-							different events based on your wardrobe items
-						</p>
-					</div>
-
-					<div className="grid lg:grid-cols-2 gap-12 items-center max-w-6xl mx-auto">
-						<div className="space-y-6">
-							<div className="flex items-start space-x-4">
-								<div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center text-primary flex-shrink-0">
-									<Target className="w-5 h-5" />
-								</div>
-								<div>
-									<h3 className="text-lg font-semibold mb-2">
-										Event-Based Styling
-									</h3>
-									<p className="text-muted-foreground">
-										Get outfit suggestions tailored for work
-										meetings, casual outings, formal events,
-										and special occasions
-									</p>
+								<div className="flex items-start space-x-6">
+									<div className="w-14 h-14 bg-gradient-to-br from-orange-500 to-red-500 rounded-xl flex items-center justify-center text-white flex-shrink-0 shadow-lg">
+										<TrendingUp className="w-7 h-7" />
+									</div>
+									<div className="space-y-2">
+										<h3 className="text-2xl font-bold">
+											Trend Awareness
+										</h3>
+										<p className="text-muted-foreground text-lg leading-relaxed">
+											Stay updated with current fashion
+											trends, seasonal colors, and styling
+											tips that perfectly match your
+											personal style preferences and body
+											type.
+										</p>
+									</div>
 								</div>
 							</div>
 
-							<div className="flex items-start space-x-4">
-								<div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center text-primary flex-shrink-0">
-									<Clock className="w-5 h-5" />
-								</div>
-								<div>
-									<h3 className="text-lg font-semibold mb-2">
-										Weekly Planning
-									</h3>
-									<p className="text-muted-foreground">
-										Plan your outfits for the entire week
-										with smart recommendations that avoid
-										repetition
-									</p>
-								</div>
-							</div>
-
-							<div className="flex items-start space-x-4">
-								<div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center text-primary flex-shrink-0">
-									<Sparkles className="w-5 h-5" />
-								</div>
-								<div>
-									<h3 className="text-lg font-semibold mb-2">
-										Smart Combinations
-									</h3>
-									<p className="text-muted-foreground">
-										Discover new outfit combinations from
-										your existing wardrobe items
-									</p>
+							{/* Enhanced sample conversation */}
+							<div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl p-8 shadow-xl border border-white/20">
+								<h4 className="font-bold text-xl mb-6 flex items-center">
+									<Bot className="w-6 h-6 mr-3 text-primary" />
+									Sample Conversation
+								</h4>
+								<div className="space-y-4">
+									<div className="flex gap-4">
+										<div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center flex-shrink-0">
+											<span className="text-white text-sm font-bold">
+												Y
+											</span>
+										</div>
+										<div className="bg-primary/10 rounded-2xl rounded-tl-md px-4 py-3 max-w-md">
+											<p className="text-sm">
+												"What should I wear to a wedding
+												this weekend?"
+											</p>
+										</div>
+									</div>
+									<div className="flex gap-4 justify-end">
+										<div className="bg-gradient-to-r from-primary to-accent rounded-2xl rounded-tr-md px-4 py-3 max-w-lg">
+											<p className="text-sm text-white">
+												"Based on your navy blazer,
+												white dress shirt, and chinos in
+												your wardrobe, I'd recommend
+												that combination with your brown
+												leather shoes. It's elegant yet
+												comfortable for a wedding
+												reception!"
+											</p>
+										</div>
+										<div className="w-8 h-8 bg-gradient-to-r from-primary to-accent rounded-full flex items-center justify-center flex-shrink-0">
+											<Bot className="w-4 h-4 text-white" />
+										</div>
+									</div>
 								</div>
 							</div>
 						</div>
 
-						<div className="grid grid-cols-2 gap-4">
-							<Card className="p-4 text-center">
-								<div className="text-2xl font-bold text-primary">
-									85%
-								</div>
-								<div className="text-sm text-muted-foreground">
-									Outfit Satisfaction
-								</div>
-							</Card>
-							<Card className="p-4 text-center">
-								<div className="text-2xl font-bold text-primary">
-									7+
-								</div>
-								<div className="text-sm text-muted-foreground">
-									Days Planned
-								</div>
-							</Card>
-							<Card className="p-4 text-center">
-								<div className="text-2xl font-bold text-primary">
-									50+
-								</div>
-								<div className="text-sm text-muted-foreground">
-									New Combinations
-								</div>
-							</Card>
-							<Card className="p-4 text-center">
-								<div className="text-2xl font-bold text-primary">
-									100%
-								</div>
-								<div className="text-sm text-muted-foreground">
-									Event Matched
-								</div>
-							</Card>
-						</div>
-					</div>
-				</div>
-			</section>
-
-			{/* Calendar Integration Section */}
-			<section className="py-20 bg-gradient-secondary/30">
-				<div className="container mx-auto px-4">
-					<div className="text-center mb-16">
-						<h2 className="text-4xl font-bold mb-4">
-							Calendar Integration
-						</h2>
-						<p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-							Seamlessly sync with your calendar to plan perfect
-							outfits for every scheduled event
-						</p>
-					</div>
-
-					<div className="max-w-4xl mx-auto">
-						<Card className="p-8 card-fashion">
-							<div className="grid md:grid-cols-2 gap-8 items-center">
-								<div className="space-y-6">
-									<div className="w-16 h-16 bg-gradient-primary rounded-2xl flex items-center justify-center">
-										<Calendar className="w-8 h-8 text-white" />
+						<div className="space-y-8">
+							<Card className="card-fashion p-8 bg-gradient-to-br from-white to-blue-50/50 dark:from-gray-800 dark:to-blue-950/20 border-0 shadow-2xl">
+								<div className="flex items-center gap-6 mb-6">
+									<div className="w-16 h-16 bg-gradient-to-r from-primary to-accent rounded-2xl flex items-center justify-center shadow-lg">
+										<Bot className="w-8 h-8 text-white" />
 									</div>
 									<div>
-										<h3 className="text-2xl font-bold mb-4">
-											Never Miss a Style Beat
+										<h3 className="text-2xl font-bold">
+											24/7 Fashion Support
 										</h3>
-										<p className="text-muted-foreground mb-6">
-											Connect your calendar and let AI
-											automatically suggest appropriate
-											outfits for each event, meeting, or
-											occasion.
+										<p className="text-muted-foreground">
+											Always available for style advice
 										</p>
-										<Button
-											className="btn-gradient"
-											asChild
-										>
-											<Link to="/calendar-connect">
-												Connect Calendar
-												<ArrowRight className="ml-2 w-4 h-4" />
-											</Link>
-										</Button>
+									</div>
+								</div>
+								<div className="space-y-4 mb-8">
+									<div className="flex justify-between items-center p-4 bg-white/50 dark:bg-gray-700/50 rounded-xl">
+										<span className="font-semibold">
+											Response Time
+										</span>
+										<span className="text-primary font-bold">
+											&lt; 2 seconds
+										</span>
+									</div>
+									<div className="flex justify-between items-center p-4 bg-white/50 dark:bg-gray-700/50 rounded-xl">
+										<span className="font-semibold">
+											Style Questions
+										</span>
+										<span className="text-primary font-bold">
+											Unlimited
+										</span>
+									</div>
+									<div className="flex justify-between items-center p-4 bg-white/50 dark:bg-gray-700/50 rounded-xl">
+										<span className="font-semibold">
+											Personalization
+										</span>
+										<span className="text-primary font-bold">
+											100%
+										</span>
+									</div>
+								</div>
+							</Card>
+
+							{/* Performance metrics */}
+							<div className="grid grid-cols-2 gap-6">
+								<Card className="p-6 text-center bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-950/20 dark:to-emerald-950/20 border-0 shadow-lg">
+									<div className="text-3xl font-bold text-green-600 mb-2">
+										50+
+									</div>
+									<div className="text-sm text-muted-foreground font-medium">
+										Style Topics
+									</div>
+								</Card>
+								<Card className="p-6 text-center bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-blue-950/20 dark:to-cyan-950/20 border-0 shadow-lg">
+									<div className="text-3xl font-bold text-blue-600 mb-2">
+										1000+
+									</div>
+									<div className="text-sm text-muted-foreground font-medium">
+										Outfit Combinations
+									</div>
+								</Card>
+								<Card className="p-6 text-center bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-950/20 dark:to-pink-950/20 border-0 shadow-lg">
+									<div className="text-3xl font-bold text-purple-600 mb-2">
+										24/7
+									</div>
+									<div className="text-sm text-muted-foreground font-medium">
+										Availability
+									</div>
+								</Card>
+								<Card className="p-6 text-center bg-gradient-to-br from-orange-50 to-red-50 dark:from-orange-950/20 dark:to-red-950/20 border-0 shadow-lg">
+									<div className="text-3xl font-bold text-orange-600 mb-2">
+										95%
+									</div>
+									<div className="text-sm text-muted-foreground font-medium">
+										Accuracy Rate
+									</div>
+								</Card>
+							</div>
+						</div>
+					</div>
+				</div>
+			</section>
+
+			{/* Voice Agent Section */}
+			<section className="py-24 bg-gradient-to-br from-purple-50 via-white to-blue-50 dark:from-purple-950/20 dark:via-gray-900 dark:to-blue-950/20">
+				<div className="container mx-auto px-4">
+					<div className="text-center mb-20">
+						<h2 className="text-4xl lg:text-5xl font-bold mb-6">
+							Conversational Fashion Intelligence
+						</h2>
+						<p className="text-xl text-muted-foreground max-w-3xl mx-auto mb-8">
+							Experience the future of fashion advice with natural
+							voice conversations. Speak to your AI stylist just
+							like you would to a friend.
+						</p>
+						<Badge className="bg-gradient-to-r from-amber-500 to-orange-500 text-white border-0 px-6 py-3 text-lg font-semibold shadow-lg">
+							<Mic className="w-5 h-5 mr-2" />
+							Pro Feature
+						</Badge>
+					</div>
+
+					<div className="max-w-7xl mx-auto">
+						<div className="grid lg:grid-cols-2 gap-16 items-center">
+							<div className="space-y-8">
+								<div className="flex items-start space-x-6">
+									<div className="w-14 h-14 bg-gradient-to-r from-blue-500 to-purple-500 rounded-xl flex items-center justify-center text-white flex-shrink-0 shadow-lg">
+										<Mic className="w-7 h-7" />
+									</div>
+									<div className="space-y-2">
+										<h3 className="text-2xl font-bold">
+											Natural Voice Conversations
+										</h3>
+										<p className="text-muted-foreground text-lg leading-relaxed">
+											Speak naturally about fashion,
+											style, and outfits. Our AI
+											understands context, remembers your
+											preferences, and provides
+											conversational responses.
+										</p>
 									</div>
 								</div>
 
-								<div className="space-y-4">
-									<Card className="p-4 border-l-4 border-l-primary/50">
-										<div className="flex items-center justify-between">
-											<div>
-												<h4 className="font-semibold">
-													Team Meeting
-												</h4>
-												<p className="text-sm text-muted-foreground">
-													Today, 2:00 PM
-												</p>
+								<div className="flex items-start space-x-6">
+									<div className="w-14 h-14 bg-gradient-to-r from-green-500 to-teal-500 rounded-xl flex items-center justify-center text-white flex-shrink-0 shadow-lg">
+										<Volume2 className="w-7 h-7" />
+									</div>
+									<div className="space-y-2">
+										<h3 className="text-2xl font-bold">
+											Real-Time Audio Responses
+										</h3>
+										<p className="text-muted-foreground text-lg leading-relaxed">
+											Get instant voice feedback with
+											personality and expertise. No more
+											reading - just listen and get styled
+											with professional fashion advice.
+										</p>
+									</div>
+								</div>
+
+								<div className="flex items-start space-x-6">
+									<div className="w-14 h-14 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl flex items-center justify-center text-white flex-shrink-0 shadow-lg">
+										<Zap className="w-7 h-7" />
+									</div>
+									<div className="space-y-2">
+										<h3 className="text-2xl font-bold">
+											Advanced AI Understanding
+										</h3>
+										<p className="text-muted-foreground text-lg leading-relaxed">
+											Powered by cutting-edge AI that
+											understands fashion context, trends,
+											seasonal changes, and your unique
+											style preferences.
+										</p>
+									</div>
+								</div>
+
+								<div className="flex items-start space-x-6">
+									<div className="w-14 h-14 bg-gradient-to-r from-orange-500 to-red-500 rounded-xl flex items-center justify-center text-white flex-shrink-0 shadow-lg">
+										<Clock className="w-7 h-7" />
+									</div>
+									<div className="space-y-2">
+										<h3 className="text-2xl font-bold">
+											Contextual Memory
+										</h3>
+										<p className="text-muted-foreground text-lg leading-relaxed">
+											The voice agent remembers your
+											conversation history, wardrobe
+											details, style preferences, and
+											previous recommendations for truly
+											personalized advice.
+										</p>
+									</div>
+								</div>
+							</div>
+
+							<div className="space-y-8">
+								<Card className="card-fashion p-8 bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-950/20 dark:to-purple-950/20 border-0 shadow-2xl">
+									<div className="text-center mb-8">
+										<div className="w-20 h-20 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-xl">
+											<Mic className="w-10 h-10 text-white" />
+										</div>
+										<h3 className="text-3xl font-bold mb-3">
+											Voice Agent Pro
+										</h3>
+										<p className="text-muted-foreground text-lg">
+											Experience fashion advice like never
+											before
+										</p>
+									</div>
+
+									<div className="space-y-4 mb-8">
+										<div className="flex items-center justify-between p-4 bg-white/60 dark:bg-gray-800/60 rounded-xl backdrop-blur-sm">
+											<span className="font-semibold text-lg">
+												Natural Conversations
+											</span>
+											<div className="flex items-center gap-3">
+												<div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
+												<span className="text-green-600 font-bold">
+													Active
+												</span>
 											</div>
-											<Badge variant="secondary">
-												Business Casual
-											</Badge>
+										</div>
+
+										<div className="flex items-center justify-between p-4 bg-white/60 dark:bg-gray-800/60 rounded-xl backdrop-blur-sm">
+											<span className="font-semibold text-lg">
+												Real-Time Responses
+											</span>
+											<div className="flex items-center gap-3">
+												<div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
+												<span className="text-green-600 font-bold">
+													&lt; 1s
+												</span>
+											</div>
+										</div>
+
+										<div className="flex items-center justify-between p-4 bg-white/60 dark:bg-gray-800/60 rounded-xl backdrop-blur-sm">
+											<span className="font-semibold text-lg">
+												Personalization
+											</span>
+											<div className="flex items-center gap-3">
+												<div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
+												<span className="text-green-600 font-bold">
+													100%
+												</span>
+											</div>
+										</div>
+									</div>
+
+									<div className="text-center">
+										<Button
+											className="btn-gradient text-lg px-8 py-6 w-full shadow-xl hover:shadow-2xl transition-all duration-300"
+											size="lg"
+										>
+											Upgrade to Pro
+											<ArrowRight className="ml-2 w-5 h-5" />
+										</Button>
+										<p className="text-sm text-muted-foreground mt-4">
+											Unlock voice conversations and
+											premium features
+										</p>
+									</div>
+								</Card>
+
+								{/* Enhanced stats grid */}
+								<div className="grid grid-cols-3 gap-6">
+									<Card className="p-6 text-center bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-950/20 dark:to-emerald-950/20 border-0 shadow-lg hover:shadow-xl transition-all duration-300">
+										<div className="text-3xl font-bold text-green-600 mb-2">
+											99%
+										</div>
+										<div className="text-sm text-muted-foreground font-medium">
+											User Satisfaction
 										</div>
 									</Card>
-
-									<Card className="p-4 border-l-4 border-l-accent/50">
-										<div className="flex items-center justify-between">
-											<div>
-												<h4 className="font-semibold">
-													Dinner Date
-												</h4>
-												<p className="text-sm text-muted-foreground">
-													Friday, 7:00 PM
-												</p>
-											</div>
-											<Badge variant="secondary">
-												Smart Casual
-											</Badge>
+									<Card className="p-6 text-center bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-blue-950/20 dark:to-cyan-950/20 border-0 shadow-lg hover:shadow-xl transition-all duration-300">
+										<div className="text-3xl font-bold text-blue-600 mb-2">
+											50+
+										</div>
+										<div className="text-sm text-muted-foreground font-medium">
+											Languages Supported
 										</div>
 									</Card>
-
-									<Card className="p-4 border-l-4 border-l-primary/30">
-										<div className="flex items-center justify-between">
-											<div>
-												<h4 className="font-semibold">
-													Weekend Brunch
-												</h4>
-												<p className="text-sm text-muted-foreground">
-													Saturday, 11:00 AM
-												</p>
-											</div>
-											<Badge variant="secondary">
-												Casual
-											</Badge>
+									<Card className="p-6 text-center bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-950/20 dark:to-pink-950/20 border-0 shadow-lg hover:shadow-xl transition-all duration-300">
+										<div className="text-3xl font-bold text-purple-600 mb-2">
+											24/7
+										</div>
+										<div className="text-sm text-muted-foreground font-medium">
+											Voice Availability
 										</div>
 									</Card>
 								</div>
 							</div>
-						</Card>
-					</div>
-				</div>
-			</section>
-
-			{/* Leaderboards Section */}
-			<section className="py-20 bg-gradient-secondary">
-				<div className="container mx-auto px-4">
-					<div className="text-center mb-16">
-						<h2 className="text-4xl font-bold mb-4">
-							Community Champions
-						</h2>
-						<p className="text-xl text-muted-foreground">
-							Celebrate our top fashion enthusiasts and style
-							icons
-						</p>
-					</div>
-
-					<div className="grid lg:grid-cols-2 gap-8 max-w-6xl mx-auto">
-						{/* Analysis Leaderboard */}
-						<div>
-							{leaderboardData?.success && (
-								<Leaderboard
-									users={leaderboardData.data.leaderboard.slice(
-										0,
-										5
-									)}
-									title="Top Analyzers"
-								/>
-							)}
-						</div>
-
-						{/* Fashion Icon */}
-						<div>
-							{fashionIconData?.success && (
-								<FashionIconCard
-									icon={fashionIconData.data.fashion_icon}
-								/>
-							)}
 						</div>
 					</div>
 				</div>
 			</section>
 
-			{/* How It Works */}
-			<section className="py-20">
+			{/* How It Works - Simplified and more visual */}
+			<section className="py-24 bg-white dark:bg-gray-900">
 				<div className="container mx-auto px-4">
-					<div className="text-center mb-16">
-						<h2 className="text-4xl font-bold mb-4">
-							How Closetic AI Works
+					<div className="text-center mb-20">
+						<h2 className="text-4xl lg:text-5xl font-bold mb-6">
+							How It Works
 						</h2>
-						<p className="text-xl text-muted-foreground">
-							Simple steps to perfect style
+						<p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+							Transform your fashion experience in three simple
+							steps
 						</p>
 					</div>
 
-					<div className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+					<div className="grid md:grid-cols-3 gap-12 max-w-6xl mx-auto">
 						{[
 							{
 								step: "1",
-								title: "Upload or Capture",
+								title: "Capture or Upload",
 								description:
-									"Take a photo or upload an image of your outfit",
+									"Take a photo with your camera or upload an existing image of your outfit",
+								icon: <Camera className="w-8 h-8" />,
+								color: "from-blue-500 to-cyan-500",
 							},
 							{
 								step: "2",
 								title: "AI Analysis",
 								description:
-									"Our AI analyzes colors, style, and overall coherence",
+									"Our advanced AI analyzes colors, style, fit, and overall fashion coherence",
+								icon: <Sparkles className="w-8 h-8" />,
+								color: "from-purple-500 to-pink-500",
 							},
 							{
 								step: "3",
-								title: "Get Insights",
+								title: "Get Expert Insights",
 								description:
-									"Receive personalized recommendations and style tips",
+									"Receive personalized recommendations and professional styling advice",
+								icon: <Bot className="w-8 h-8" />,
+								color: "from-green-500 to-emerald-500",
 							},
 						].map((step, index) => (
-							<div key={index} className="text-center space-y-4">
-								<div className="w-16 h-16 bg-gradient-primary rounded-full flex items-center justify-center text-white text-xl font-bold mx-auto">
+							<div
+								key={index}
+								className="text-center space-y-6 group"
+								data-aos="fade-up"
+								data-aos-delay={index * 200}
+							>
+								<div
+									className={`w-20 h-20 bg-gradient-to-r ${step.color} rounded-2xl flex items-center justify-center text-white text-2xl font-bold mx-auto shadow-lg group-hover:scale-110 group-hover:rotate-6 transition-all duration-500`}
+								>
 									{step.step}
 								</div>
-								<h3 className="text-xl font-semibold">
-									{step.title}
-								</h3>
-								<p className="text-muted-foreground">
-									{step.description}
-								</p>
+								<div className="space-y-4">
+									<h3 className="text-2xl font-bold">
+										{step.title}
+									</h3>
+									<p className="text-muted-foreground text-lg leading-relaxed max-w-sm mx-auto">
+										{step.description}
+									</p>
+								</div>
+								<div
+									className={`w-16 h-16 bg-gradient-to-r ${step.color} rounded-xl flex items-center justify-center text-white mx-auto shadow-md group-hover:shadow-lg transition-all duration-300`}
+								>
+									{step.icon}
+								</div>
 							</div>
 						))}
 					</div>
 				</div>
 			</section>
 
-			{/* CTA Section */}
-			<section className="py-20 bg-gradient-to-r from-primary to-accent text-white">
-				<div className="container mx-auto px-4 text-center">
-					<div className="max-w-3xl mx-auto space-y-8">
-						<h2 className="text-4xl font-bold">
-							Ready to Transform Your Style?
+			{/* Pricing Section - Professional and comprehensive */}
+			<section className="py-24 bg-gradient-to-br from-gray-50 via-white to-blue-50 dark:from-gray-900 dark:via-gray-800 dark:to-blue-950/20">
+				<div className="container mx-auto px-4">
+					<div className="text-center mb-20">
+						<h2 className="text-4xl lg:text-5xl font-bold mb-6">
+							Choose Your Style Journey
 						</h2>
-						<p className="text-xl opacity-90">
-							Join thousands of users who have elevated their
-							fashion game with Closetic AI
+						<p className="text-xl text-muted-foreground max-w-3xl mx-auto mb-8">
+							Select the perfect plan for your fashion needs.
+							Start free and upgrade as you grow.
 						</p>
-						<div className="flex flex-col sm:flex-row gap-4 justify-center">
-							<Button
-								size="lg"
-								variant="secondary"
-								className="text-lg px-8 py-4"
-								asChild
-							>
-								<Link to="/register">
-									Get Started Free
-									<ArrowRight className="ml-2 w-5 h-5" />
-								</Link>
-							</Button>
-							<Button
-								size="lg"
-								variant="outline"
-								className="text-lg px-8 py-4 border-white text-white bg-transparent hover:bg-primary hover:text-white transition-colors"
-								asChild
-							>
-								<Link to="/upload">Try Demo</Link>
-							</Button>
+						<Button
+							variant="outline"
+							className="text-lg px-8 py-4 border-2 border-primary text-primary hover:bg-primary hover:text-white transition-all duration-300"
+							asChild
+						>
+							<Link to="/pricing">
+								View Full Pricing Details
+								<ArrowRight className="ml-2 w-5 h-5" />
+							</Link>
+						</Button>
+					</div>
+
+					{/* Free Tier - Prominent First */}
+					<div className="flex justify-center mb-12">
+						<Card className="relative card-fashion border-0 shadow-2xl hover:shadow-3xl transition-all duration-500 group max-w-md w-full">
+							<CardHeader className="text-center pb-8">
+								<div className="w-16 h-16 bg-gradient-to-r from-green-500 to-emerald-500 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg group-hover:scale-110 transition-all duration-300">
+									<Star className="w-8 h-8 text-white" />
+								</div>
+								<CardTitle className="text-3xl font-bold mb-2">
+									{pricingTiers.free.name}
+								</CardTitle>
+								<div className="text-5xl font-bold text-primary mb-4">
+									${pricingTiers.free.price_monthly}
+									<span className="text-lg font-normal text-muted-foreground">
+										/month
+									</span>
+								</div>
+								<p className="text-muted-foreground">
+									Perfect for getting started
+								</p>
+							</CardHeader>
+							<CardContent className="space-y-6">
+								<ul className="space-y-4">
+									<li className="flex items-center gap-3">
+										<div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0">
+											<svg
+												className="w-3 h-3 text-white"
+												fill="currentColor"
+												viewBox="0 0 20 20"
+											>
+												<path
+													fillRule="evenodd"
+													d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+													clipRule="evenodd"
+												/>
+											</svg>
+										</div>
+										<span className="text-muted-foreground">
+											{
+												pricingTiers.free
+													.max_upload_analyze
+											}{" "}
+											outfit analyses per month
+										</span>
+									</li>
+									<li className="flex items-center gap-3">
+										<div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0">
+											<svg
+												className="w-3 h-3 text-white"
+												fill="currentColor"
+												viewBox="0 0 20 20"
+											>
+												<path
+													fillRule="evenodd"
+													d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+													clipRule="evenodd"
+												/>
+											</svg>
+										</div>
+										<span className="text-muted-foreground">
+											{
+												pricingTiers.free
+													.max_wardrobe_items
+											}{" "}
+											wardrobe items
+										</span>
+									</li>
+									<li className="flex items-center gap-3">
+										<div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0">
+											<svg
+												className="w-3 h-3 text-white"
+												fill="currentColor"
+												viewBox="0 0 20 20"
+											>
+												<path
+													fillRule="evenodd"
+													d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+													clipRule="evenodd"
+												/>
+											</svg>
+										</div>
+										<span className="text-muted-foreground">
+											{pricingTiers.free.ai_calls_per_day}{" "}
+											AI calls per day
+										</span>
+									</li>
+									<li className="flex items-center gap-3">
+										<div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0">
+											<svg
+												className="w-3 h-3 text-white"
+												fill="currentColor"
+												viewBox="0 0 20 20"
+											>
+												<path
+													fillRule="evenodd"
+													d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+													clipRule="evenodd"
+												/>
+											</svg>
+										</div>
+										<span className="text-muted-foreground">
+											Basic dashboard access
+										</span>
+									</li>
+								</ul>
+								<Button
+									className="w-full py-6 text-lg font-semibold bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white shadow-lg hover:shadow-xl transition-all duration-300"
+									asChild
+								>
+									<Link to="/register">
+										Get Started Free
+										<ArrowRight className="ml-2 w-5 h-5" />
+									</Link>
+								</Button>
+							</CardContent>
+						</Card>
+					</div>
+
+					{/* Pro Plans - 3 Column Layout */}
+					<div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-3 gap-8 max-w-7xl mx-auto justify-items-center">
+						{/* Spotlight Tier - Recommended */}
+						<Card className="relative card-fashion border-0 shadow-2xl hover:shadow-3xl transition-all duration-500 group max-w-md w-full">
+							<div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
+								<Badge className="bg-gradient-to-r from-primary to-accent text-white px-6 py-2 text-sm font-bold shadow-lg">
+									Most Popular
+								</Badge>
+							</div>
+							<CardHeader className="text-center pb-8">
+								<div className="w-16 h-16 bg-gradient-to-r from-primary to-accent rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg group-hover:scale-110 transition-all duration-300">
+									<Zap className="w-8 h-8 text-white" />
+								</div>
+								<CardTitle className="text-3xl font-bold mb-2">
+									{pricingTiers.spotlight.name}
+								</CardTitle>
+								<div className="text-5xl font-bold text-primary mb-4">
+									${pricingTiers.spotlight.price_monthly}
+									<span className="text-lg font-normal text-muted-foreground">
+										/month
+									</span>
+								</div>
+								<p className="text-muted-foreground">
+									For fashion enthusiasts
+								</p>
+							</CardHeader>
+							<CardContent className="space-y-6">
+								<ul className="space-y-4">
+									<li className="flex items-center gap-3">
+										<div className="w-5 h-5 bg-primary rounded-full flex items-center justify-center flex-shrink-0">
+											<svg
+												className="w-3 h-3 text-white"
+												fill="currentColor"
+												viewBox="0 0 20 20"
+											>
+												<path
+													fillRule="evenodd"
+													d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+													clipRule="evenodd"
+												/>
+											</svg>
+										</div>
+										<span className="text-muted-foreground">
+											{
+												pricingTiers.spotlight
+													.max_upload_analyze
+											}{" "}
+											outfit analyses per month
+										</span>
+									</li>
+									<li className="flex items-center gap-3">
+										<div className="w-5 h-5 bg-primary rounded-full flex items-center justify-center flex-shrink-0">
+											<svg
+												className="w-3 h-3 text-white"
+												fill="currentColor"
+												viewBox="0 0 20 20"
+											>
+												<path
+													fillRule="evenodd"
+													d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+													clipRule="evenodd"
+												/>
+											</svg>
+										</div>
+										<span className="text-muted-foreground">
+											{
+												pricingTiers.spotlight
+													.max_wardrobe_items
+											}{" "}
+											wardrobe items
+										</span>
+									</li>
+									<li className="flex items-center gap-3">
+										<div className="w-5 h-5 bg-primary rounded-full flex items-center justify-center flex-shrink-0">
+											<svg
+												className="w-3 h-3 text-white"
+												fill="currentColor"
+												viewBox="0 0 20 20"
+											>
+												<path
+													fillRule="evenodd"
+													d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+													clipRule="evenodd"
+												/>
+											</svg>
+										</div>
+										<span className="text-muted-foreground">
+											{
+												pricingTiers.spotlight
+													.ai_calls_per_day
+											}{" "}
+											AI calls per day
+										</span>
+									</li>
+									<li className="flex items-center gap-3">
+										<div className="w-5 h-5 bg-primary rounded-full flex items-center justify-center flex-shrink-0">
+											<svg
+												className="w-3 h-3 text-white"
+												fill="currentColor"
+												viewBox="0 0 20 20"
+											>
+												<path
+													fillRule="evenodd"
+													d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+													clipRule="evenodd"
+												/>
+											</svg>
+										</div>
+										<span className="text-muted-foreground">
+											{pricingTiers.spotlight
+												.ai_styling_advice
+												? "AI styling advice"
+												: "Basic recommendations"}
+										</span>
+									</li>
+									<li className="flex items-center gap-3">
+										<div className="w-5 h-5 bg-primary rounded-full flex items-center justify-center flex-shrink-0">
+											<svg
+												className="w-3 h-3 text-white"
+												fill="currentColor"
+												viewBox="0 0 20 20"
+											>
+												<path
+													fillRule="evenodd"
+													d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+													clipRule="evenodd"
+												/>
+											</svg>
+										</div>
+										<span className="text-muted-foreground">
+											{pricingTiers.spotlight
+												.calendar_integration
+												? "Calendar integration"
+												: "No calendar sync"}
+										</span>
+									</li>
+								</ul>
+								<Button
+									className="w-full py-6 text-lg font-semibold bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-white shadow-lg hover:shadow-xl transition-all duration-300"
+									asChild
+								>
+									<Link to="/register">
+										Start {pricingTiers.spotlight.name}{" "}
+										Trial
+										<ArrowRight className="ml-2 w-5 h-5" />
+									</Link>
+								</Button>
+							</CardContent>
+						</Card>
+
+						{/* Elite Tier */}
+						<Card className="relative card-fashion border-0 shadow-2xl hover:shadow-3xl transition-all duration-500 group max-w-md w-full">
+							<CardHeader className="text-center pb-8">
+								<div className="w-16 h-16 bg-gradient-to-r from-purple-500 to-pink-500 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg group-hover:scale-110 transition-all duration-300">
+									<Star className="w-8 h-8 text-white" />
+								</div>
+								<CardTitle className="text-3xl font-bold mb-2">
+									{pricingTiers.elite.name}
+								</CardTitle>
+								<div className="text-5xl font-bold text-primary mb-4">
+									${pricingTiers.elite.price_monthly}
+									<span className="text-lg font-normal text-muted-foreground">
+										/month
+									</span>
+								</div>
+								<p className="text-muted-foreground">
+									For style professionals
+								</p>
+							</CardHeader>
+							<CardContent className="space-y-6">
+								<ul className="space-y-4">
+									<li className="flex items-center gap-3">
+										<div className="w-5 h-5 bg-purple-500 rounded-full flex items-center justify-center flex-shrink-0">
+											<svg
+												className="w-3 h-3 text-white"
+												fill="currentColor"
+												viewBox="0 0 20 20"
+											>
+												<path
+													fillRule="evenodd"
+													d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+													clipRule="evenodd"
+												/>
+											</svg>
+										</div>
+										<span className="text-muted-foreground">
+											{
+												pricingTiers.elite
+													.max_upload_analyze
+											}{" "}
+											outfit analyses per month
+										</span>
+									</li>
+									<li className="flex items-center gap-3">
+										<div className="w-5 h-5 bg-purple-500 rounded-full flex items-center justify-center flex-shrink-0">
+											<svg
+												className="w-3 h-3 text-white"
+												fill="currentColor"
+												viewBox="0 0 20 20"
+											>
+												<path
+													fillRule="evenodd"
+													d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+													clipRule="evenodd"
+												/>
+											</svg>
+										</div>
+										<span className="text-muted-foreground">
+											{
+												pricingTiers.elite
+													.max_wardrobe_items
+											}{" "}
+											wardrobe items
+										</span>
+									</li>
+									<li className="flex items-center gap-3">
+										<div className="w-5 h-5 bg-purple-500 rounded-full flex items-center justify-center flex-shrink-0">
+											<svg
+												className="w-3 h-3 text-white"
+												fill="currentColor"
+												viewBox="0 0 20 20"
+											>
+												<path
+													fillRule="evenodd"
+													d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+													clipRule="evenodd"
+												/>
+											</svg>
+										</div>
+										<span className="text-muted-foreground">
+											{
+												pricingTiers.elite
+													.ai_calls_per_day
+											}{" "}
+											AI calls per day
+										</span>
+									</li>
+									<li className="flex items-center gap-3">
+										<div className="w-5 h-5 bg-purple-500 rounded-full flex items-center justify-center flex-shrink-0">
+											<svg
+												className="w-3 h-3 text-white"
+												fill="currentColor"
+												viewBox="0 0 20 20"
+											>
+												<path
+													fillRule="evenodd"
+													d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+													clipRule="evenodd"
+												/>
+											</svg>
+										</div>
+										<span className="text-muted-foreground">
+											{pricingTiers.elite
+												.weather_integration
+												? "Weather integration"
+												: "No weather sync"}
+										</span>
+									</li>
+									<li className="flex items-center gap-3">
+										<div className="w-5 h-5 bg-purple-500 rounded-full flex items-center justify-center flex-shrink-0">
+											<svg
+												className="w-3 h-3 text-white"
+												fill="currentColor"
+												viewBox="0 0 20 20"
+											>
+												<path
+													fillRule="evenodd"
+													d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+													clipRule="evenodd"
+												/>
+											</svg>
+										</div>
+										<span className="text-muted-foreground">
+											{pricingTiers.elite
+												.monthly_style_reports
+												? "Monthly style reports"
+												: "No reports"}
+										</span>
+									</li>
+								</ul>
+								<Button
+									className="w-full py-6 text-lg font-semibold bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white shadow-lg hover:shadow-xl transition-all duration-300"
+									asChild
+								>
+									<Link to="/register">
+										Go {pricingTiers.elite.name}
+										<ArrowRight className="ml-2 w-5 h-5" />
+									</Link>
+								</Button>
+							</CardContent>
+						</Card>
+
+						{/* Icon Tier */}
+						<Card className="relative card-fashion border-0 shadow-2xl hover:shadow-3xl transition-all duration-500 group max-w-md w-full">
+							<CardHeader className="text-center pb-8">
+								<div className="w-16 h-16 bg-gradient-to-r from-amber-500 to-orange-500 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg group-hover:scale-110 transition-all duration-300">
+									<TrendingUp className="w-8 h-8 text-white" />
+								</div>
+								<CardTitle className="text-3xl font-bold mb-2">
+									{pricingTiers.icon.name}
+								</CardTitle>
+								<div className="text-5xl font-bold text-primary mb-4">
+									${pricingTiers.icon.price_monthly}
+									<span className="text-lg font-normal text-muted-foreground">
+										/month
+									</span>
+								</div>
+								<p className="text-muted-foreground">
+									For fashion influencers
+								</p>
+							</CardHeader>
+							<CardContent className="space-y-6">
+								<ul className="space-y-4">
+									<li className="flex items-center gap-3">
+										<div className="w-5 h-5 bg-amber-500 rounded-full flex items-center justify-center flex-shrink-0">
+											<svg
+												className="w-3 h-3 text-white"
+												fill="currentColor"
+												viewBox="0 0 20 20"
+											>
+												<path
+													fillRule="evenodd"
+													d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+													clipRule="evenodd"
+												/>
+											</svg>
+										</div>
+										<span className="text-muted-foreground">
+											{
+												pricingTiers.icon
+													.max_upload_analyze
+											}{" "}
+											outfit analyses per month
+										</span>
+									</li>
+									<li className="flex items-center gap-3">
+										<div className="w-5 h-5 bg-amber-500 rounded-full flex items-center justify-center flex-shrink-0">
+											<svg
+												className="w-3 h-3 text-white"
+												fill="currentColor"
+												viewBox="0 0 20 20"
+											>
+												<path
+													fillRule="evenodd"
+													d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+													clipRule="evenodd"
+												/>
+											</svg>
+										</div>
+										<span className="text-muted-foreground">
+											{
+												pricingTiers.icon
+													.max_wardrobe_items
+											}{" "}
+											wardrobe items
+										</span>
+									</li>
+									<li className="flex items-center gap-3">
+										<div className="w-5 h-5 bg-amber-500 rounded-full flex items-center justify-center flex-shrink-0">
+											<svg
+												className="w-3 h-3 text-white"
+												fill="currentColor"
+												viewBox="0 0 20 20"
+											>
+												<path
+													fillRule="evenodd"
+													d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+													clipRule="evenodd"
+												/>
+											</svg>
+										</div>
+										<span className="text-muted-foreground">
+											{pricingTiers.icon.ai_calls_per_day}{" "}
+											AI calls per day
+										</span>
+									</li>
+									<li className="flex items-center gap-3">
+										<div className="w-5 h-5 bg-amber-500 rounded-full flex items-center justify-center flex-shrink-0">
+											<svg
+												className="w-3 h-3 text-white"
+												fill="currentColor"
+												viewBox="0 0 20 20"
+											>
+												<path
+													fillRule="evenodd"
+													d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+													clipRule="evenodd"
+												/>
+											</svg>
+										</div>
+										<span className="text-muted-foreground">
+											{pricingTiers.icon.priority_support
+												? "Priority support"
+												: "Standard support"}
+										</span>
+									</li>
+									<li className="flex items-center gap-3">
+										<div className="w-5 h-5 bg-amber-500 rounded-full flex items-center justify-center flex-shrink-0">
+											<svg
+												className="w-3 h-3 text-white"
+												fill="currentColor"
+												viewBox="0 0 20 20"
+											>
+												<path
+													fillRule="evenodd"
+													d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+													clipRule="evenodd"
+												/>
+											</svg>
+										</div>
+										<span className="text-muted-foreground">
+											Everything in Elite
+										</span>
+									</li>
+								</ul>
+								<Button
+									className="w-full py-6 text-lg font-semibold bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white shadow-lg hover:shadow-xl transition-all duration-300"
+									asChild
+								>
+									<Link to="/register">
+										Become an {pricingTiers.icon.name}
+										<ArrowRight className="ml-2 w-5 h-5" />
+									</Link>
+								</Button>
+							</CardContent>
+						</Card>
+					</div>
+
+					{/* FAQ Section */}
+					<div className="mt-20 max-w-4xl mx-auto">
+						<h3 className="text-3xl font-bold text-center mb-12">
+							Frequently Asked Questions
+						</h3>
+						<div className="grid md:grid-cols-2 gap-8">
+							<div className="space-y-6">
+								<div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-white/20">
+									<h4 className="font-bold text-lg mb-3">
+										Can I change plans anytime?
+									</h4>
+									<p className="text-muted-foreground">
+										Yes! You can upgrade or downgrade your
+										plan at any time. Changes take effect
+										immediately.
+									</p>
+								</div>
+								<div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-white/20">
+									<h4 className="font-bold text-lg mb-3">
+										Is there a free trial?
+									</h4>
+									<p className="text-muted-foreground">
+										Absolutely! Start with our free plan and
+										upgrade when you're ready. No credit
+										card required to begin.
+									</p>
+								</div>
+							</div>
+							<div className="space-y-6">
+								<div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-white/20">
+									<h4 className="font-bold text-lg mb-3">
+										What payment methods do you accept?
+									</h4>
+									<p className="text-muted-foreground">
+										We accept all major credit cards,
+										PayPal, and other popular payment
+										methods for your convenience.
+									</p>
+								</div>
+								<div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-white/20">
+									<h4 className="font-bold text-lg mb-3">
+										Can I cancel anytime?
+									</h4>
+									<p className="text-muted-foreground">
+										Yes, you can cancel your subscription at
+										any time. No long-term contracts or
+										cancellation fees.
+									</p>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</section>
+
+			{/* Community & Social Proof */}
+			<section className="py-24 bg-gradient-to-r from-primary/5 via-accent/5 to-primary/5">
+				<div className="container mx-auto px-4">
+					<div className="text-center mb-20">
+						<h2 className="text-4xl lg:text-5xl font-bold mb-6">
+							Join Our Fashion Community
+						</h2>
+						<p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+							Connect with fellow fashion enthusiasts, share your
+							style journey, and get inspired by top performers
+						</p>
+					</div>
+
+					<div className="grid lg:grid-cols-2 gap-12 max-w-6xl mx-auto">
+						{/* Analysis Leaderboard */}
+						<div data-aos="fade-right">
+							{fashionAPI && leaderboardData?.success && (
+								<Card className="p-8 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border-0 shadow-2xl">
+									<div className="flex items-center gap-4 mb-6">
+										<div className="w-12 h-12 bg-gradient-to-r from-primary to-accent rounded-xl flex items-center justify-center">
+											<TrendingUp className="w-6 h-6 text-white" />
+										</div>
+										<div>
+											<h3 className="text-2xl font-bold">
+												Top Fashion Analysts
+											</h3>
+											<p className="text-muted-foreground">
+												Our most active style explorers
+											</p>
+										</div>
+									</div>
+									<Leaderboard
+										users={leaderboardData.data.leaderboard.slice(
+											0,
+											5
+										)}
+										title=""
+									/>
+								</Card>
+							)}
 						</div>
 
-						{/* Pricing summary, feature cards, and sales contact for all tiers */}
-						<div className="mt-6 flex flex-col items-center justify-center gap-6 text-sm text-white">
-							{Object.keys(pricingTiers).length > 0 ? (
-								<>
-									<div className="text-center">
-										<div className="font-semibold text-lg mb-2">
-											Our Plans
+						{/* Fashion Icon */}
+						<div data-aos="fade-left">
+							{fashionAPI && fashionIconData?.success && (
+								<Card className="p-8 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border-0 shadow-2xl">
+									<div className="flex items-center gap-4 mb-6">
+										<div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl flex items-center justify-center">
+											<Star className="w-6 h-6 text-white" />
 										</div>
-										{recommendedTier && (
-											<div className="text-sm opacity-90 mb-2">
-												<span className="font-bold">
-													Recommended:
-												</span>{" "}
-												{recommendedTier
-													.charAt(0)
-													.toUpperCase() +
-													recommendedTier.slice(1)}
-											</div>
-										)}
+										<div>
+											<h3 className="text-2xl font-bold">
+												Fashion Icon of the Month
+											</h3>
+											<p className="text-muted-foreground">
+												Celebrating exceptional style
+											</p>
+										</div>
 									</div>
-									<div className="w-full flex flex-wrap justify-center gap-6">
-										{Object.entries(pricingTiers).map(
-											([key, tier], idx) => (
-												<Card
-													key={tier.name}
-													className={`bg-white/10 border-white/20 text-white w-80 ${
-														tier.name ===
-														recommendedTier
-															? "ring-2 ring-accent"
-															: ""
-													}`}
-												>
-													<CardHeader>
-														<CardTitle className="flex items-center gap-2 text-2xl">
-															{tier.name
-																.charAt(0)
-																.toUpperCase() +
-																tier.name.slice(
-																	1
-																)}
-															{tier.name ===
-																recommendedTier && (
-																<Badge className="ml-2 bg-accent/20 text-accent border-accent/30 uppercase tracking-wide">
-																	Recommended
-																</Badge>
-															)}
-														</CardTitle>
-														<div className="mt-2 text-3xl font-bold">
-															$
-															{tier.price_monthly.toFixed(
-																2
-															)}
-															<span className="text-base font-normal opacity-80 ml-1">
-																/mo
-															</span>
-														</div>
-													</CardHeader>
-													<CardContent>
-														<ul className="space-y-2 text-left">
-															{Object.entries(
-																tier
-															).map(
-																([
-																	key,
-																	value,
-																]) => {
-																	// Format key for display
-																	const label =
-																		key
-																			.replace(
-																				/_/g,
-																				" "
-																			)
-																			.replace(
-																				/\b\w/g,
-																				(
-																					l
-																				) =>
-																					l.toUpperCase()
-																			);
-																	let display: React.ReactNode;
-																	if (
-																		typeof value ===
-																		"boolean"
-																	) {
-																		display =
-																			value ? (
-																				<span className="text-green-400 font-bold ml-2">
-																					✔
-																				</span>
-																			) : (
-																				<span className="text-red-400 font-bold ml-2">
-																					✖
-																				</span>
-																			);
-																	} else if (
-																		typeof value ===
-																			"number" ||
-																		typeof value ===
-																			"string"
-																	) {
-																		display =
-																			(
-																				<span className="ml-2 font-semibold">
-																					{String(
-																						value
-																					)}
-																				</span>
-																			);
-																	} else {
-																		display =
-																			null;
-																	}
-																	return (
-																		<li
-																			key={
-																				key
-																			}
-																			className="flex items-center justify-between border-b border-white/10 py-1 last:border-b-0"
-																		>
-																			<span>
-																				{
-																					label
-																				}
-																			</span>
-																			{
-																				display
-																			}
-																		</li>
-																	);
-																}
-															)}
-														</ul>
-													</CardContent>
-												</Card>
-											)
-										)}
-									</div>
-									<Button
-										size="lg"
-										variant="outline"
-										className="text-lg px-6 py-3 mt-2 border-white text-white bg-transparent hover:bg-primary hover:text-white transition-colors"
-										asChild
-									>
-										<a
-											href={`mailto:support@closetic.com?subject=${encodeURIComponent(
-												"Closetic AI - Pricing Inquiry"
-											)}&body=${encodeURIComponent(
-												`Hello Sales Team,
-
-I'd like to discuss pricing and features. Please provide more details about your plans and onboarding.
-
-Thanks.`
-											)}`}
-										>
-											Talk to Sales
-										</a>
-									</Button>
-								</>
-							) : (
-								<div className="text-center opacity-90">
-									Pricing information unavailable
-								</div>
+									<FashionIconCard
+										icon={fashionIconData.data.fashion_icon}
+									/>
+								</Card>
 							)}
 						</div>
 					</div>
 				</div>
 			</section>
 
-			{/* Footer */}
-			<footer className="py-12 border-t border-border">
+			{/* CTA Section - Simplified and focused */}
+			<section className="py-24 bg-gradient-to-r from-primary via-accent to-primary text-white relative overflow-hidden">
+				<div className="absolute inset-0 bg-black/20"></div>
+				<div className="container mx-auto px-4 text-center relative z-10">
+					<div className="max-w-4xl mx-auto space-y-8">
+						<div className="space-y-4">
+							<h2 className="text-4xl lg:text-6xl font-bold mb-6">
+								Ready to Transform Your Style?
+							</h2>
+							<p className="text-xl opacity-90 max-w-2xl mx-auto leading-relaxed">
+								Join thousands of users who have elevated their
+								fashion game with AI-powered style analysis.
+								Start your journey to better style today.
+							</p>
+						</div>
+
+						<div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
+							<Button
+								size="lg"
+								variant="secondary"
+								className="text-lg px-10 py-6 shadow-2xl hover:shadow-3xl transition-all duration-300 bg-white text-primary hover:bg-gray-50 font-semibold"
+								asChild
+							>
+								<Link to="/register">
+									Start Free Analysis
+									<ArrowRight className="ml-3 w-5 h-5" />
+								</Link>
+							</Button>
+							<Button
+								size="lg"
+								variant="outline"
+								className="text-lg px-10 py-6 border-2 border-white text-white bg-transparent hover:bg-white hover:text-primary transition-all duration-300 shadow-xl"
+								asChild
+							>
+								<Link to="/upload">
+									<Camera className="mr-3 w-5 h-5" />
+									Try Demo Now
+								</Link>
+							</Button>
+						</div>
+
+						<div className="mt-12 pt-8 border-t border-white/20">
+							<p className="text-white/80 text-lg">
+								✨ No credit card required • Instant access •
+								Cancel anytime
+							</p>
+						</div>
+					</div>
+				</div>
+
+				{/* Background decorative elements */}
+				<div className="absolute top-0 left-0 w-full h-full">
+					<div className="absolute top-20 left-10 w-32 h-32 bg-white/10 rounded-full blur-2xl animate-pulse"></div>
+					<div className="absolute bottom-20 right-10 w-40 h-40 bg-white/10 rounded-full blur-2xl animate-pulse"></div>
+					<div className="absolute top-1/2 left-1/4 w-24 h-24 bg-white/10 rounded-full blur-xl animate-pulse"></div>
+				</div>
+			</section>
+
+			{/* Footer - Enhanced and organized */}
+			<footer className="bg-gray-900 text-white py-16">
 				<div className="container mx-auto px-4">
-					<div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
-						<div className="flex items-center space-x-2">
-							<div className="w-8 h-8 rounded-lg overflow-hidden">
-								<img
-									src={logoImage}
-									alt="Closetic AI Logo"
-									className="w-full h-full object-cover"
-								/>
+					<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+						{/* Brand Section */}
+						<div className="space-y-4">
+							<div className="flex items-center space-x-2">
+								<div className="w-8 h-8 rounded-lg overflow-hidden">
+									<img
+										src={logoImage}
+										alt="Closetic AI Logo"
+										className="w-full h-full object-cover"
+									/>
+								</div>
+								<span className="text-2xl font-bold text-gradient">
+									Closetic AI
+								</span>
 							</div>
-							<span className="text-xl font-bold text-gradient">
-								Closetic AI
-							</span>
+							<p className="text-gray-400 leading-relaxed">
+								Transform your style with AI-powered fashion
+								analysis. Get personalized recommendations and
+								elevate your wardrobe game.
+							</p>
 						</div>
-						<div className="flex items-center space-x-8 text-sm text-muted-foreground">
-							<Link
-								to="/privacy-policy"
-								className="hover:text-primary transition-colors"
-							>
-								Privacy
-							</Link>
-							<Link
-								to="/terms-of-service"
-								className="hover:text-primary transition-colors"
-							>
-								Terms
-							</Link>
-							<a
-								href="mailto:support@closetic.com"
-								className="hover:text-primary transition-colors"
-							>
-								Support
-							</a>
-							<Link
-								to="/pricing"
-								className="hover:text-primary transition-colors"
-							>
-								Pricing
-							</Link>
+
+						{/* Product Links */}
+						<div className="space-y-4">
+							<h3 className="text-lg font-semibold">Product</h3>
+							<ul className="space-y-2">
+								<li>
+									<Link
+										to="/upload"
+										className="text-gray-400 hover:text-accent transition-colors"
+									>
+										Upload & Analyze
+									</Link>
+								</li>
+								<li>
+									<Link
+										to="/dashboard"
+										className="text-gray-400 hover:text-accent transition-colors"
+									>
+										Dashboard
+									</Link>
+								</li>
+								<li>
+									<Link
+										to="/camera"
+										className="text-gray-400 hover:text-accent transition-colors"
+									>
+										Camera Analysis
+									</Link>
+								</li>
+								<li>
+									<a
+										href="#"
+										className="text-gray-400 hover:text-accent transition-colors"
+									>
+										API Access
+									</a>
+								</li>
+							</ul>
 						</div>
-						<div className="flex items-center space-x-4">
-							<Shield className="w-4 h-4 text-muted-foreground" />
-							<span className="text-sm text-muted-foreground">
-								Secure & Private
-							</span>
+
+						{/* Company Links */}
+						<div className="space-y-4">
+							<h3 className="text-lg font-semibold">Company</h3>
+							<ul className="space-y-2">
+								<li>
+									<a
+										href="#"
+										className="text-gray-400 hover:text-accent transition-colors"
+									>
+										About Us
+									</a>
+								</li>
+								<li>
+									<a
+										href="#"
+										className="text-gray-400 hover:text-accent transition-colors"
+									>
+										Careers
+									</a>
+								</li>
+								<li>
+									<a
+										href="#"
+										className="text-gray-400 hover:text-accent transition-colors"
+									>
+										Blog
+									</a>
+								</li>
+								<li>
+									<a
+										href="#"
+										className="text-gray-400 hover:text-accent transition-colors"
+									>
+										Press Kit
+									</a>
+								</li>
+							</ul>
+						</div>
+
+						{/* Support Links */}
+						<div className="space-y-4">
+							<h3 className="text-lg font-semibold">Support</h3>
+							<ul className="space-y-2">
+								<li>
+									<a
+										href="#"
+										className="text-gray-400 hover:text-accent transition-colors"
+									>
+										Help Center
+									</a>
+								</li>
+								<li>
+									<a
+										href="#"
+										className="text-gray-400 hover:text-accent transition-colors"
+									>
+										Contact Us
+									</a>
+								</li>
+								<li>
+									<Link
+										to="/privacy-policy"
+										className="text-gray-400 hover:text-accent transition-colors"
+									>
+										Privacy Policy
+									</Link>
+								</li>
+								<li>
+									<Link
+										to="/terms-of-service"
+										className="text-gray-400 hover:text-accent transition-colors"
+									>
+										Terms of Service
+									</Link>
+								</li>
+							</ul>
+						</div>
+					</div>
+
+					{/* Bottom Section */}
+					<div className="border-t border-gray-800 mt-12 pt-8">
+						<div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
+							<p className="text-gray-400 text-sm">
+								© 2024 Closetic AI. All rights reserved.
+							</p>
+							<div className="flex items-center space-x-6 text-sm text-gray-400">
+								<span>Built with ❤️ for fashion lovers</span>
+								<div className="flex items-center space-x-2">
+									<span>Powered by</span>
+									<span className="text-accent font-semibold">
+										AI Technology
+									</span>
+								</div>
+							</div>
 						</div>
 					</div>
 				</div>
