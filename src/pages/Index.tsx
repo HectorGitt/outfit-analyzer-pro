@@ -902,60 +902,139 @@ const Index = () => {
 											style, and outfits. Our AI
 											understands context, remembers your
 											preferences, and provides
-											conversational responses.
+											conversational responses powered by
+											OpenAI's Realtime API for fluid,
+											human-like interactions.
 										</p>
 									</div>
 								</div>
 
 								<div className="flex items-start space-x-6">
-									<div className="w-14 h-14 bg-gradient-to-r from-green-500 to-teal-500 rounded-xl flex items-center justify-center text-white flex-shrink-0 shadow-lg">
-										<Volume2 className="w-7 h-7" />
-									</div>
-									<div className="space-y-2">
-										<h3 className="text-2xl font-bold">
-											Real-Time Audio Responses
-										</h3>
-										<p className="text-muted-foreground text-lg leading-relaxed">
-											Get instant voice feedback with
-											personality and expertise. No more
-											reading - just listen and get styled
-											with professional fashion advice.
-										</p>
-									</div>
-								</div>
-
-								<div className="flex items-start space-x-6">
-									<div className="w-14 h-14 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl flex items-center justify-center text-white flex-shrink-0 shadow-lg">
+									<div className="w-14 h-14 bg-gradient-to-r from-indigo-500 to-blue-500 rounded-xl flex items-center justify-center text-white flex-shrink-0 shadow-lg">
 										<Zap className="w-7 h-7" />
 									</div>
 									<div className="space-y-2">
 										<h3 className="text-2xl font-bold">
-											Advanced AI Understanding
+											Smart API Integration
 										</h3>
 										<p className="text-muted-foreground text-lg leading-relaxed">
-											Powered by cutting-edge AI that
-											understands fashion context, trends,
-											seasonal changes, and your unique
-											style preferences.
+											Powered by advanced API tools that
+											seamlessly interact with your data
+											to provide intelligent fashion
+											assistance. The voice agent uses 7
+											specialized tools to access and
+											analyze your fashion information in
+											real-time.
 										</p>
-									</div>
-								</div>
-
-								<div className="flex items-start space-x-6">
-									<div className="w-14 h-14 bg-gradient-to-r from-orange-500 to-red-500 rounded-xl flex items-center justify-center text-white flex-shrink-0 shadow-lg">
-										<Clock className="w-7 h-7" />
-									</div>
-									<div className="space-y-2">
-										<h3 className="text-2xl font-bold">
-											Contextual Memory
-										</h3>
-										<p className="text-muted-foreground text-lg leading-relaxed">
-											The voice agent remembers your
-											conversation history, wardrobe
-											details, style preferences, and
-											previous recommendations for truly
-											personalized advice.
-										</p>
+										<div className="bg-gradient-to-r from-indigo-50 to-blue-50 dark:from-indigo-950/20 dark:to-blue-950/20 p-4 rounded-xl border border-indigo-200 dark:border-indigo-800 mt-4">
+											<h4 className="font-semibold text-indigo-800 dark:text-indigo-200 mb-3 flex items-center">
+												<Bot className="w-4 h-4 mr-2" />
+												7 Powerful API Tools
+											</h4>
+											<div className="grid grid-cols-1 gap-3">
+												<div className="flex items-center gap-3 p-2 bg-white/60 dark:bg-gray-800/60 rounded-lg">
+													<div className="w-3 h-3 bg-indigo-500 rounded-full flex-shrink-0"></div>
+													<div className="flex-1">
+														<span className="font-medium text-indigo-700 dark:text-indigo-300">
+															getCalendarEvents
+														</span>
+														<span className="text-sm text-indigo-600 dark:text-indigo-400 ml-2">
+															Accesses your
+															calendar to suggest
+															outfits for upcoming
+															events
+														</span>
+													</div>
+												</div>
+												<div className="flex items-center gap-3 p-2 bg-white/60 dark:bg-gray-800/60 rounded-lg">
+													<div className="w-3 h-3 bg-blue-500 rounded-full flex-shrink-0"></div>
+													<div className="flex-1">
+														<span className="font-medium text-blue-700 dark:text-blue-300">
+															getWardrobeItems
+														</span>
+														<span className="text-sm text-blue-600 dark:text-blue-400 ml-2">
+															Retrieves your
+															wardrobe items for
+															personalized
+															recommendations
+														</span>
+													</div>
+												</div>
+												<div className="flex items-center gap-3 p-2 bg-white/60 dark:bg-gray-800/60 rounded-lg">
+													<div className="w-3 h-3 bg-purple-500 rounded-full flex-shrink-0"></div>
+													<div className="flex-1">
+														<span className="font-medium text-purple-700 dark:text-purple-300">
+															addWardrobeItem
+														</span>
+														<span className="text-sm text-purple-600 dark:text-purple-400 ml-2">
+															Adds new clothing
+															items to your
+															digital wardrobe
+														</span>
+													</div>
+												</div>
+												<div className="flex items-center gap-3 p-2 bg-white/60 dark:bg-gray-800/60 rounded-lg">
+													<div className="w-3 h-3 bg-green-500 rounded-full flex-shrink-0"></div>
+													<div className="flex-1">
+														<span className="font-medium text-green-700 dark:text-green-300">
+															getUserPreferences
+														</span>
+														<span className="text-sm text-green-600 dark:text-green-400 ml-2">
+															Accesses your style
+															preferences and
+															fashion profile
+														</span>
+													</div>
+												</div>
+												<div className="flex items-center gap-3 p-2 bg-white/60 dark:bg-gray-800/60 rounded-lg">
+													<div className="w-3 h-3 bg-orange-500 rounded-full flex-shrink-0"></div>
+													<div className="flex-1">
+														<span className="font-medium text-orange-700 dark:text-orange-300">
+															generateOutfitSuggestion
+														</span>
+														<span className="text-sm text-orange-600 dark:text-orange-400 ml-2">
+															Creates AI-powered
+															outfit combinations
+															based on your
+															criteria
+														</span>
+													</div>
+												</div>
+												<div className="flex items-center gap-3 p-2 bg-white/60 dark:bg-gray-800/60 rounded-lg">
+													<div className="w-3 h-3 bg-red-500 rounded-full flex-shrink-0"></div>
+													<div className="flex-1">
+														<span className="font-medium text-red-700 dark:text-red-300">
+															getOutfitPlans
+														</span>
+														<span className="text-sm text-red-600 dark:text-red-400 ml-2">
+															Retrieves your saved
+															outfit plans and
+															schedules
+														</span>
+													</div>
+												</div>
+												<div className="flex items-center gap-3 p-2 bg-white/60 dark:bg-gray-800/60 rounded-lg">
+													<div className="w-3 h-3 bg-teal-500 rounded-full flex-shrink-0"></div>
+													<div className="flex-1">
+														<span className="font-medium text-teal-700 dark:text-teal-300">
+															createOutfitPlan
+														</span>
+														<span className="text-sm text-teal-600 dark:text-teal-400 ml-2">
+															Creates and saves
+															new outfit plans for
+															future events
+														</span>
+													</div>
+												</div>
+											</div>
+											<p className="text-xs text-indigo-600 dark:text-indigo-400 mt-3 font-medium">
+												These tools work together to
+												provide comprehensive,
+												data-driven fashion assistance
+												that adapts to your unique style
+												and needs.
+											</p>
+										</div>
 									</div>
 								</div>
 							</div>
