@@ -14,15 +14,12 @@ export const setNavigateFunction = (navigate: (path: string) => void) => {
 const navigateTo = (path: string) => {
 	try {
 		if (navigateFunction) {
-			console.log(`🔄 SPA Navigation: ${path}`);
 			navigateFunction(path);
 		} else {
-			console.log(`🔄 Fallback Navigation: ${path}`);
 			// Fallback to window.location if navigate function not set
 			window.location.href = path;
 		}
 	} catch (error) {
-		console.error(`❌ Navigation failed: ${path}`, error);
 		// Final fallback
 		window.location.href = path;
 	}
@@ -127,9 +124,6 @@ api.interceptors.response.use(
 		) {
 			// Don't use hooks in interceptors - handle logout through navigation
 			const url = error.config?.url || "";
-			console.log(
-				`🔐 Auth error on ${url}, navigateFunction set: ${!!navigateFunction}`
-			);
 			if (
 				window.location.pathname !== "/login" &&
 				!url.includes("pricing")
@@ -140,7 +134,6 @@ api.interceptors.response.use(
 				const loginUrl = `/login?next=${encodeURIComponent(
 					currentPath
 				)}`;
-				console.log(`🚪 Redirecting to: ${loginUrl}`);
 				navigateTo(loginUrl);
 			}
 		}
