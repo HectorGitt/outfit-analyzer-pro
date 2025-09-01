@@ -216,153 +216,502 @@ const Index = () => {
 				<div className="absolute bottom-20 right-10 w-32 h-32 bg-accent/10 rounded-full blur-xl animate-pulse" />
 			</section>
 
-			{/* Core Features - Simplified and more focused */}
-			<section className="py-24 bg-white dark:bg-gray-900">
-				<div className="container mx-auto px-4">
-					<div className="text-center mb-20">
-						<h2 className="text-4xl lg:text-5xl font-bold mb-6">
-							Everything You Need for Perfect Style
+			{/* Core Features - Enhanced Design */}
+			<section className="py-32 bg-gradient-to-br from-slate-50 via-white to-blue-50/30 dark:from-gray-900 dark:via-gray-800 dark:to-blue-950/20 relative overflow-hidden">
+				{/* Background Pattern */}
+				<div className="absolute inset-0 opacity-5">
+					<div className="absolute top-20 left-10 w-72 h-72 bg-primary rounded-full blur-3xl"></div>
+					<div className="absolute bottom-20 right-10 w-96 h-96 bg-accent rounded-full blur-3xl"></div>
+					<div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-purple-500 rounded-full blur-3xl"></div>
+				</div>
+
+				<div className="container mx-auto px-4 relative z-10">
+					<div className="text-center mb-24">
+						<div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-6 py-3 rounded-full text-sm font-semibold mb-8 border border-primary/20">
+							<Sparkles className="w-4 h-4" />
+							Complete Fashion Solution
+						</div>
+						<h2 className="text-5xl lg:text-7xl font-bold mb-8 leading-tight">
+							Everything You Need for{" "}
+							<span className="text-gradient bg-gradient-to-r from-primary via-purple-500 to-accent bg-clip-text text-transparent">
+								Perfect Style
+							</span>
 						</h2>
-						<p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-							From instant analysis to personalized
+						<p className="text-xl text-muted-foreground max-w-4xl mx-auto leading-relaxed">
+							From instant AI analysis to personalized
 							recommendations, discover the complete fashion
-							toolkit powered by AI
+							toolkit that transforms how you dress, shop, and
+							express your unique style
 						</p>
 					</div>
 
-					<div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+					<div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-7xl mx-auto">
 						{features.map((feature, index) => (
 							<Card
 								key={index}
-								className="card-fashion group hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 border-0 shadow-lg"
+								className="group relative card-fashion hover:shadow-2xl hover:-translate-y-3 transition-all duration-700 border-0 shadow-xl bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm overflow-hidden"
 								data-aos="fade-up"
-								data-aos-delay={index * 100}
+								data-aos-delay={index * 150}
 							>
-								<CardHeader className="pb-4">
-									<div className="w-14 h-14 bg-gradient-to-br from-primary/20 to-accent/20 rounded-xl flex items-center justify-center text-primary mb-4 group-hover:scale-110 group-hover:rotate-6 transition-all duration-300">
+								{/* Gradient overlay on hover */}
+								<div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-accent/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+
+								{/* Animated border */}
+								<div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-primary via-purple-500 to-accent opacity-0 group-hover:opacity-20 transition-opacity duration-500 blur-sm"></div>
+
+								<CardHeader className="pb-6 relative z-10">
+									<div className="w-16 h-16 bg-gradient-to-br from-primary/20 to-accent/20 rounded-2xl flex items-center justify-center text-primary mb-6 group-hover:scale-110 group-hover:rotate-6 transition-all duration-500 shadow-lg group-hover:shadow-primary/25">
 										{feature.icon}
 									</div>
-									<CardTitle className="text-xl font-bold">
+									<CardTitle className="text-2xl font-bold group-hover:text-primary transition-colors duration-300">
 										{feature.title}
 									</CardTitle>
 								</CardHeader>
-								<CardContent>
-									<p className="text-muted-foreground mb-6 leading-relaxed">
+
+								<CardContent className="relative z-10">
+									<p className="text-muted-foreground mb-8 leading-relaxed group-hover:text-gray-700 dark:group-hover:text-gray-300 transition-colors duration-300">
 										{feature.description}
 									</p>
-									<Button
-										variant="ghost"
-										className="group-hover:text-primary group-hover:translate-x-2 transition-all duration-300 p-0 h-auto font-semibold py-3"
-										asChild
-									>
-										<Link
-											to={feature.href}
-											className="flex items-center"
+
+									{/* Enhanced CTA Button */}
+									<div className="relative">
+										<Button
+											variant="ghost"
+											className="group/btn relative overflow-hidden bg-gradient-to-r from-primary/10 to-accent/10 hover:from-primary/20 hover:to-accent/20 text-primary hover:text-primary font-semibold py-4 px-6 rounded-xl transition-all duration-300 border border-primary/20 hover:border-primary/40"
+											asChild
 										>
-											Explore Feature
-											<ArrowRight className="ml-2 w-4 h-4" />
-										</Link>
-									</Button>
+											<Link
+												to={feature.href}
+												className="flex items-center justify-between w-full"
+											>
+												<span>Explore Feature</span>
+												<div className="flex items-center gap-2">
+													<span className="group-hover/btn:translate-x-1 transition-transform duration-300">
+														<ArrowRight className="w-4 h-4" />
+													</span>
+												</div>
+											</Link>
+										</Button>
+
+										{/* Animated underline */}
+										<div className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-primary to-accent group-hover:w-full transition-all duration-500"></div>
+									</div>
 								</CardContent>
+
+								{/* Floating elements */}
+								<div className="absolute -top-2 -right-2 w-4 h-4 bg-primary rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500 animate-pulse"></div>
+								<div className="absolute -bottom-2 -left-2 w-3 h-3 bg-accent rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-700 animate-pulse"></div>
 							</Card>
 						))}
+					</div>
+
+					{/* Enhanced Stats Section */}
+					<div className="mt-24 text-center">
+						<div className="inline-flex items-center gap-2 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm px-8 py-4 rounded-2xl shadow-xl border border-white/20">
+							<div className="flex items-center gap-6">
+								<div className="text-center">
+									<div className="text-3xl font-bold text-primary mb-1">
+										10K+
+									</div>
+									<div className="text-sm text-muted-foreground">
+										Happy Users
+									</div>
+								</div>
+								<div className="w-px h-12 bg-gradient-to-b from-transparent via-primary/30 to-transparent"></div>
+								<div className="text-center">
+									<div className="text-3xl font-bold text-primary mb-1">
+										500+
+									</div>
+									<div className="text-sm text-muted-foreground">
+										Style Combinations
+									</div>
+								</div>
+								<div className="w-px h-12 bg-gradient-to-b from-transparent via-primary/30 to-transparent"></div>
+								<div className="text-center">
+									<div className="text-3xl font-bold text-primary mb-1">
+										24/7
+									</div>
+									<div className="text-sm text-muted-foreground">
+										AI Support
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					{/* Call to Action */}
+					<div className="mt-16 text-center">
+						<div className="max-w-2xl mx-auto">
+							<h3 className="text-2xl font-bold mb-4">
+								Ready to Transform Your Wardrobe?
+							</h3>
+							<p className="text-muted-foreground mb-8">
+								Join thousands of fashion enthusiasts who have
+								discovered their perfect style
+							</p>
+							<div className="flex flex-col sm:flex-row gap-4 justify-center">
+								<Button
+									className="btn-gradient text-lg px-8 py-4 shadow-xl hover:shadow-2xl transition-all duration-300"
+									asChild
+								>
+									<Link to="/upload">
+										Start Your Style Journey
+										<ArrowRight className="ml-2 w-5 h-5" />
+									</Link>
+								</Button>
+								<Button
+									variant="outline"
+									className="text-lg px-8 py-4 border-2 hover:bg-primary hover:text-white transition-all duration-300"
+									asChild
+								>
+									<Link to="/camera">
+										<Camera className="mr-2 w-5 h-5" />
+										Try Live Analysis
+									</Link>
+								</Button>
+							</div>
+						</div>
 					</div>
 				</div>
 			</section>
 
-			{/* Calendar Integration Section */}
-			<section className="py-20 bg-gradient-secondary/30">
+			{/* Smart Fashion Scheduling Section */}
+			<section className="py-24 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-blue-950/20 dark:via-indigo-950/20 dark:to-purple-950/20">
 				<div className="container mx-auto px-4">
-					<div className="text-center mb-16">
-						<h2 className="text-4xl font-bold mb-4">
-							Calendar Integration
+					<div className="text-center mb-20">
+						<Badge className="bg-gradient-to-r from-blue-500 to-purple-500 text-white border-0 px-6 py-3 text-lg font-semibold shadow-lg mb-6">
+							<Calendar className="w-5 h-5 mr-2" />
+							Smart Fashion Scheduling
+						</Badge>
+						<h2 className="text-4xl lg:text-6xl font-bold mb-6">
+							Get personalized outfit recommendations for{" "}
+							<span className="text-gradient">
+								different events
+							</span>
 						</h2>
-						<p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-							Seamlessly sync with your calendar to plan perfect
-							outfits for every scheduled event
+						<p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
+							Transform your wardrobe planning with AI-powered
+							scheduling that understands your style preferences,
+							occasions, and creates perfect outfit combinations
+							tailored to your calendar events.
 						</p>
 					</div>
 
-					<div className="max-w-4xl mx-auto">
-						<Card className="p-8 card-fashion">
-							<div className="grid md:grid-cols-2 gap-8 items-center">
-								<div className="space-y-6">
-									<div className="w-16 h-16 bg-gradient-primary rounded-2xl flex items-center justify-center">
-										<Calendar className="w-8 h-8 text-white" />
-									</div>
-									<div>
-										<h3 className="text-2xl font-bold mb-4">
-											Never Miss a Style Beat
-										</h3>
-										<p className="text-muted-foreground mb-6">
-											Connect your calendar and let AI
-											automatically suggest appropriate
-											outfits for each event, meeting, or
-											occasion.
-										</p>
-										<Button
-											className="btn-gradient"
-											asChild
+					{/* Main Features Grid */}
+					<div className="grid lg:grid-cols-2 gap-16 items-center max-w-7xl mx-auto mb-20">
+						{/* Left Side - Features */}
+						<div className="space-y-12">
+							{/* Event-Based Styling */}
+							<div className="flex items-start space-x-6 group">
+								<div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-2xl flex items-center justify-center text-white flex-shrink-0 shadow-lg group-hover:scale-110 group-hover:rotate-6 transition-all duration-500">
+									<Calendar className="w-8 h-8" />
+								</div>
+								<div className="space-y-3">
+									<h3 className="text-3xl font-bold text-gray-900 dark:text-white">
+										Event-Based Styling
+									</h3>
+									<p className="text-lg text-muted-foreground leading-relaxed">
+										Get outfit suggestions tailored for work
+										meetings, casual outings, formal events,
+										and special occasions. Our AI analyzes
+										the event type, time, and your personal
+										style to recommend the perfect ensemble.
+									</p>
+									<div className="flex flex-wrap gap-2">
+										<Badge
+											variant="secondary"
+											className="bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200"
 										>
-											<Link to="/calendar-connect">
-												Connect Calendar
-												<ArrowRight className="ml-2 w-4 h-4" />
-											</Link>
-										</Button>
+											Work Meetings
+										</Badge>
+										<Badge
+											variant="secondary"
+											className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
+										>
+											Casual Outings
+										</Badge>
+										<Badge
+											variant="secondary"
+											className="bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200"
+										>
+											Formal Events
+										</Badge>
+										<Badge
+											variant="secondary"
+											className="bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200"
+										>
+											Special Occasions
+										</Badge>
 									</div>
 								</div>
+							</div>
 
-								<div className="space-y-4">
-									<Card className="p-4 border-l-4 border-l-primary/50">
-										<div className="flex items-center justify-between">
-											<div>
-												<h4 className="font-semibold">
-													Team Meeting
-												</h4>
-												<p className="text-sm text-muted-foreground">
-													Today, 2:00 PM
-												</p>
+							{/* Weekly Planning */}
+							<div className="flex items-start space-x-6 group">
+								<div className="w-16 h-16 bg-gradient-to-r from-green-500 to-emerald-500 rounded-2xl flex items-center justify-center text-white flex-shrink-0 shadow-lg group-hover:scale-110 group-hover:rotate-6 transition-all duration-500">
+									<Clock className="w-8 h-8" />
+								</div>
+								<div className="space-y-3">
+									<h3 className="text-3xl font-bold text-gray-900 dark:text-white">
+										Weekly Planning
+									</h3>
+									<p className="text-lg text-muted-foreground leading-relaxed">
+										Plan your outfits for the entire week
+										with smart recommendations that avoid
+										repetition and ensure variety. Get
+										weather-aware suggestions and never wear
+										the same outfit twice in a week.
+									</p>
+									<div className="grid grid-cols-2 gap-3">
+										<div className="bg-white/60 dark:bg-gray-800/60 p-4 rounded-xl border border-white/20">
+											<div className="text-2xl font-bold text-green-600 mb-1">
+												7
 											</div>
-											<Badge variant="secondary">
+											<div className="text-sm text-muted-foreground">
+												Days Planned
+											</div>
+										</div>
+										<div className="bg-white/60 dark:bg-gray-800/60 p-4 rounded-xl border border-white/20">
+											<div className="text-2xl font-bold text-blue-600 mb-1">
+												0
+											</div>
+											<div className="text-sm text-muted-foreground">
+												Repeats
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+
+							{/* Smart Combinations */}
+							<div className="flex items-start space-x-6 group">
+								<div className="w-16 h-16 bg-gradient-to-r from-purple-500 to-pink-500 rounded-2xl flex items-center justify-center text-white flex-shrink-0 shadow-lg group-hover:scale-110 group-hover:rotate-6 transition-all duration-500">
+									<Sparkles className="w-8 h-8" />
+								</div>
+								<div className="space-y-3">
+									<h3 className="text-3xl font-bold text-gray-900 dark:text-white">
+										Smart Combinations
+									</h3>
+									<p className="text-lg text-muted-foreground leading-relaxed">
+										Discover new outfit combinations from
+										your existing wardrobe items. Our AI
+										analyzes your clothing colors, patterns,
+										and styles to create fresh looks you
+										never considered.
+									</p>
+									<div className="bg-gradient-to-r from-purple-100 to-pink-100 dark:from-purple-900/20 dark:to-pink-900/20 p-4 rounded-xl border border-purple-200 dark:border-purple-800">
+										<p className="text-sm font-medium text-purple-800 dark:text-purple-200">
+											🎨 "Mix your blue jeans with that
+											floral blouse for a stunning casual
+											look!"
+										</p>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						{/* Right Side - Interactive Demo */}
+						<div className="space-y-8">
+							<Card className="card-fashion p-8 bg-gradient-to-br from-white to-blue-50/50 dark:from-gray-800 dark:to-blue-950/20 border-0 shadow-2xl">
+								<div className="text-center mb-8">
+									<div className="w-20 h-20 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-xl">
+										<Calendar className="w-10 h-10 text-white" />
+									</div>
+									<h3 className="text-3xl font-bold mb-3">
+										Your Smart Calendar
+									</h3>
+									<p className="text-muted-foreground text-lg">
+										AI-powered outfit planning
+									</p>
+								</div>
+
+								{/* Calendar Events */}
+								<div className="space-y-4">
+									{/* Monday */}
+									<Card className="p-4 border-l-4 border-l-blue-500 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/20 dark:to-indigo-950/20">
+										<div className="flex items-center justify-between">
+											<div className="flex items-center gap-3">
+												<div className="w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center text-white font-bold">
+													M
+												</div>
+												<div>
+													<h4 className="font-semibold">
+														Team Meeting
+													</h4>
+													<p className="text-sm text-muted-foreground">
+														9:00 AM - 10:00 AM
+													</p>
+												</div>
+											</div>
+											<Badge className="bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
 												Business Casual
 											</Badge>
 										</div>
 									</Card>
 
-									<Card className="p-4 border-l-4 border-l-accent/50">
+									{/* Wednesday */}
+									<Card className="p-4 border-l-4 border-l-green-500 bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-950/20 dark:to-emerald-950/20">
 										<div className="flex items-center justify-between">
-											<div>
-												<h4 className="font-semibold">
-													Dinner Date
-												</h4>
-												<p className="text-sm text-muted-foreground">
-													Friday, 7:00 PM
-												</p>
+											<div className="flex items-center gap-3">
+												<div className="w-10 h-10 bg-green-500 rounded-lg flex items-center justify-center text-white font-bold">
+													W
+												</div>
+												<div>
+													<h4 className="font-semibold">
+														Dinner Date
+													</h4>
+													<p className="text-sm text-muted-foreground">
+														7:00 PM - 9:00 PM
+													</p>
+												</div>
 											</div>
-											<Badge variant="secondary">
+											<Badge className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
 												Smart Casual
 											</Badge>
 										</div>
 									</Card>
 
-									<Card className="p-4 border-l-4 border-l-primary/30">
+									{/* Friday */}
+									<Card className="p-4 border-l-4 border-l-purple-500 bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-950/20 dark:to-pink-950/20">
 										<div className="flex items-center justify-between">
-											<div>
-												<h4 className="font-semibold">
-													Weekend Brunch
-												</h4>
-												<p className="text-sm text-muted-foreground">
-													Saturday, 11:00 AM
-												</p>
+											<div className="flex items-center gap-3">
+												<div className="w-10 h-10 bg-purple-500 rounded-lg flex items-center justify-center text-white font-bold">
+													F
+												</div>
+												<div>
+													<h4 className="font-semibold">
+														Wedding Reception
+													</h4>
+													<p className="text-sm text-muted-foreground">
+														6:00 PM - 11:00 PM
+													</p>
+												</div>
 											</div>
-											<Badge variant="secondary">
+											<Badge className="bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200">
+												Formal
+											</Badge>
+										</div>
+									</Card>
+
+									{/* Saturday */}
+									<Card className="p-4 border-l-4 border-l-orange-500 bg-gradient-to-r from-orange-50 to-red-50 dark:from-orange-950/20 dark:to-red-950/20">
+										<div className="flex items-center justify-between">
+											<div className="flex items-center gap-3">
+												<div className="w-10 h-10 bg-orange-500 rounded-lg flex items-center justify-center text-white font-bold">
+													S
+												</div>
+												<div>
+													<h4 className="font-semibold">
+														Weekend Brunch
+													</h4>
+													<p className="text-sm text-muted-foreground">
+														11:00 AM - 1:00 PM
+													</p>
+												</div>
+											</div>
+											<Badge className="bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200">
 												Casual
 											</Badge>
 										</div>
 									</Card>
 								</div>
+
+								{/* AI Suggestions */}
+								<div className="mt-8 p-4 bg-gradient-to-r from-indigo-100 to-purple-100 dark:from-indigo-900/20 dark:to-purple-900/20 rounded-xl border border-indigo-200 dark:border-indigo-800">
+									<div className="flex items-center gap-3 mb-3">
+										<Bot className="w-5 h-5 text-indigo-600" />
+										<span className="font-semibold text-indigo-800 dark:text-indigo-200">
+											AI Suggestion
+										</span>
+									</div>
+									<p className="text-sm text-indigo-700 dark:text-indigo-300">
+										"For your wedding reception, I recommend
+										your navy blazer with the white dress
+										shirt and black trousers. This
+										combination is elegant yet comfortable
+										and perfectly matches the formal
+										occasion."
+									</p>
+								</div>
+							</Card>
+
+							{/* Stats Cards */}
+							<div className="grid grid-cols-3 gap-4">
+								<Card className="p-6 text-center bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-950/20 dark:to-indigo-950/20 border-0 shadow-lg">
+									<div className="text-3xl font-bold text-blue-600 mb-2">
+										500+
+									</div>
+									<div className="text-sm text-muted-foreground font-medium">
+										Outfit Combinations
+									</div>
+								</Card>
+								<Card className="p-6 text-center bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-950/20 dark:to-emerald-950/20 border-0 shadow-lg">
+									<div className="text-3xl font-bold text-green-600 mb-2">
+										24/7
+									</div>
+									<div className="text-sm text-muted-foreground font-medium">
+										Smart Planning
+									</div>
+								</Card>
+								<Card className="p-6 text-center bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-950/20 dark:to-pink-950/20 border-0 shadow-lg">
+									<div className="text-3xl font-bold text-purple-600 mb-2">
+										95%
+									</div>
+									<div className="text-sm text-muted-foreground font-medium">
+										Accuracy Rate
+									</div>
+								</Card>
 							</div>
-						</Card>
+						</div>
+					</div>
+
+					{/* CTA Section */}
+					<div className="text-center">
+						<div className="max-w-3xl mx-auto space-y-8">
+							<div className="space-y-4">
+								<h3 className="text-3xl lg:text-4xl font-bold">
+									Ready to Revolutionize Your Wardrobe
+									Planning?
+								</h3>
+								<p className="text-xl text-muted-foreground">
+									Connect your calendar and let AI handle your
+									outfit planning with personalized,
+									event-specific recommendations that match
+									your style perfectly.
+								</p>
+							</div>
+
+							<div className="flex flex-col sm:flex-row gap-6 justify-center">
+								<Button
+									className="btn-gradient text-lg px-10 py-6 shadow-xl hover:shadow-2xl transition-all duration-300"
+									size="lg"
+									asChild
+								>
+									<Link to="/calendar-connect">
+										Connect Calendar
+										<ArrowRight className="ml-3 w-5 h-5" />
+									</Link>
+								</Button>
+								<Button
+									variant="outline"
+									className="text-lg px-10 py-6 border-2 hover:bg-primary hover:text-white transition-all duration-300"
+									size="lg"
+									asChild
+								>
+									<Link to="/upload">
+										<Camera className="mr-3 w-5 h-5" />
+										Try Free Analysis
+									</Link>
+								</Button>
+							</div>
+
+							<div className="mt-8 pt-8 border-t border-gray-200 dark:border-gray-700">
+								<p className="text-muted-foreground">
+									✨ Sync with Google Calendar • Outlook •
+									Apple Calendar • Smart AI Planning
+								</p>
+							</div>
+						</div>
 					</div>
 				</div>
 			</section>
