@@ -2,6 +2,7 @@ import React from "react";
 import { legalTermsContent } from "./legalTermsContent";
 import { Navbar } from "../components/navigation/navbar";
 import { Card, CardContent } from "../components/ui/card";
+import Footer from "../components/ui/Footer";
 
 const sections = [
 	{
@@ -95,6 +96,9 @@ const TermsOfService: React.FC = () => {
 					</CardContent>
 				</Card>
 			</div>
+
+			{/* Footer */}
+			<Footer />
 		</>
 	);
 };

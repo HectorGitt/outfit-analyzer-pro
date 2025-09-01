@@ -18,6 +18,7 @@ import {
 	TrendingUp,
 } from "lucide-react";
 import { pricingTiers } from "@/lib/pricingTiers";
+import Footer from "@/components/ui/Footer";
 
 const Pricing = () => {
 	const recommendedTier = "elite";
@@ -282,76 +283,7 @@ Thanks.`
 			</section>
 
 			{/* Footer */}
-			<section className="py-12 bg-muted/30 border-t">
-				<div className="container mx-auto px-4">
-					<div className="max-w-4xl mx-auto">
-						<div className="grid md:grid-cols-3 gap-8 text-center md:text-left">
-							<div>
-								<h3 className="font-semibold mb-4">Legal</h3>
-								<div className="space-y-2">
-									<Link
-										to="/terms-of-service"
-										className="block text-sm text-muted-foreground hover:text-primary transition-colors"
-									>
-										Terms of Service
-									</Link>
-									<Link
-										to="/privacy-policy"
-										className="block text-sm text-muted-foreground hover:text-primary transition-colors"
-									>
-										Privacy Policy
-									</Link>
-									<Link
-										to="/refund-policy"
-										className="block text-sm text-muted-foreground hover:text-primary transition-colors"
-									>
-										Refund Policy
-									</Link>
-								</div>
-							</div>
-							<div>
-								<h3 className="font-semibold mb-4">Support</h3>
-								<div className="space-y-2">
-									<a
-										href="mailto:support@closetic.com"
-										className="block text-sm text-muted-foreground hover:text-primary transition-colors"
-									>
-										Contact Support
-									</a>
-									<Link
-										to="/faq"
-										className="block text-sm text-muted-foreground hover:text-primary transition-colors"
-									>
-										FAQ
-									</Link>
-								</div>
-							</div>
-							<div>
-								<h3 className="font-semibold mb-4">Company</h3>
-								<div className="space-y-2">
-									<Link
-										to="/about"
-										className="block text-sm text-muted-foreground hover:text-primary transition-colors"
-									>
-										About Us
-									</Link>
-									<a
-										href="mailto:support@closetic.com"
-										className="block text-sm text-muted-foreground hover:text-primary transition-colors"
-									>
-										Contact Sales
-									</a>
-								</div>
-							</div>
-						</div>
-						<div className="mt-8 pt-8 border-t border-border text-center">
-							<p className="text-sm text-muted-foreground">
-								© 2025 Closetic AI. All rights reserved.
-							</p>
-						</div>
-					</div>
-				</div>
-			</section>
+			<Footer />
 		</div>
 	);
 };

@@ -12,6 +12,7 @@ import {
 	AlertTriangle,
 	Info,
 } from "lucide-react";
+import Footer from "@/components/ui/Footer";
 
 const RefundPolicy = () => {
 	return (
@@ -307,6 +308,9 @@ const RefundPolicy = () => {
 					</div>
 				</div>
 			</section>
+
+			{/* Footer */}
+			<Footer />
 		</div>
 	);
 };
