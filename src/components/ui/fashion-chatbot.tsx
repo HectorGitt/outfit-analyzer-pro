@@ -848,9 +848,8 @@ Say: “Thanks for your patience—I’m connecting you with a specialist now.�
 		if (!hasVoiceAccess) {
 			toast({
 				title: "Premium Feature",
-				description: `Voice chat is available for ${
-					userTier?.name || "Pro"
-				} users only. Upgrade to access this feature!`,
+				description: `Voice chat is available for Icons
+					 only. Upgrade to access this feature!`,
 				variant: "default",
 				action: (
 					<Button
