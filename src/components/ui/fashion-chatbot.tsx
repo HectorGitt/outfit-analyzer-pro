@@ -15,13 +15,270 @@ import {
 	RotateCcw,
 	Keyboard,
 	LogIn,
+	Mic,
+	MicOff,
+	Volume2,
+	VolumeX,
+	PhoneOff,
+	Lock,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { fashionAPI } from "@/services/api";
+import {
+	calendarAPI,
+	wardrobeAPI,
+	userAPI,
+	outfitAPI,
+	planningAPI,
+} from "@/services/api";
 import { ChatbotRequest } from "@/types/api";
 import { useToast } from "@/hooks/use-toast";
 import { useChatbotStore, type Message } from "@/stores/chatbotStore";
 import { useAuthStore } from "@/stores/authStore";
+import { usePricingTier } from "@/hooks/useCalendar";
+import { tool, RealtimeAgent, RealtimeSession } from "@openai/agents-realtime";
+import { z } from "zod";
+
+// Tool definitions for fashion assistant
+const getCalendarEvents = tool({
+	name: "get_calendar_events",
+	description: "Get user calendar events for outfit planning and scheduling.",
+	parameters: z.object({
+		startDate: z
+			.string()
+			.nullable()
+			.describe("Start date for events (ISO format)"),
+		endDate: z
+			.string()
+			.nullable()
+			.describe("End date for events (ISO format)"),
+		eventType: z
+			.string()
+			.nullable()
+			.describe("Type of events to filter (e.g., work, social, formal)"),
+	}),
+	async execute({ startDate, endDate, eventType }) {
+		try {
+			const response = await calendarAPI.getEvents({
+				startDate,
+				endDate,
+				eventType,
+			});
+			return response;
+		} catch (error) {
+			console.error("Error fetching calendar events:", error);
+			return { error: "Failed to fetch calendar events" };
+		}
+	},
+});
+
+const getWardrobeItems = tool({
+	name: "get_wardrobe_items",
+	description: "Get user wardrobe items for outfit suggestions.",
+	parameters: z.object({
+		category: z
+			.string()
+			.nullable()
+			.describe("Category filter (tops, bottoms, shoes, etc.)"),
+		occasion: z
+			.string()
+			.nullable()
+			.describe("Occasion filter (casual, formal, work, etc.)"),
+		season: z
+			.string()
+			.nullable()
+			.describe("Season filter (spring, summer, fall, winter)"),
+		limit: z
+			.number()
+			.nullable()
+			.describe("Maximum number of items to return"),
+	}),
+	async execute({ category, occasion, season, limit = 20 }) {
+		try {
+			const response = await wardrobeAPI.getItems({
+				category,
+				occasion,
+				season,
+				limit,
+			});
+			return response.data;
+		} catch (error) {
+			console.error("Error fetching wardrobe items:", error);
+			return { error: "Failed to fetch wardrobe items" };
+		}
+	},
+});
+
+const addWardrobeItem = tool({
+	name: "add_wardrobe_item",
+	description: "Add a new item to the user wardrobe.",
+	parameters: z.object({
+		name: z.string().describe("Item name"),
+		category: z
+			.string()
+			.describe(
+				"Item category (tops, bottoms, shoes, accessories, etc.)"
+			),
+		color: z.string().nullable().describe("Item color"),
+		brand: z.string().nullable().describe("Item brand"),
+		size: z.string().nullable().describe("Item size"),
+		occasion: z.string().nullable().describe("Suitable occasions"),
+		season: z.string().nullable().describe("Suitable seasons"),
+		description: z.string().nullable().describe("Additional description"),
+	}),
+	async execute({
+		name,
+		category,
+		color,
+		brand,
+		size,
+		occasion,
+		season,
+		description,
+	}) {
+		try {
+			const response = await wardrobeAPI.createItem({
+				description: name,
+				category: category as any,
+				color_primary: color || "",
+				brand,
+				size,
+				season: season as any,
+				occasion: occasion ? [occasion] : [],
+			});
+			return response.data;
+		} catch (error) {
+			console.error("Error adding wardrobe item:", error);
+			return { error: "Failed to add wardrobe item" };
+		}
+	},
+});
+
+const getUserPreferences = tool({
+	name: "get_user_preferences",
+	description: "Get user fashion preferences and style profile.",
+	parameters: z.object({}),
+	async execute() {
+		try {
+			const response = await userAPI.getPreferences();
+			return response.data;
+		} catch (error) {
+			console.error("Error fetching user preferences:", error);
+			return { error: "Failed to fetch user preferences" };
+		}
+	},
+});
+
+const generateOutfitSuggestion = tool({
+	name: "generate_outfit_suggestion",
+	description:
+		"Generate outfit suggestions based on occasion, weather, and preferences.",
+	parameters: z.object({
+		eventId: z.string().describe("Calendar event ID for context"),
+		title: z.string().describe("Event title"),
+		startTime: z.string().describe("Event start time (ISO format)"),
+		endTime: z.string().describe("Event end time (ISO format)"),
+		description: z.string().nullable().describe("Event description"),
+		weather: z.string().nullable().describe("Current weather conditions"),
+		colors: z.array(z.string()).nullable().describe("Preferred colors"),
+	}),
+	async execute({
+		eventId,
+		title,
+		startTime,
+		endTime,
+		description,
+		weather,
+		colors,
+	}) {
+		try {
+			const response = await outfitAPI.generateSuggestion({
+				id: eventId,
+				title,
+				start_time: startTime,
+				end_time: endTime,
+				description: description || "",
+				weather: weather
+					? {
+							temperature: 20,
+							condition: weather,
+							humidity: 50,
+							windSpeed: 5,
+							precipitation: 0,
+							location: "",
+							date: new Date().toISOString().split("T")[0],
+					  }
+					: undefined,
+				preferences: colors ? { colors } : undefined,
+			});
+			return response.data;
+		} catch (error) {
+			console.error("Error generating outfit suggestion:", error);
+			return { error: "Failed to generate outfit suggestion" };
+		}
+	},
+});
+
+const getOutfitPlans = tool({
+	name: "get_outfit_plans",
+	description: "Get existing outfit plans and suggestions.",
+	parameters: z.object({
+		eventId: z.string().nullable().describe("Filter by calendar event ID"),
+		status: z
+			.string()
+			.nullable()
+			.describe("Filter by status (planned, completed, etc.)"),
+		startDate: z.string().nullable().describe("Start date filter"),
+		endDate: z.string().nullable().describe("End date filter"),
+		limit: z
+			.number()
+			.nullable()
+			.describe("Maximum number of plans to return"),
+	}),
+	async execute({ eventId, status, startDate, endDate, limit = 10 }) {
+		try {
+			const response = await planningAPI.getPlans({
+				eventId,
+				status,
+				startDate,
+				endDate,
+				limit,
+			});
+			return response.data;
+		} catch (error) {
+			console.error("Error fetching outfit plans:", error);
+			return { error: "Failed to fetch outfit plans" };
+		}
+	},
+});
+
+const createOutfitPlan = tool({
+	name: "create_outfit_plan",
+	description: "Create a new outfit plan for a specific event or occasion.",
+	parameters: z.object({
+		eventId: z.string().describe("Calendar event ID"),
+		outfitId: z
+			.string()
+			.describe("Outfit suggestion ID to use for the plan"),
+		notes: z
+			.string()
+			.nullable()
+			.describe("Additional notes for the outfit plan"),
+	}),
+	async execute({ eventId, outfitId, notes }) {
+		try {
+			const response = await planningAPI.planOutfit({
+				eventId,
+				outfitId,
+				notes,
+			});
+			return response.data;
+		} catch (error) {
+			console.error("Error creating outfit plan:", error);
+			return { error: "Failed to create outfit plan" };
+		}
+	},
+});
 
 // Generate login URL with current page as next parameter
 const getLoginUrl = () => {
@@ -135,6 +392,8 @@ const LoginRequiredMessage = ({
 const FashionChatbot = () => {
 	// Check authentication status
 	const { isAuthenticated } = useAuthStore();
+	const { data: pricingData } = usePricingTier();
+	const isPro = pricingData?.data?.is_pro ?? false;
 	const navigate = useNavigate();
 
 	// Zustand store state and actions
@@ -161,6 +420,11 @@ const FashionChatbot = () => {
 	);
 	const messagesEndRef = useRef<HTMLDivElement>(null);
 	const { toast } = useToast();
+
+	// Voice functionality state
+	const [isVoiceMode, setIsVoiceMode] = useState(false);
+	const [realtimeSession, setRealtimeSession] = useState<any>(null);
+	const [isVoiceLoading, setIsVoiceLoading] = useState(false);
 
 	const scrollToBottom = () => {
 		messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -370,6 +634,194 @@ const FashionChatbot = () => {
 		});
 	};
 
+	// Voice functionality functions
+	const initializeRealtimeSession = async () => {
+		try {
+			setIsVoiceLoading(true);
+
+			// First, fetch the ephemeral token from the backend
+			const tokenResponse = await fashionAPI.getRealtimeClientSecret();
+			const clientSecret = tokenResponse.data.client_secret;
+
+			const agent = new RealtimeAgent({
+				name: "Fashion Assistant",
+				instructions: `
+# Role & Objective
+You are a helpful fashion assistant. Help users with outfit suggestions, styling tips, and fashion advice. 
+You can access the user's calendar events, wardrobe items, preferences, and outfit plans to provide personalized recommendations. 
+Success means providing clear, stylish, and practical guidance tailored to the user.
+
+# Personality & Tone
+- Friendly, confident, approachable
+- Warm and concise
+- Speak clearly and briefly, avoid over-explaining
+- 2–3 sentences per turn
+- Deliver audio quickly but do not sound rushed
+- Vary phrasing to avoid robotic repetition
+
+# Context
+- Use calendar events to suggest outfits for specific occasions
+- Use wardrobe items to mix and match clothing
+- Use preferences and outfit plans to align with personal style
+- Stay updated with current fashion trends
+
+## Language
+- The conversation will be only in English.
+- Do not respond in any other language, even if the user asks.
+- If the user speaks another language, politely explain that support is limited to English.
+
+# Instructions / Rules
+- IF AUDIO IS UNCLEAR, ask the user politely to repeat
+- DO NOT provide financial, legal, or medical advice
+- ESCALATE if repeated dissatisfaction, confusion, or safety concerns
+- Provide varied suggestions, not identical repeats
+- Keep suggestions practical: weather, season, event, and user preferences matter
+
+# Conversation Flow
+Greeting → Discover (event/occasion) → Outfit Suggestion → Confirm → Adjust (if needed) → Close
+
+Greeting Examples:
+- “Hi, ready to plan your look for today?”
+- “Welcome back, do you want me to pick an outfit for your next event?”
+
+Outfit Suggestion Examples:
+- “For your dinner in Paris, I’d suggest a tailored navy blazer, white shirt, and loafers.”
+- “It’s warm today, so light chinos with a linen shirt would be a great fit.”
+
+Clarification Examples:
+- “Sorry, I didn’t catch that—could you say it again?”
+- “I only heard part of that. What did you say after…?”
+
+Closing Examples:
+- “Enjoy your evening, I’ll save this outfit in your plan.”
+- “Perfect, I’ve added that to your calendar.”
+
+# Safety & Escalation
+Escalate if:
+- User explicitly requests human help
+- Severe dissatisfaction after 2 failed attempts
+- Threats, harassment, or safety risk
+Say: “Thanks for your patience—I’m connecting you with a specialist now.”
+
+# Variety
+- Do not repeat the same phrases
+- Rotate expressions for greetings, confirmations, and suggestions
+`,
+				tools: [
+					getCalendarEvents,
+					getWardrobeItems,
+					addWardrobeItem,
+					getUserPreferences,
+					generateOutfitSuggestion,
+					getOutfitPlans,
+					createOutfitPlan,
+				],
+			});
+
+			const session = new RealtimeSession(agent);
+			await session.connect({
+				apiKey: clientSecret,
+			});
+
+			setRealtimeSession(session);
+			return session;
+		} catch (error) {
+			console.error("Failed to initialize realtime session:", error);
+			toast({
+				title: "Voice Setup Failed",
+				description:
+					"Could not initialize voice functionality. Please try again later.",
+				variant: "destructive",
+			});
+			return null;
+		} finally {
+			setIsVoiceLoading(false);
+		}
+	};
+
+	const hangupCall = async () => {
+		if (realtimeSession) {
+			try {
+				await realtimeSession.close();
+				setRealtimeSession(null);
+				setIsVoiceMode(false);
+				setIsVoiceLoading(false);
+				toast({
+					title: "Call Ended",
+					description: "Voice session has been disconnected.",
+					variant: "default",
+				});
+			} catch (error) {
+				console.error("Error disconnecting realtime session:", error);
+				toast({
+					title: "Disconnect Failed",
+					description: "Could not properly end the voice session.",
+					variant: "destructive",
+				});
+			}
+		}
+	};
+
+	const toggleVoiceMode = async () => {
+		if (!isAuthenticated || isVoiceLoading) {
+			return;
+		}
+
+		// Check if user is pro before allowing voice functionality
+		if (!isPro) {
+			toast({
+				title: "Pro Feature",
+				description:
+					"Voice chat is available for Pro users only. Upgrade to access this feature!",
+				variant: "default",
+				action: (
+					<Button
+						variant="outline"
+						size="sm"
+						onClick={() => navigate("/profile")}
+					>
+						Upgrade
+					</Button>
+				),
+			});
+			return;
+		}
+
+		if (!isVoiceMode) {
+			// Switching to voice mode
+			const session = await initializeRealtimeSession();
+			console.log("Realtime session started:", session);
+			if (session) {
+				setIsVoiceMode(true);
+				toast({
+					title: "Voice Call Started",
+					description:
+						"You can now speak with the fashion assistant!",
+					variant: "default",
+				});
+			}
+		} else {
+			// Switching back to text mode
+			await hangupCall();
+		}
+	};
+
+	// Cleanup on unmount
+	useEffect(() => {
+		return () => {
+			if (realtimeSession) {
+				try {
+					realtimeSession.close();
+				} catch (error) {
+					console.error(
+						"Error disconnecting realtime session:",
+						error
+					);
+				}
+			}
+		};
+	}, [realtimeSession]);
+
 	if (!isOpen) {
 		return (
 			<Button
@@ -412,6 +864,12 @@ const FashionChatbot = () => {
 						{!isAuthenticated && (
 							<span className="text-xs text-blue-600 dark:text-blue-400 truncate">
 								Login required
+							</span>
+						)}
+						{isAuthenticated && !isPro && (
+							<span className="text-xs text-amber-600 dark:text-amber-400 truncate flex items-center gap-1">
+								<Lock className="h-3 w-3" />
+								Pro features available
 							</span>
 						)}
 					</div>
@@ -556,6 +1014,11 @@ const FashionChatbot = () => {
 									Press Enter to send
 								</span>
 								<span className="sm:hidden">Tap to send</span>
+								{!isPro && (
+									<span className="ml-2 text-amber-600 dark:text-amber-400">
+										• Voice chat: Pro only
+									</span>
+								)}
 							</>
 						) : (
 							<span className="text-blue-600 dark:text-blue-400">
@@ -579,56 +1042,126 @@ const FashionChatbot = () => {
 				</div>
 
 				<div className="flex gap-2">
-					<Input
-						value={inputValue}
-						onChange={(e) => {
-							if (e.target.value.length <= 500) {
-								setInputValue(e.target.value);
-								setShowWelcome(false);
+					{isAuthenticated && (
+						<Button
+							onClick={toggleVoiceMode}
+							size="icon"
+							variant={isVoiceMode ? "default" : "outline"}
+							disabled={isVoiceLoading}
+							className={cn(
+								"transition-all duration-200",
+								isVoiceMode
+									? "bg-blue-500 hover:bg-blue-600"
+									: "",
+								!isPro && "opacity-60 hover:opacity-80"
+							)}
+							title={
+								!isPro
+									? "Voice chat is a Pro feature"
+									: isVoiceMode
+									? "Switch to text mode"
+									: "Switch to voice mode"
 							}
-						}}
-						onKeyPress={handleKeyPress}
-						placeholder={
-							isAuthenticated
-								? "Ask about fashion..."
-								: "Log in to start chatting..."
-						}
-						className="flex-1 text-sm"
-						disabled={isLoading || !isAuthenticated}
-						maxLength={500}
-						aria-label={
-							isAuthenticated
-								? "Type your fashion question"
-								: "Please log in to chat"
-						}
-					/>
-					<Button
-						onClick={
-							isAuthenticated
-								? handleSendMessage
-								: handleLoginClick
-						}
-						size="icon"
-						disabled={
-							(!isAuthenticated && false) ||
-							(isAuthenticated &&
-								(!inputValue.trim() ||
-									isLoading ||
-									inputValue.length > 500))
-						}
-						className="transition-all duration-200 hover:scale-105 active:scale-95"
-						aria-label={
-							isAuthenticated ? "Send message" : "Log in to chat"
-						}
-					>
-						{isAuthenticated && isLoading ? (
-							<Loader2 className="h-4 w-4 animate-spin" />
-						) : isAuthenticated ? (
-							<Send className="h-4 w-4" />
-						) : (
-							<LogIn className="h-4 w-4" />
-						)}
-					</Button>
+							aria-label={
+								!isPro
+									? "Voice chat is a Pro feature"
+									: isVoiceMode
+									? "Switch to text mode"
+									: "Switch to voice mode"
+							}
+						>
+							{isVoiceLoading ? (
+								<Loader2 className="h-4 w-4 animate-spin" />
+							) : !isPro ? (
+								<div className="relative">
+									<Mic className="h-4 w-4" />
+								</div>
+							) : isVoiceMode ? (
+								<Keyboard className="h-4 w-4" />
+							) : (
+								<Mic className="h-4 w-4" />
+							)}
+						</Button>
+					)}
+
+					{isVoiceMode ? (
+						// Voice mode controls
+						<div className="flex gap-2 flex-1">
+							<div className="flex-1 flex items-center justify-center p-2 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+								<div className="flex items-center gap-2 text-blue-700 dark:text-blue-300">
+									<div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+									<span className="text-sm font-medium">
+										Voice Active
+									</span>
+								</div>
+							</div>
+							<Button
+								onClick={hangupCall}
+								size="icon"
+								variant="destructive"
+								className="transition-all duration-200 hover:scale-105 active:scale-95"
+								aria-label="Hang up voice call"
+							>
+								<PhoneOff className="h-4 w-4" />
+							</Button>
+						</div>
+					) : (
+						// Text mode controls
+						<>
+							<Input
+								value={inputValue}
+								onChange={(e) => {
+									if (e.target.value.length <= 500) {
+										setInputValue(e.target.value);
+										setShowWelcome(false);
+									}
+								}}
+								onKeyDown={handleKeyPress}
+								placeholder={
+									isAuthenticated
+										? "Ask about fashion..."
+										: "Log in to start chatting..."
+								}
+								className="flex-1 text-sm"
+								disabled={isLoading || !isAuthenticated}
+								maxLength={500}
+								aria-label={
+									isAuthenticated
+										? "Type your fashion question"
+										: "Please log in to chat"
+								}
+							/>
+							<Button
+								onClick={
+									isAuthenticated
+										? handleSendMessage
+										: handleLoginClick
+								}
+								size="icon"
+								disabled={
+									(!isAuthenticated && false) ||
+									(isAuthenticated &&
+										(!inputValue.trim() ||
+											isLoading ||
+											inputValue.length > 500))
+								}
+								className="transition-all duration-200 hover:scale-105 active:scale-95"
+								aria-label={
+									isAuthenticated
+										? "Send message"
+										: "Log in to chat"
+								}
+							>
+								{isAuthenticated && isLoading ? (
+									<Loader2 className="h-4 w-4 animate-spin" />
+								) : isAuthenticated ? (
+									<Send className="h-4 w-4" />
+								) : (
+									<LogIn className="h-4 w-4" />
+								)}
+							</Button>
+						</>
+					)}
 				</div>
 			</div>
 		</div>

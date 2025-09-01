@@ -169,6 +169,12 @@ export const fashionAPI = {
 
 	chatbot: (data: ChatbotRequest) =>
 		apiCall<ChatbotResponse>("POST", "/fashion/chatbot", data),
+
+	getRealtimeClientSecret: () =>
+		apiCall<{ client_secret: string }>(
+			"POST",
+			"/fashion/realtime-client-secret"
+		),
 };
 
 // Admin API endpoints
@@ -453,7 +459,7 @@ export const wardrobeAPI = {
 		season?: string;
 		limit?: number;
 		offset?: number;
-		wardrobe: WardrobeItem[];
+		wardrobe?: WardrobeItem[];
 	}) =>
 		apiCall<WardrobeResponse>(
 			"GET",
