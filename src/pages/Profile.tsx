@@ -11,6 +11,7 @@ import {
 	ArrowRight,
 	Globe,
 	Users,
+	Star,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -50,6 +51,7 @@ export default function Profile() {
 	const [loading, setLoading] = useState(false);
 	const [saving, setSaving] = useState(false);
 	const { toast } = useToast();
+	const [averageScore, setAverageScore] = useState<number | null>(null);
 
 	const [selectedStyles, setSelectedStyles] = useState<string[]>([]);
 	const [selectedColors, setSelectedColors] = useState<string[]>([]);
@@ -88,6 +90,7 @@ export default function Profile() {
 
 					setPersonalStyleGuide(prefs.personal_style_guide || null);
 					setPreferences(prefs);
+					setAverageScore(prefs.average_score || null);
 					/* console.log(
 						"Personal Style Guide:",
 						prefs.personal_style_guide
@@ -307,10 +310,23 @@ export default function Profile() {
 						<h1 className="text-4xl font-bold mb-4">
 							Your Style Profile
 						</h1>
-						<p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+						<p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-6">
 							Customize your preferences to get personalized
 							fashion recommendations
 						</p>
+						{averageScore !== null && (
+							<div className="inline-flex items-center gap-3 bg-gradient-to-r from-primary/10 to-accent/10 rounded-full px-6 py-3 border border-primary/20">
+								<Star className="w-5 h-5 text-primary fill-primary" />
+								<div className="text-center">
+									<div className="text-sm text-muted-foreground">
+										Average Fashion Score
+									</div>
+									<div className="text-2xl font-bold text-primary">
+										{averageScore.toFixed(1)}/100
+									</div>
+								</div>
+							</div>
+						)}
 					</div>
 
 					{/* Loading State */}

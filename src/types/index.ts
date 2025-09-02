@@ -29,6 +29,7 @@ export interface UserPreferences {
 	country?: string;
 	gender?: string;
 	personal_style_guide?: PersonalStyleGuide;
+	average_score?: number;
 }
 
 export interface FashionAnalysis {
