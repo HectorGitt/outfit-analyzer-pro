@@ -294,7 +294,7 @@ const createOutfitPlan = tool({
 const endCall = tool({
 	name: "end_call",
 	description:
-		"End the current voice call when the conversation is complete, the user requests it, or when it's appropriate to disconnect.",
+		"End the current voice call when the conversation is complete, the user requests it, or when it's appropriate to disconnect. Make sure you say something before ending the call",
 	parameters: z.object({
 		reason: z
 			.string()
