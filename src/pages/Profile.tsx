@@ -29,6 +29,13 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { Navbar } from "@/components/navigation/navbar";
 import { Badge } from "@/components/ui/badge";
+import {
+	Dialog,
+	DialogContent,
+	DialogDescription,
+	DialogHeader,
+	DialogTitle,
+} from "@/components/ui/dialog";
 import { userAPI } from "@/services/api";
 import { UserPreferences, PersonalStyleGuide } from "@/types";
 import { useAuthStore } from "@/stores/authStore";
@@ -52,6 +59,7 @@ export default function Profile() {
 	const [saving, setSaving] = useState(false);
 	const { toast } = useToast();
 	const [averageScore, setAverageScore] = useState<number | null>(null);
+	const [showWelcomeModal, setShowWelcomeModal] = useState(false);
 
 	const [selectedStyles, setSelectedStyles] = useState<string[]>([]);
 	const [selectedColors, setSelectedColors] = useState<string[]>([]);
@@ -121,6 +129,17 @@ export default function Profile() {
 				});
 		}
 	}, [user?.username]);
+
+	// Show welcome modal for yc2025 user
+	useEffect(() => {
+		if (user?.username === "yc2025" && !loading) {
+			// Small delay to ensure the page has loaded
+			const timer = setTimeout(() => {
+				setShowWelcomeModal(true);
+			}, 1000);
+			return () => clearTimeout(timer);
+		}
+	}, [user?.username, loading]);
 
 	const styleOptions = [
 		"Casual",
@@ -852,6 +871,216 @@ export default function Profile() {
 					)}
 				</div>
 			</div>
+
+			{/* Welcome Modal for yc2025 */}
+			<Dialog open={showWelcomeModal} onOpenChange={setShowWelcomeModal}>
+				<DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+					<DialogHeader>
+						<DialogTitle className="text-2xl font-bold text-center bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+							🎉 Welcome to Closetic AI - Your Fashion Assistant!
+						</DialogTitle>
+						<DialogDescription className="text-center text-lg">
+							You've been granted access to test our premium
+							features!
+						</DialogDescription>
+					</DialogHeader>
+
+					<div className="space-y-6 mt-6">
+						{/* Account Status */}
+						<div className="bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 p-6 rounded-lg border border-green-200 dark:border-green-800">
+							<div className="flex items-center gap-3 mb-3">
+								<div className="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center">
+									<Star className="w-5 h-5 text-white fill-white" />
+								</div>
+								<h3 className="text-xl font-bold text-green-800 dark:text-green-200">
+									Premium Test Account
+								</h3>
+							</div>
+							<p className="text-green-700 dark:text-green-300">
+								Your account (yc2025) has been set up with the
+								highest pricing tier for testing purposes. You
+								have access to all premium features without any
+								limitations!
+							</p>
+						</div>
+
+						{/* App Features */}
+						<div className="space-y-4">
+							<h3 className="text-xl font-bold flex items-center gap-2">
+								✨ Full App Features Available to You:
+							</h3>
+
+							<div className="grid md:grid-cols-2 gap-4">
+								<div className="space-y-3">
+									<div className="flex items-start gap-3 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+										<Camera className="w-5 h-5 text-blue-600 mt-0.5" />
+										<div>
+											<h4 className="font-semibold text-blue-800 dark:text-blue-200">
+												AI Fashion Analysis
+											</h4>
+											<p className="text-sm text-blue-700 dark:text-blue-300">
+												Upload photos for instant style
+												analysis and personalized
+												recommendations
+											</p>
+										</div>
+									</div>
+
+									<div className="flex items-start gap-3 p-3 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
+										<Heart className="w-5 h-5 text-purple-600 mt-0.5" />
+										<div>
+											<h4 className="font-semibold text-purple-800 dark:text-purple-200">
+												Personal Style Guide
+											</h4>
+											<p className="text-sm text-purple-700 dark:text-purple-300">
+												Get AI-generated style
+												principles, color palettes, and
+												shopping tips
+											</p>
+										</div>
+									</div>
+
+									<div className="flex items-start gap-3 p-3 bg-pink-50 dark:bg-pink-900/20 rounded-lg">
+										<ShoppingBag className="w-5 h-5 text-pink-600 mt-0.5" />
+										<div>
+											<h4 className="font-semibold text-pink-800 dark:text-pink-200">
+												Wardrobe Management
+											</h4>
+											<p className="text-sm text-pink-700 dark:text-pink-300">
+												Organize your clothing items and
+												get outfit suggestions
+											</p>
+										</div>
+									</div>
+								</div>
+
+								<div className="space-y-3">
+									<div className="flex items-start gap-3 p-3 bg-orange-50 dark:bg-orange-900/20 rounded-lg">
+										<Calendar className="w-5 h-5 text-orange-600 mt-0.5" />
+										<div>
+											<h4 className="font-semibold text-orange-800 dark:text-orange-200">
+												Calendar Integration
+											</h4>
+											<p className="text-sm text-orange-700 dark:text-orange-300">
+												Connect Google Calendar for
+												event-based outfit
+												recommendations
+											</p>
+										</div>
+									</div>
+
+									<div className="flex items-start gap-3 p-3 bg-teal-50 dark:bg-teal-900/20 rounded-lg">
+										<User className="w-5 h-5 text-teal-600 mt-0.5" />
+										<div>
+											<h4 className="font-semibold text-teal-800 dark:text-teal-200">
+												Style Preferences
+											</h4>
+											<p className="text-sm text-teal-700 dark:text-teal-300">
+												Set your style preferences,
+												colors, and occasions for better
+												recommendations
+											</p>
+										</div>
+									</div>
+
+									<div className="flex items-start gap-3 p-3 bg-indigo-50 dark:bg-indigo-900/20 rounded-lg">
+										<Palette className="w-5 h-5 text-indigo-600 mt-0.5" />
+										<div>
+											<h4 className="font-semibold text-indigo-800 dark:text-indigo-200">
+												Color Analysis
+											</h4>
+											<p className="text-sm text-indigo-700 dark:text-indigo-300">
+												Advanced color harmony analysis
+												and palette recommendations
+											</p>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						{/* Voice Agent Highlight */}
+						<div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 p-6 rounded-lg border border-blue-200 dark:border-blue-800">
+							<div className="flex items-center gap-3 mb-3">
+								<div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center">
+									<span className="text-white text-lg">
+										🎤
+									</span>
+								</div>
+								<h3 className="text-xl font-bold text-blue-800 dark:text-blue-200">
+									Try Our Voice Agent!
+								</h3>
+							</div>
+							<p className="text-blue-700 dark:text-blue-300 mb-4">
+								Experience our cutting-edge voice-powered
+								fashion assistant. Click the microphone button
+								in the bottom-right corner to start a
+								conversation and get personalized fashion
+								advice!
+							</p>
+							<div className="flex items-center gap-2 text-sm text-blue-600 dark:text-blue-400">
+								<span className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></span>
+								Available 24/7 with instant responses
+							</div>
+						</div>
+
+						{/* Additional Information */}
+						<div className="bg-gradient-to-r from-amber-50 to-yellow-50 dark:from-amber-900/20 dark:to-yellow-900/20 p-6 rounded-lg border border-amber-200 dark:border-amber-800">
+							<div className="flex items-center gap-3 mb-3">
+								<div className="w-10 h-10 bg-amber-500 rounded-full flex items-center justify-center">
+									<span className="text-white text-lg">
+										ℹ️
+									</span>
+								</div>
+								<h3 className="text-xl font-bold text-amber-800 dark:text-amber-200">
+									Important Information
+								</h3>
+							</div>
+							<div className="space-y-3 text-amber-700 dark:text-amber-300">
+								<p>
+									<strong>Wardrobe Items:</strong> Your
+									account has been pre-populated with sample
+									wardrobe items to help you explore the
+									features immediately.
+								</p>
+								<p>
+									<strong>Google Account:</strong> A Google
+									account has already been connected to your
+									profile, so you can start generating outfits
+									for calendar events right away.
+								</p>
+								<p>
+									<strong>Calendar Connection:</strong> You
+									can also connect additional Google accounts
+									in the{" "}
+									<Link
+										to="/calendar-connect"
+										className="underline hover:text-amber-800"
+									>
+										Calendar Connect
+									</Link>{" "}
+									page for even more personalized
+									recommendations.
+								</p>
+							</div>
+						</div>
+
+						{/* Call to Action */}
+						<div className="text-center pt-4 border-t">
+							<p className="text-muted-foreground mb-4">
+								Start exploring all these features and let us
+								know your feedback!
+							</p>
+							<Button
+								onClick={() => setShowWelcomeModal(false)}
+								className="btn-gradient px-8 py-3"
+							>
+								Start Exploring ✨
+							</Button>
+						</div>
+					</div>
+				</DialogContent>
+			</Dialog>
 		</div>
 	);
 }
