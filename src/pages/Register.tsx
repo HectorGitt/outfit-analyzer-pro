@@ -53,12 +53,6 @@ export default function Register() {
 	const { toast } = useToast();
 	const queryClient = useQueryClient();
 
-	// Generate login URL with current page as next parameter
-	const getLoginUrl = () => {
-		const currentPath = location.pathname + location.search;
-		return `/login?next=${encodeURIComponent(currentPath)}`;
-	};
-
 	const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const { name, value } = e.target;
 		setFormData((prev) => ({
@@ -579,7 +573,7 @@ export default function Register() {
 									<p className="text-sm text-muted-foreground">
 										Already have an account?{" "}
 										<Link
-											to={getLoginUrl()}
+											to="/login"
 											className="text-primary hover:underline font-medium"
 										>
 											Sign in

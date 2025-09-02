@@ -334,6 +334,7 @@ const endCall = tool({
 // Generate login URL with current page as next parameter
 const getLoginUrl = () => {
 	const currentPath = location.pathname + location.search;
+	if (currentPath.includes("/login")) return "/login";
 	return `/login?next=${encodeURIComponent(currentPath)}`;
 };
 
