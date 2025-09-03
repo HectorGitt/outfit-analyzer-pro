@@ -189,7 +189,7 @@ export default function EmailVerification() {
 									</li>
 									<li>
 										Check if the link has expired (links are
-										valid for 24 hours)
+										valid for 15 minutes)
 									</li>
 									<li>
 										Make sure you're using the correct link
