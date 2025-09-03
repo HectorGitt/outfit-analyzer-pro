@@ -76,7 +76,6 @@ export default function EmailVerification() {
 					status === "success"
 						? "Your email has been verified! Please sign in to continue."
 						: "Please sign in to access your account.",
-				username: email,
 			},
 		});
 	};

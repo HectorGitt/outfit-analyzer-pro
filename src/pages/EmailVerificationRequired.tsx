@@ -92,7 +92,6 @@ export default function EmailVerificationRequired() {
 			state: {
 				message:
 					"Please check your email and verify your account before logging in.",
-				username: email,
 			},
 		});
 	};
