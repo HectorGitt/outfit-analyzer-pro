@@ -31,7 +31,11 @@ export const authAPI = {
 		apiCall<Token>("POST", "auth/login", credentials),
 
 	register: (credentials: RegisterCredentials) =>
-		apiCall<Token>("POST", "auth/register", credentials),
+		apiCall<{ message: string; user_id?: string; email?: string }>(
+			"POST",
+			"auth/register",
+			credentials
+		),
 
 	logout: () => apiCall<void>("POST", "/auth/logout"),
 
@@ -147,6 +151,20 @@ export const userAPI = {
 	getPreferences: () => apiCall<UserPreferences>("GET", `/users/preferences`),
 
 	getWardrobeBuilder: () => apiCall<any>("GET", "/users/wardrobe-builder"),
+
+	// Email verification endpoints
+	sendVerificationEmail: (email: string) =>
+		apiCall<{ message: string; verification_sent: boolean }>(
+			"POST",
+			"/auth/send-verification",
+			{ email }
+		),
+
+	verifyEmail: (token: string) =>
+		apiCall<{ success: boolean; message: string; email: string }>(
+			"GET",
+			`/auth/verify-email?token=${token}`
+		),
 };
 
 // Fashion Analysis API endpoints

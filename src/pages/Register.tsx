@@ -133,7 +133,8 @@ export default function Register() {
 			if (success) {
 				toast({
 					title: "Account created",
-					description: "Your account was created successfully.",
+					description:
+						"Please check your email to verify your account.",
 				});
 
 				// Invalidate pricing query to refetch user's current tier
@@ -141,7 +142,11 @@ export default function Register() {
 					queryKey: pricingQueryKeys.userTier(),
 				});
 
-				navigate("/profile");
+				// Redirect to email verification required page with email
+				localStorage.setItem("verificationEmail", formData.email);
+				navigate("/email-verification-required", {
+					state: { email: formData.email },
+				});
 			}
 			// If not successful, error will be displayed via auth store
 		} catch (err) {

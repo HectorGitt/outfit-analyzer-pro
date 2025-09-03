@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
 	Link,
 	useNavigate,
@@ -31,6 +31,25 @@ export default function Login() {
 		useAuthStore();
 	const { toast } = useToast();
 	const queryClient = useQueryClient();
+
+	// Pre-fill username from localStorage or location state
+	useEffect(() => {
+		const storedUsername = localStorage.getItem("loginUsername");
+		const stateUsername = location.state?.username;
+
+		if (storedUsername) {
+			setFormData((prev) => ({
+				...prev,
+				username: storedUsername,
+			}));
+			localStorage.removeItem("loginUsername"); // Clear after use
+		} else if (stateUsername) {
+			setFormData((prev) => ({
+				...prev,
+				username: stateUsername,
+			}));
+		}
+	}, [location.state]);
 
 	const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const { name, value } = e.target;
@@ -71,11 +90,37 @@ export default function Login() {
 				// Redirect to the intended page or default to profile
 				const redirectTo = nextParam || fromLocation || "/profile";
 				navigate(redirectTo, { replace: true });
+			} else {
+				// Login failed - check if it's due to unverified email
+				console.log("Login failed - checking error details");
+				console.log("error:", error);
+				console.log("errorDetails:", errorDetails);
+
+				const isEmailNotVerified =
+					errorDetails?.message === "Email not verified" ||
+					errorDetails?.details?.detail === "Email not verified" ||
+					error === "Email not verified";
+
+				console.log("isEmailNotVerified:", isEmailNotVerified);
+
+				if (isEmailNotVerified) {
+					toast({
+						title: "Email verification required",
+						description:
+							"Please verify your email address before signing in.",
+						variant: "default",
+					});
+
+					// Redirect to email verification page
+					navigate("/email-verification-required");
+					return;
+				}
+
+				// Other login errors are already displayed via ErrorDisplay component
 			}
-			// If not successful, error will be displayed via auth store
-		} catch (err) {
-			// Error is handled by the auth store, but also surface a toast
-			console.error("Login failed:", err);
+		} catch (err: any) {
+			console.error("Unexpected login error:", err);
+			// Handle unexpected errors that might still be thrown
 			toast({
 				title: "Sign in error",
 				description:
@@ -122,16 +167,14 @@ export default function Login() {
 						<CardContent>
 							<form onSubmit={handleSubmit} className="space-y-6">
 								<div className="space-y-2">
-									<Label htmlFor="username">
-										Username or Email
-									</Label>
+									<Label htmlFor="username">Username</Label>
 									<div className="relative">
 										<Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
 										<Input
 											id="username"
 											name="username"
 											type="text"
-											placeholder="Enter your username or email"
+											placeholder="Enter your username"
 											className="pl-10 input-fashion"
 											value={formData.username}
 											onChange={handleInputChange}
@@ -222,23 +265,26 @@ export default function Login() {
 						</CardContent>
 					</Card>
 
-					{/* Demo Account */}
+					{/* Email Verification Resend */}
 					<Card className="card-fashion">
 						<CardContent className="pt-6">
 							<div className="text-center space-y-3">
-								<h3 className="font-medium">Demo Account</h3>
+								<h3 className="font-medium">
+									Need to verify your email?
+								</h3>
 								<p className="text-sm text-muted-foreground">
-									Username: demo
-									<br />
-									Password: demo123
+									If you haven't received your verification
+									email, you can request a new one.
 								</p>
 								<Button
 									variant="outline"
 									size="sm"
-									onClick={handleDemoLogin}
+									asChild
 									className="mt-2"
 								>
-									Fill Demo Credentials
+									<Link to="/email-verification-required">
+										Resend Verification Email
+									</Link>
 								</Button>
 							</div>
 						</CardContent>

@@ -26,6 +26,8 @@ import NotFound from "./pages/NotFound";
 import Pricing from "./pages/Pricing";
 import RefundPolicy from "./pages/RefundPolicy";
 import Maintenance from "./pages/Maintenance";
+import EmailVerificationRequired from "./pages/EmailVerificationRequired";
+import EmailVerification from "./pages/EmailVerification";
 
 const queryClient = new QueryClient();
 
@@ -45,6 +47,11 @@ const AppContent = () => {
 				<Route path="/" element={<Index />} />
 				<Route path="/login" element={<Login />} />
 				<Route path="/register" element={<Register />} />
+				<Route
+					path="/email-verification-required"
+					element={<EmailVerificationRequired />}
+				/>
+				<Route path="/verify-email" element={<EmailVerification />} />
 				<Route
 					path="/upload"
 					element={
