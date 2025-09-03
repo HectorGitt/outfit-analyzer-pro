@@ -60,6 +60,9 @@ export const useUserPricingTier = () => {
 			}
 		},
 		refetchOnWindowFocus: false,
+		enabled: useAuthStore.getState().isAuthenticated, // Only run when user is authenticated
+		staleTime: 5 * 60 * 1000, // Consider data fresh for 5 minutes
+		gcTime: 10 * 60 * 1000, // Keep in cache for 10 minutes
 	});
 };
 
@@ -75,6 +78,8 @@ export const usePricingTiers = () => {
 			}));
 		},
 		refetchOnWindowFocus: false,
+		staleTime: 30 * 60 * 1000, // Static data, keep for 30 minutes
+		gcTime: 60 * 60 * 1000, // Keep in cache for 1 hour
 	});
 };
 
@@ -102,7 +107,7 @@ export const useUpdatePricingTier = () => {
 export const useFeatureAccess = (feature: keyof typeof pricingTiers.free) => {
 	const { data: userTier } = useUserPricingTier();
 
-	if (!userTier) return false;
+	if (!userTier) return false; // No data means no access (free tier features only)
 
 	return userTier.features[feature] === true;
 };
@@ -111,7 +116,7 @@ export const useFeatureAccess = (feature: keyof typeof pricingTiers.free) => {
 export const useFeatureLimit = (feature: keyof typeof pricingTiers.free) => {
 	const { data: userTier } = useUserPricingTier();
 
-	if (!userTier) return 0;
+	if (!userTier) return 0; // No data means no limit (free tier)
 
 	const limit = userTier.features[feature];
 	return typeof limit === "number" ? limit : 0;

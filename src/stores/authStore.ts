@@ -33,7 +33,6 @@ interface AuthActions {
 	clearError: () => void;
 	updateUser: (userData: Partial<User>) => void;
 	updatePricingTier: (tier: keyof typeof pricingTiers) => void;
-	fetchUserPricingTier: () => Promise<void>;
 }
 
 export const useAuthStore = create<AuthState & AuthActions>()(
@@ -46,30 +45,30 @@ export const useAuthStore = create<AuthState & AuthActions>()(
 			errorDetails: null,
 			pricingTier: "free" as keyof typeof pricingTiers,
 
-			// Helper function to fetch user's pricing tier
-			fetchUserPricingTier: async () => {
-				try {
-					const response = await apiCall(
-						"GET",
-						"/users/pricing-tier"
-					);
-					const data = response.data as any;
-					const tierKey = data.pricing_tier || "free";
-					set({ pricingTier: tierKey as keyof typeof pricingTiers });
-					console.log("✅ User pricing tier loaded:", tierKey);
-				} catch (error) {
-					console.warn(
-						"⚠️ Failed to fetch user pricing tier, keeping default 'free' tier:",
-						error
-					);
-					if (error.response?.status === 401) {
-						//logout
-						get().logout();
-						console.log("🔒 Logged out due to unauthorized access");
-					}
-					// Keep default 'free' tier if API fails
-				}
-			},
+			// Helper function to fetch user's pricing tier (deprecated - now handled by React Query)
+			// fetchUserPricingTier: async () => {
+			// 	try {
+			// 		const response = await apiCall(
+			// 			"GET",
+			// 			"/users/pricing-tier"
+			// 		);
+			// 		const data = response.data as any;
+			// 		const tierKey = data.pricing_tier || "free";
+			// 		set({ pricingTier: tierKey as keyof typeof pricingTiers });
+			// 		console.log("✅ User pricing tier loaded:", tierKey);
+			// 	} catch (error) {
+			// 		console.warn(
+			// 			"⚠️ Failed to fetch user pricing tier, keeping default 'free' tier:",
+			// 			error
+			// 		);
+			// 		if (error.response?.status === 401) {
+			// 			//logout
+			// 			get().logout();
+			// 			console.log("🔒 Logged out due to unauthorized access");
+			// 		}
+			// 		// Keep default 'free' tier if API fails
+			// 	}
+			// },
 
 			login: async (credentials: LoginCredentials) => {
 				set({ isLoading: true, error: null, errorDetails: null });
@@ -134,8 +133,8 @@ export const useAuthStore = create<AuthState & AuthActions>()(
 						errorDetails: null,
 					});
 
-					// Fetch user's pricing tier after successful login
-					get().fetchUserPricingTier();
+					// Note: Pricing tier will be fetched automatically by React Query hooks when needed
+					// No need to manually fetch here as it would duplicate the API call
 
 					return true; // Success
 				} catch (error: any) {
@@ -164,95 +163,36 @@ export const useAuthStore = create<AuthState & AuthActions>()(
 			register: async (credentials: RegisterCredentials) => {
 				set({ isLoading: true, error: null, errorDetails: null });
 				try {
-					/* console.log(
-						"Registering user with credentials:",
-						credentials
-					); */
 					const response = await authAPI.register(credentials);
-					//console.log("Register response:", response);
 
-					const tokenData = response.data;
-					//console.log("Token data:", tokenData);
-
-					// Check if we have the expected structure
-					if (!tokenData) {
-						throw new Error("No token data received from server");
-					}
-
-					// Handle different possible response structures
-					let userInfo: any, accessToken: string;
-
-					if (tokenData.user_info && tokenData.access_token) {
-						// Expected FastAPI structure
-						userInfo = tokenData.user_info;
-						accessToken = tokenData.access_token;
-					} else if (
-						(tokenData as any).user &&
-						(tokenData as any).token
-					) {
-						// Alternative structure
-						userInfo = (tokenData as any).user;
-						accessToken = (tokenData as any).token;
-					} else if (tokenData.access_token) {
-						// Token only structure - extract user info from credentials
-						accessToken = tokenData.access_token;
-						userInfo = {
-							id: credentials.username, // fallback
-							username: credentials.username,
-							email: credentials.email,
-							full_name: credentials.full_name,
-						};
-					} else {
-						throw new Error(
-							"Invalid response structure from server"
-						);
-					}
-
-					// Transform Token response to AuthUser
-					const authUser: AuthUser = {
-						id: userInfo.id || userInfo.username || "unknown",
-						username: userInfo.username || credentials.username,
-						email: userInfo.email || credentials.email,
-						avatar: undefined, // Backend doesn't provide avatar in register response
-						role: "user", // Default role, could be enhanced with backend role info
-						token: accessToken,
-					};
-
-					// Store token for API requests
-					localStorage.setItem("auth_token", accessToken);
-
+					// Registration successful - no token expected yet
+					// User needs to verify email before getting token
 					set({
-						user: authUser,
-						isAuthenticated: true,
 						isLoading: false,
 						error: null,
 						errorDetails: null,
 					});
-
-					// Fetch user's pricing tier after successful registration
-					get().fetchUserPricingTier();
-
-					return true; // Success
+					return true;
 				} catch (error: any) {
-					const errorDetails = {
-						message: error.message || "Registration failed",
-						statusCode: error.status,
-						validationErrors: error.validationErrors,
-						timestamp: new Date().toISOString(),
-						details: error.details,
-					};
+					console.error("Registration error:", error);
 
-					console.error(
-						"Registration failed - Full error details:",
-						errorDetails
-					);
+					let errorMessage = "Registration failed";
+					let errorDetails = null;
+
+					if (error?.response?.data) {
+						errorDetails = error.response.data;
+						errorMessage =
+							error.response.data.message || errorMessage;
+					} else if (error?.message) {
+						errorMessage = error.message;
+					}
 
 					set({
 						isLoading: false,
-						error: error.message || "Registration failed",
+						error: errorMessage,
 						errorDetails,
 					});
-					return false; // Failure
+					return false;
 				}
 			},
 

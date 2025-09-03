@@ -48,6 +48,7 @@ import { usePricingTier } from "@/hooks/useCalendar";
 import { useUserPricingTier, useFeatureAccess } from "@/hooks/usePricing";
 import { tool, RealtimeAgent, RealtimeSession } from "@openai/agents-realtime";
 import { z } from "zod";
+import { QueryClient } from "@tanstack/react-query";
 
 // Tool definitions for fashion assistant
 const getCalendarEvents = tool({
@@ -156,6 +157,13 @@ const addWardrobeItem = tool({
 				season: season as any,
 				occasion: occasion ? [occasion] : [],
 			});
+			console.log("Wardrobe item added:", response.data);
+			// Use the global QueryClient instance to invalidate wardrobe queries
+			if (typeof window !== "undefined" && (window as any).queryClient) {
+				(window as any).queryClient.invalidateQueries({
+					queryKey: ["wardrobe"],
+				});
+			}
 			return response.data;
 		} catch (error) {
 			console.error("Error adding wardrobe item:", error);
@@ -492,7 +500,7 @@ const LoginRequiredMessage = ({
 const FashionChatbot = () => {
 	// Check authentication status
 	const { isAuthenticated } = useAuthStore();
-	const { data: userTier } = useUserPricingTier();
+	const { data: userTier, isLoading: pricingLoading } = useUserPricingTier();
 	const isPro = userTier?.tier !== "free";
 	const hasVoiceAccess = useFeatureAccess("voice_integration");
 	const navigate = useNavigate();
