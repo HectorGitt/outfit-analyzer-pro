@@ -157,7 +157,7 @@ export const fashionAPI = {
 	cameraAnalyze: (file: File, preferences?: UserPreferences) =>
 		uploadFile("/fashion/camera-analyze", file, { preferences }),
 
-	getAnalysisHistory: (page = 1, limit = 10) =>
+	getAnalysisHistory: (page = 1, limit = 100) =>
 		apiCall<any>("GET", `/users/history?page=${page}&limit=${limit}`),
 
 	getAnalysisById: (id: string) =>
