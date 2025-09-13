@@ -533,7 +533,7 @@ export const outfitAPI = {
 	generateSuggestion: (data: GenerateOutfitRequest) =>
 		apiCall<OutfitSuggestion>(
 			"POST",
-			"/calendar/outfit-plans/single",
+			"/calendar/outfit-plans/generate",
 			data
 		),
 
@@ -567,6 +567,9 @@ export const planningAPI = {
 		),
 
 	getPlan: (id: string) => apiCall<OutfitPlan>("GET", `/plans/${id}`),
+
+	savePlan: (data: PlanOutfitRequest) =>
+		apiCall<OutfitPlan>("POST", "/calendar/outfit-plans/single/save", data),
 
 	updatePlan: (
 		id: string,

@@ -122,7 +122,8 @@ const getWardrobeItems = tool({
 
 const addWardrobeItem = tool({
 	name: "add_wardrobe_item",
-	description: "Add a new item to the user wardrobe.",
+	description:
+		"Add a new item to the user wardrobe. Users must explicitly consent to adding items.",
 	parameters: z.object({
 		name: z.string().describe("Item name"),
 		category: z
@@ -179,7 +180,7 @@ const getUserPreferences = tool({
 	async execute() {
 		try {
 			const response = await userAPI.getPreferences();
-			return response.data;
+			return response;
 		} catch (error) {
 			console.error("Error fetching user preferences:", error);
 			return { error: "Failed to fetch user preferences" };
@@ -188,9 +189,69 @@ const getUserPreferences = tool({
 });
 
 const generateOutfitSuggestion = tool({
-	name: "generate_outfit_suggestion",
+	name: "generate_and_save_outfit_suggestion",
 	description:
-		"Generate outfit suggestions based on occasion, weather, and preferences.",
+		"Generate and save an outfit suggestion for an event with details about timing, weather, and preferences. (Used when no prior suggestion exists or user requests a new one)",
+	parameters: z.object({
+		id: z.string().describe("The event ID"),
+		title: z.string().describe("The event title"),
+		description: z.string().nullable().describe("The event description"),
+		start_time: z.string().describe("The event start time in ISO format"),
+		end_time: z.string().describe("The event end time in ISO format"),
+	}),
+	async execute({ id, title, description, start_time, end_time }) {
+		try {
+			// Format the date from start_time
+			const eventDate = new Date(start_time).toISOString().split("T")[0];
+
+			// Create event context object
+			const eventContext = {
+				id,
+				title,
+				description: description || "",
+				start_time,
+				end_time,
+				date: eventDate,
+			};
+
+			console.log("Generating suggestion for event:", eventContext);
+
+			// Call the API to generate a suggestion
+			const response = await outfitAPI.generateSuggestion({
+				id,
+				title,
+				start_time,
+				end_time,
+				description: description || "",
+			});
+
+			return {
+				success: true,
+				message: "Outfit suggestion generated successfully",
+				data: response.data,
+				eventContext,
+			};
+		} catch (error) {
+			console.error("Error generating outfit suggestion:", error);
+			return {
+				error: "Failed to generate outfit suggestion",
+				eventContext: {
+					id,
+					title,
+					description: description || "",
+					start_time,
+					end_time,
+					date: new Date(start_time).toISOString().split("T")[0],
+				},
+			};
+		}
+	},
+});
+
+const saveOutfitSuggestion = tool({
+	name: "save_outfit_suggestion",
+	description:
+		"Save detailed outfit suggestions based on what was suggested and occasion, weather, and preferences. used after some suggestion has been made",
 	parameters: z.object({
 		eventId: z.string().describe("Calendar event ID for context"),
 		title: z.string().describe("Event title"),
@@ -199,6 +260,31 @@ const generateOutfitSuggestion = tool({
 		description: z.string().nullable().describe("Event description"),
 		weather: z.string().nullable().describe("Current weather conditions"),
 		colors: z.array(z.string()).nullable().describe("Preferred colors"),
+		outfitDescription: z
+			.string()
+			.describe(
+				"Detailed description of the suggested outfit, including specific items, colors, and styles"
+			),
+		wardrobeItemIds: z
+			.array(z.number())
+			.describe(
+				"List of specific wardrobe item IDs to use in the outfit"
+			),
+		alternatives: z
+			.array(z.string())
+			.describe(
+				"Alternative suggestions if the primary items aren't suitable"
+			),
+		weatherConsiderations: z
+			.string()
+			.describe(
+				"Specific considerations for the current weather conditions"
+			),
+		confidenceScore: z
+			.number()
+			.min(0)
+			.max(100)
+			.describe("Confidence score for this outfit suggestion (0-100)"),
 	}),
 	async execute({
 		eventId,
@@ -208,11 +294,35 @@ const generateOutfitSuggestion = tool({
 		description,
 		weather,
 		colors,
+		outfitDescription,
+		wardrobeItemIds,
+		alternatives,
+		weatherConsiderations,
+		confidenceScore,
 	}) {
 		try {
-			const response = await outfitAPI.generateSuggestion({
+			// Format the date from the startTime
+			const eventDate = new Date(startTime).toISOString().split("T")[0];
+
+			// Create a structured outfit suggestion JSON
+			const formattedSuggestion = {
+				date: eventDate,
+				event_title: title,
+				event_description: description || "",
+				outfit_description: outfitDescription,
+				wardrobe_item_ids: wardrobeItemIds,
+				alternatives: alternatives,
+				weather_considerations: weatherConsiderations,
+				confidence_score: confidenceScore,
+			};
+
+			// Log the formatted suggestion for debugging
+			console.log("Formatted outfit suggestion:", formattedSuggestion);
+
+			// Send the suggestion to the backend
+			const response = await planningAPI.savePlan({
 				id: eventId,
-				title,
+				event_title: title,
 				start_time: startTime,
 				end_time: endTime,
 				description: description || "",
@@ -224,15 +334,33 @@ const generateOutfitSuggestion = tool({
 							windSpeed: 5,
 							precipitation: 0,
 							location: "",
-							date: new Date().toISOString().split("T")[0],
+							date: eventDate,
 					  }
 					: undefined,
-				preferences: colors ? { colors } : undefined,
+				outfit_suggestion: formattedSuggestion, // Add the formatted suggestion
 			});
-			return response.data;
+
+			return {
+				success: true,
+				message: "Outfit suggestion saved successfully",
+				data: response.data,
+				suggestion: formattedSuggestion,
+			};
 		} catch (error) {
-			console.error("Error generating outfit suggestion:", error);
-			return { error: "Failed to generate outfit suggestion" };
+			console.error("Error saving outfit suggestion:", error);
+			return {
+				error: "Failed to save outfit suggestion",
+				suggestion: {
+					date: new Date(startTime).toISOString().split("T")[0],
+					event_title: title,
+					event_description: description || "",
+					outfit_description: outfitDescription,
+					wardrobe_item_ids: wardrobeItemIds,
+					alternatives: alternatives,
+					weather_considerations: weatherConsiderations,
+					confidence_score: confidenceScore,
+				},
+			};
 		}
 	},
 });
@@ -270,30 +398,17 @@ const getOutfitPlans = tool({
 	},
 });
 
-const createOutfitPlan = tool({
-	name: "create_outfit_plan",
-	description: "Create a new outfit plan for a specific event or occasion.",
-	parameters: z.object({
-		eventId: z.string().describe("Calendar event ID"),
-		outfitId: z
-			.string()
-			.describe("Outfit suggestion ID to use for the plan"),
-		notes: z
-			.string()
-			.nullable()
-			.describe("Additional notes for the outfit plan"),
-	}),
-	async execute({ eventId, outfitId, notes }) {
+const createOutfitPlansForMonth = tool({
+	name: "create_outfit_plans_for_month",
+	description: "Create new outfit plans for the next 30 days.",
+	parameters: z.object({}),
+	async execute() {
 		try {
-			const response = await planningAPI.planOutfit({
-				eventId,
-				outfitId,
-				notes,
-			});
+			const response = await outfitAPI.generateSuggestions();
 			return response.data;
 		} catch (error) {
-			console.error("Error creating outfit plan:", error);
-			return { error: "Failed to create outfit plan" };
+			console.error("Error creating outfit plans:", error);
+			return { error: "Failed to create outfit plans" };
 		}
 	},
 });
@@ -302,7 +417,7 @@ const createOutfitPlan = tool({
 const endCall = tool({
 	name: "end_call",
 	description:
-		"End the current voice call when the conversation is complete, the user requests it, or when it's appropriate to disconnect. Make sure you say something before ending the call",
+		"End the current voice call when the conversation is complete, the user requests it, or when it's appropriate to disconnect. Make sure you confirm if the user is satisfied with the conversation before ending the call",
 	parameters: z.object({
 		reason: z
 			.string()
@@ -962,8 +1077,9 @@ Say: “Thanks for your patience—I’m connecting you with a specialist now.�
 					addWardrobeItem,
 					getUserPreferences,
 					generateOutfitSuggestion,
+					saveOutfitSuggestion,
 					getOutfitPlans,
-					createOutfitPlan,
+					createOutfitPlansForMonth,
 					endCall,
 				],
 			});

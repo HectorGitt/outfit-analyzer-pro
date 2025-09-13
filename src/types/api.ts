@@ -154,9 +154,23 @@ export interface GenerateOutfitRequest {
 }
 
 export interface PlanOutfitRequest {
-	eventId: string;
-	outfitId: string;
+	id: string;
+	event_title: string;
+	start_time: string;
+	end_time: string;
+	description: string;
+	weather: WeatherData;
 	notes?: string;
+	outfit_suggestion: {
+		date: string;
+		event_title: string;
+		event_description: string;
+		outfit_description: string;
+		wardrobe_item_ids: number[];
+		alternatives: WardrobeItem[][];
+		weather_considerations: WeatherData;
+		confidence_score: number;
+	};
 }
 
 // Chatbot API types
