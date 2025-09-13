@@ -161,9 +161,8 @@ const addWardrobeItem = tool({
 			console.log("Wardrobe item added:", response.data);
 			// Use the global QueryClient instance to invalidate wardrobe queries
 			if (typeof window !== "undefined" && (window as any).queryClient) {
-				(window as any).queryClient.invalidateQueries({
-					queryKey: ["wardrobe"],
-				});
+				const queryClient = (window as any).queryClient;
+				queryClient.invalidateQueries({ queryKey: ["wardrobe"] });
 			}
 			return response.data;
 		} catch (error) {
@@ -224,6 +223,14 @@ const generateOutfitSuggestion = tool({
 				end_time,
 				description: description || "",
 			});
+
+			// Invalidate relevant queries after successful generation
+			if (typeof window !== "undefined" && (window as any).queryClient) {
+				const queryClient = (window as any).queryClient;
+				queryClient.invalidateQueries({ queryKey: ["outfits"] });
+				queryClient.invalidateQueries({ queryKey: ["events"] });
+				queryClient.invalidateQueries({ queryKey: ["plans"] });
+			}
 
 			return {
 				success: true,
@@ -340,6 +347,15 @@ const saveOutfitSuggestion = tool({
 				outfit_suggestion: formattedSuggestion, // Add the formatted suggestion
 			});
 
+			// Invalidate relevant queries after successful save
+			if (typeof window !== "undefined" && (window as any).queryClient) {
+				const queryClient = (window as any).queryClient;
+				queryClient.invalidateQueries({ queryKey: ["outfits"] });
+				queryClient.invalidateQueries({ queryKey: ["events"] });
+				queryClient.invalidateQueries({ queryKey: ["plans"] });
+				queryClient.invalidateQueries({ queryKey: ["wardrobe"] });
+			}
+
 			return {
 				success: true,
 				message: "Outfit suggestion saved successfully",
@@ -405,6 +421,16 @@ const createOutfitPlansForMonth = tool({
 	async execute() {
 		try {
 			const response = await outfitAPI.generateSuggestions();
+
+			// Invalidate relevant queries after successful creation
+			if (typeof window !== "undefined" && (window as any).queryClient) {
+				const queryClient = (window as any).queryClient;
+				queryClient.invalidateQueries({ queryKey: ["outfits"] });
+				queryClient.invalidateQueries({ queryKey: ["events"] });
+				queryClient.invalidateQueries({ queryKey: ["plans"] });
+				queryClient.invalidateQueries({ queryKey: ["wardrobe"] });
+			}
+
 			return response.data;
 		} catch (error) {
 			console.error("Error creating outfit plans:", error);
