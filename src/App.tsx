@@ -31,6 +31,11 @@ import EmailVerification from "./pages/EmailVerification";
 
 const queryClient = new QueryClient();
 
+// Make queryClient available globally for tools
+if (typeof window !== "undefined") {
+	(window as any).queryClient = queryClient;
+}
+
 // Inner component to access useNavigate hook
 const AppContent = () => {
 	const navigate = useNavigate();
