@@ -192,9 +192,9 @@ const Index = () => {
 							Complete Fashion Solution
 						</div>
 						<h2 className="text-5xl lg:text-7xl font-bold mb-8 leading-tight">
-							Everything You Need for{" "}
+							General Style Analysis &{" "}
 							<span className="text-gradient bg-gradient-to-r from-primary via-purple-500 to-accent bg-clip-text text-transparent">
-								Perfect Style
+								Recommendations
 							</span>
 						</h2>
 						<p className="text-xl text-muted-foreground max-w-4xl mx-auto leading-relaxed">
@@ -205,63 +205,58 @@ const Index = () => {
 						</p>
 					</div>
 
-					<div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-7xl mx-auto">
-						{features.map((feature, index) => (
-							<Card
+					<div className="grid md:grid-cols-3 gap-12 max-w-6xl mx-auto">
+						{[
+							{
+								step: "1",
+								title: "Capture or Upload",
+								description:
+									"Take a photo with your camera or upload an existing image of your outfit",
+								icon: <Camera className="w-8 h-8" />,
+								color: "from-blue-500 to-cyan-500",
+							},
+							{
+								step: "2",
+								title: "AI Analysis",
+								description:
+									"Our advanced AI analyzes colors, style, fit, and overall fashion coherence",
+								icon: <Sparkles className="w-8 h-8" />,
+								color: "from-purple-500 to-pink-500",
+							},
+							{
+								step: "3",
+								title: "Get Expert Insights",
+								description:
+									"Receive personalized recommendations and professional styling advice",
+								icon: <Bot className="w-8 h-8" />,
+								color: "from-green-500 to-emerald-500",
+							},
+						].map((step, index) => (
+							<div
 								key={index}
-								className="group relative card-fashion hover:shadow-2xl hover:-translate-y-3 transition-all duration-700 border-0 shadow-xl bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm overflow-hidden"
+								className="text-center space-y-6 group"
 								data-aos="fade-up"
-								data-aos-delay={index * 150}
+								data-aos-delay={index * 200}
 							>
-								{/* Gradient overlay on hover */}
-								<div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-accent/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-
-								{/* Animated border */}
-								<div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-primary via-purple-500 to-accent opacity-0 group-hover:opacity-20 transition-opacity duration-500 blur-sm"></div>
-
-								<CardHeader className="pb-6 relative z-10">
-									<div className="w-16 h-16 bg-gradient-to-br from-primary/20 to-accent/20 rounded-2xl flex items-center justify-center text-primary mb-6 group-hover:scale-110 group-hover:rotate-6 transition-all duration-500 shadow-lg group-hover:shadow-primary/25">
-										{feature.icon}
-									</div>
-									<CardTitle className="text-2xl font-bold group-hover:text-primary transition-colors duration-300">
-										{feature.title}
-									</CardTitle>
-								</CardHeader>
-
-								<CardContent className="relative z-10">
-									<p className="text-muted-foreground mb-8 leading-relaxed group-hover:text-gray-700 dark:group-hover:text-gray-300 transition-colors duration-300">
-										{feature.description}
+								<div
+									className={`w-20 h-20 bg-gradient-to-r ${step.color} rounded-2xl flex items-center justify-center text-white text-2xl font-bold mx-auto shadow-lg group-hover:scale-110 group-hover:rotate-6 transition-all duration-500`}
+								>
+									{step.step}
+								</div>
+								<div className="space-y-4">
+									<h3 className="text-2xl font-bold">
+										{step.title}
+									</h3>
+									<p className="text-muted-foreground text-lg leading-relaxed max-w-sm mx-auto">
+										{step.description}
 									</p>
-
-									{/* Enhanced CTA Button */}
-									<div className="relative">
-										<Button
-											variant="ghost"
-											className="group/btn relative overflow-hidden bg-gradient-to-r from-primary/10 to-accent/10 hover:from-primary/20 hover:to-accent/20 text-primary hover:text-primary font-semibold py-4 px-6 rounded-xl transition-all duration-300 border border-primary/20 hover:border-primary/40"
-											asChild
-										>
-											<Link
-												to={feature.href}
-												className="flex items-center justify-between w-full"
-											>
-												<span>Explore Feature</span>
-												<div className="flex items-center gap-2">
-													<span className="group-hover/btn:translate-x-1 transition-transform duration-300">
-														<ArrowRight className="w-4 h-4" />
-													</span>
-												</div>
-											</Link>
-										</Button>
-
-										{/* Animated underline */}
-										<div className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-primary to-accent group-hover:w-full transition-all duration-500"></div>
-									</div>
-								</CardContent>
-
-								{/* Floating elements */}
-								<div className="absolute -top-2 -right-2 w-4 h-4 bg-primary rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500 animate-pulse"></div>
-								<div className="absolute -bottom-2 -left-2 w-3 h-3 bg-accent rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-700 animate-pulse"></div>
-							</Card>
+								</div>
+								<div
+									className={`w-16 h-16 bg-gradient-to-r ${step.color} rounded-xl flex items-center justify-center text-white mx-auto shadow-md group-hover:shadow-lg transition-all duration-300`}
+								>
+									{step.icon}
+								</div>
+							</div>
 						))}
 					</div>
 
@@ -1139,76 +1134,6 @@ const Index = () => {
 								</div>
 							</div>
 						</div>
-					</div>
-				</div>
-			</section>
-
-			{/* How It Works - Simplified and more visual */}
-			<section className="py-24 bg-white dark:bg-gray-900">
-				<div className="container mx-auto px-4 max-w-full overflow-hidden">
-					<div className="text-center mb-20">
-						<h2 className="text-4xl lg:text-5xl font-bold mb-6">
-							How It Works
-						</h2>
-						<p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-							Transform your fashion experience in three simple
-							steps
-						</p>
-					</div>
-
-					<div className="grid md:grid-cols-3 gap-12 max-w-6xl mx-auto">
-						{[
-							{
-								step: "1",
-								title: "Capture or Upload",
-								description:
-									"Take a photo with your camera or upload an existing image of your outfit",
-								icon: <Camera className="w-8 h-8" />,
-								color: "from-blue-500 to-cyan-500",
-							},
-							{
-								step: "2",
-								title: "AI Analysis",
-								description:
-									"Our advanced AI analyzes colors, style, fit, and overall fashion coherence",
-								icon: <Sparkles className="w-8 h-8" />,
-								color: "from-purple-500 to-pink-500",
-							},
-							{
-								step: "3",
-								title: "Get Expert Insights",
-								description:
-									"Receive personalized recommendations and professional styling advice",
-								icon: <Bot className="w-8 h-8" />,
-								color: "from-green-500 to-emerald-500",
-							},
-						].map((step, index) => (
-							<div
-								key={index}
-								className="text-center space-y-6 group"
-								data-aos="fade-up"
-								data-aos-delay={index * 200}
-							>
-								<div
-									className={`w-20 h-20 bg-gradient-to-r ${step.color} rounded-2xl flex items-center justify-center text-white text-2xl font-bold mx-auto shadow-lg group-hover:scale-110 group-hover:rotate-6 transition-all duration-500`}
-								>
-									{step.step}
-								</div>
-								<div className="space-y-4">
-									<h3 className="text-2xl font-bold">
-										{step.title}
-									</h3>
-									<p className="text-muted-foreground text-lg leading-relaxed max-w-sm mx-auto">
-										{step.description}
-									</p>
-								</div>
-								<div
-									className={`w-16 h-16 bg-gradient-to-r ${step.color} rounded-xl flex items-center justify-center text-white mx-auto shadow-md group-hover:shadow-lg transition-all duration-300`}
-								>
-									{step.icon}
-								</div>
-							</div>
-						))}
 					</div>
 				</div>
 			</section>
