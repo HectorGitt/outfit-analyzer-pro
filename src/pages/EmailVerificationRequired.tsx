@@ -14,6 +14,7 @@ import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useToast } from "@/hooks/use-toast";
 import { userAPI } from "@/services/api";
+import { cn } from "@/lib/utils";
 
 export default function EmailVerificationRequired() {
 	const [email, setEmail] = useState("");
@@ -24,6 +25,10 @@ export default function EmailVerificationRequired() {
 	const navigate = useNavigate();
 	const location = useLocation();
 	const { toast } = useToast();
+
+	// Simple client-side email validation
+	const emailTrimmed = email.trim();
+	const isEmailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailTrimmed);
 
 	// Get email from location state (passed from registration)
 	useEffect(() => {
@@ -49,18 +54,26 @@ export default function EmailVerificationRequired() {
 			return;
 		}
 
+		if (!isEmailValid) {
+			setResendError("Please enter a valid email address");
+			return;
+		}
+
 		setIsResending(true);
 		setResendError("");
 		setResendSuccess(false);
 
 		try {
-			const response = await userAPI.sendVerificationEmail(email);
+			// Use trimmed email for API and storage
+			const response = await userAPI.sendVerificationEmail(emailTrimmed);
 
 			if (response.data.verification_sent) {
 				setResendSuccess(true);
 				setEmailSent(true); // Mark that email has been sent
 				// Store email in localStorage for future use
-				localStorage.setItem("verificationEmail", email);
+				localStorage.setItem("verificationEmail", emailTrimmed);
+				// Normalize input field to trimmed value
+				setEmail(emailTrimmed);
 				toast({
 					title: "Verification email sent",
 					description:
@@ -173,11 +186,20 @@ export default function EmailVerificationRequired() {
 										onChange={(e) =>
 											setEmail(e.target.value)
 										}
-										className="flex-1"
+										className={cn(
+											"flex-1",
+											emailTrimmed && !isEmailValid
+												? "border-red-500 focus-visible:ring-red-500"
+												: ""
+										)}
 									/>
 									<Button
 										onClick={handleResendVerification}
-										disabled={isResending}
+										disabled={
+											isResending ||
+											!emailTrimmed ||
+											!isEmailValid
+										}
 										variant="outline"
 									>
 										{isResending ? (
@@ -189,6 +211,11 @@ export default function EmailVerificationRequired() {
 										)}
 									</Button>
 								</div>
+								{emailTrimmed && !isEmailValid && (
+									<p className="text-xs text-red-600">
+										Please enter a valid email address
+									</p>
+								)}
 							</div>
 
 							{/* Success/Error messages */}
