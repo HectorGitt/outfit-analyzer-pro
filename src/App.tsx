@@ -28,6 +28,8 @@ import RefundPolicy from "./pages/RefundPolicy";
 import Maintenance from "./pages/Maintenance";
 import EmailVerificationRequired from "./pages/EmailVerificationRequired";
 import EmailVerification from "./pages/EmailVerification";
+import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
 
 const queryClient = new QueryClient();
 
@@ -52,6 +54,8 @@ const AppContent = () => {
 				<Route path="/" element={<Index />} />
 				<Route path="/login" element={<Login />} />
 				<Route path="/register" element={<Register />} />
+				<Route path="/forgot-password" element={<ForgotPassword />} />
+				<Route path="/reset-password" element={<ResetPassword />} />
 				<Route
 					path="/email-verification-required"
 					element={<EmailVerificationRequired />}

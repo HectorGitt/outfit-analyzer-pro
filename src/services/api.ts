@@ -43,6 +43,21 @@ export const authAPI = {
 
 	getCurrentUser: () => apiCall<User>("GET", "/auth/me"),
 
+	// Password reset: request email and complete reset
+	requestPasswordReset: (email: string) =>
+		apiCall<{ message: string; requested: boolean }>(
+			"POST",
+			"/auth/password/forgot",
+			{ email }
+		),
+
+	resetPassword: (data: { token: string; password: string }) =>
+		apiCall<{ message: string; reset: boolean }>(
+			"POST",
+			"/auth/password/reset",
+			data
+		),
+
 	// Send Google Calendar token to backend after connection
 	sendGoogleCalendarToken: (token: {
 		access_token: string;
