@@ -1,5 +1,5 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Navbar } from "@/components/navigation/navbar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -19,9 +19,33 @@ import {
 } from "lucide-react";
 import { pricingTiers } from "@/lib/pricingTiers";
 import Footer from "@/components/ui/Footer";
+import { useAuthStore } from "@/stores/authStore";
 
 const Pricing = () => {
+	const navigate = useNavigate();
 	const recommendedTier = "elite";
+	const { user, isAuthenticated } = useAuthStore();
+
+	// Handle pricing tier selection
+	const handlePricingSelect = (tierKey: string, tier: any) => {
+		// Check if user is authenticated for paid plans
+		if (tier.price_monthly > 0 && !isAuthenticated) {
+			// Redirect to login with return URL
+			const currentPath = window.location.pathname;
+			const loginUrl = `/login?next=${encodeURIComponent(currentPath)}`;
+			window.location.href = loginUrl;
+			return;
+		}
+
+		if (tier.price_monthly === 0) {
+			// Free tier - redirect to upload
+			window.location.href = "/upload";
+			return;
+		}
+
+		// Paid tier - redirect to billing page with plan parameter
+		navigate(`/billing?plan=${tierKey.toLowerCase()}`);
+	};
 
 	const getTierIcon = (tierName: string) => {
 		switch (tierName.toLowerCase()) {
@@ -155,41 +179,22 @@ const Pricing = () => {
 													? "btn-gradient"
 													: "bg-primary hover:bg-primary/90"
 											}`}
-											size="lg"
-											asChild
+											onClick={() =>
+												handlePricingSelect(key, tier)
+											}
 										>
 											{tier.price_monthly === 0 ? (
-												<Link to="/upload">
+												<>
 													Get Started Free
 													<ArrowRight className="ml-2 w-4 h-4" />
-												</Link>
+												</>
 											) : (
-												<a
-													href={`mailto:sales@closetic.com?subject=${encodeURIComponent(
-														`Closetic AI - ${tier.name} Plan Inquiry`
-													)}&body=${encodeURIComponent(
-														`Hello Sales Team,
-
-I'm interested in the ${
-															tier.name
-														} plan. Please provide more details and help me get started.
-
-Plan Details:
-- Plan: ${tier.name}
-- Price: $${tier.price_monthly}/month
-
-Key Features:
-${Object.entries(tier)
-	.filter(([k]) => k !== "name" && k !== "price_monthly")
-	.map(([key, value]) => `- ${formatFeatureName(key)}: ${value}`)
-	.join("\n")}
-
-Thanks!`
-													)}`}
-												>
-													Choose Plan
+												<>
+													{isAuthenticated
+														? "Choose Plan"
+														: "Sign In to Choose"}
 													<ArrowRight className="ml-2 w-4 h-4" />
-												</a>
+												</>
 											)}
 										</Button>
 									</CardContent>
@@ -272,42 +277,33 @@ Thanks!`
 								size="lg"
 								variant="secondary"
 								className="text-lg px-8 py-4"
-								asChild
+								onClick={() =>
+									(window.location.href = "/upload")
+								}
 							>
-								<a
-									href={`mailto:sales@closetic.com?subject=${encodeURIComponent(
-										"Closetic AI - Free Plan Signup"
-									)}&body=${encodeURIComponent(
-										`Hello Sales Team,
-
-I'm interested in getting started with Closetic AI. Please help me sign up for the free plan and guide me through the onboarding process.
-
-Thanks!`
-									)}`}
-								>
-									Get Started Free
-									<ArrowRight className="ml-2 w-5 h-5" />
-								</a>
+								Get Started Free
+								<ArrowRight className="ml-2 w-5 h-5" />
 							</Button>
 							<Button
 								size="lg"
 								variant="outline"
 								className="text-lg px-8 py-4 border-white text-white bg-transparent hover:bg-primary hover:text-white transition-colors"
-								asChild
+								onClick={() => {
+									if (!isAuthenticated) {
+										const currentPath =
+											window.location.pathname;
+										const loginUrl = `/login?next=${encodeURIComponent(
+											currentPath
+										)}`;
+										window.location.href = loginUrl;
+									} else {
+										navigate("/billing?plan=elite");
+									}
+								}}
 							>
-								<a
-									href={`mailto:sales@closetic.com?subject=${encodeURIComponent(
-										"Closetic AI - Pricing Inquiry"
-									)}&body=${encodeURIComponent(
-										`Hello Sales Team,
-
-I'd like to discuss pricing and features. Please provide more details about your plans and onboarding.
-
-Thanks.`
-									)}`}
-								>
-									Contact Sales
-								</a>
+								{isAuthenticated
+									? "Choose Elite Plan"
+									: "Sign In to Get Started"}
 							</Button>
 						</div>
 					</div>

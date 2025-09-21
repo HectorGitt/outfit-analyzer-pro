@@ -23,6 +23,8 @@ import {
 	PaginatedResponse,
 	ChatbotRequest,
 	ChatbotResponse,
+	TransactionHistoryResponse,
+	TransactionDetailResponse,
 } from "@/types/api";
 
 // Authentication API endpoints
@@ -618,4 +620,32 @@ export const analyticsAPI = {
 			occasionBreakdown: { occasion: string; count: number }[];
 			monthlyTrends: { month: string; outfits: number }[];
 		}>("GET", "/analytics/outfits", undefined, params),
+};
+
+// Payment/Transaction API endpoints
+export const paymentAPI = {
+	getTransactionHistory: (params?: {
+		page?: number;
+		limit?: number;
+		status?: string;
+		startDate?: string;
+		endDate?: string;
+	}) =>
+		apiCall<TransactionHistoryResponse>(
+			"GET",
+			"/payments/history",
+			undefined,
+			params
+		),
+
+	getTransactionById: (id: string) =>
+		apiCall<TransactionDetailResponse>(
+			"GET",
+			`/payments/transactions/${id}`
+		),
+
+	managePayment: () =>
+		apiCall<{
+			management_link: string;
+		}>("GET", "/payments/manage"),
 };

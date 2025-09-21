@@ -240,3 +240,35 @@ export interface GoogleCalendarEvent {
 	status: string;
 	htmlLink: string;
 }
+
+// Payment/Transaction API types
+export interface Transaction {
+	id: string;
+	reference: string;
+	amount: number;
+	currency: string;
+	status: "success" | "pending" | "failed" | "cancelled";
+	payment_method: string;
+	plan_type: string;
+	tier: string;
+	created_at: string;
+	verified_at?: string | null;
+}
+
+export interface TransactionHistoryResponse {
+	history: Transaction[];
+	total_count: number;
+	limit: number;
+	offset: number;
+}
+
+export interface TransactionDetailResponse extends Transaction {
+	payment_details?: {
+		paystack_reference?: string;
+		authorization_code?: string;
+		bank_name?: string;
+		bank_code?: string;
+		paid_at?: string;
+		created_at?: string;
+	};
+}
