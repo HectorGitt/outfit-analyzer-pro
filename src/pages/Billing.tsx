@@ -369,9 +369,9 @@ const Billing = () => {
 			// Call the /payment/manage endpoint
 			const response = await paymentAPI.managePayment();
 
-			if (response.success && response.data?.management_link) {
+			if (response.success && response?.management_link) {
 				// Redirect to the payment management portal
-				window.location.href = response.data.management_link;
+				window.location.href = response.management_link;
 			} else {
 				toast({
 					title: "Unable to Access Payment Management",
