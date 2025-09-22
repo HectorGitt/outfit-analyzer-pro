@@ -208,19 +208,19 @@ export default function Upload() {
 	};
 
 	return (
-		<div className="min-h-screen bg-gradient-hero">
+		<div className="min-h-screen bg-gradient-hero overflow-x-hidden">
 			<Navbar />
-			<div className="container mx-auto px-4 py-8">
+			<div className="container mx-auto px-2 sm:px-4 py-8">
 				<div className="max-w-7xl mx-auto">
 					{/* Enhanced Header */}
 					<div className="text-center mb-8 animate-fade-up">
 						<div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-primary/20 to-accent/20 rounded-full mb-6 shadow-lg">
 							<Camera className="w-10 h-10 text-primary" />
 						</div>
-						<h1 className="text-5xl font-bold mb-4 bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent">
+						<h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4 bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent">
 							AI Fashion Analysis
 						</h1>
-						<p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
+						<p className="text-lg sm:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
 							Upload multiple outfit photos and get instant
 							AI-powered style analysis, personalized
 							recommendations, and fashion insights
@@ -228,7 +228,7 @@ export default function Upload() {
 
 						{/* Quick Stats */}
 						{uploadedFiles.length > 0 && (
-							<div className="flex justify-center gap-6 mt-6">
+							<div className="flex flex-col sm:flex-row justify-center gap-4 sm:gap-6 mt-6">
 								<div className="text-center">
 									<div className="text-2xl font-bold text-primary">
 										{stats.total}
@@ -257,7 +257,7 @@ export default function Upload() {
 						)}
 					</div>
 
-					<div className="grid lg:grid-cols-3 gap-8">
+					<div className="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-8">
 						{/* Upload Section */}
 						<div className="lg:col-span-1 space-y-6">
 							<Card className="card-fashion border-2 border-dashed border-primary/20 hover:border-primary/40 transition-colors">
@@ -401,7 +401,7 @@ export default function Upload() {
 												Your Photos (
 												{filteredFiles.length})
 											</CardTitle>
-											<div className="flex items-center gap-2">
+											<div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
 												<div className="relative">
 													<Search className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" />
 													<input
@@ -413,7 +413,7 @@ export default function Upload() {
 																e.target.value
 															)
 														}
-														className="pl-9 pr-3 py-2 text-sm border rounded-md w-48"
+														className="pl-9 pr-3 py-2 text-sm border rounded-md w-full sm:w-48"
 													/>
 												</div>
 												<select
@@ -424,7 +424,7 @@ export default function Upload() {
 																.value as any
 														)
 													}
-													className="px-3 py-2 text-sm border rounded-md"
+													className="px-3 py-2 text-sm border rounded-md w-full sm:w-auto"
 												>
 													<option value="all">
 														All ({stats.total})
@@ -456,7 +456,7 @@ export default function Upload() {
 											<div
 												className={cn(
 													viewMode === "grid"
-														? "grid grid-cols-2 md:grid-cols-3 gap-4"
+														? "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4"
 														: "space-y-4"
 												)}
 											>
