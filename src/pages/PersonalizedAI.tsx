@@ -338,7 +338,7 @@ const PersonalizedAI = () => {
 
 							<div className="mt-8 pt-8 border-t border-gray-200 dark:border-gray-700">
 								<p className="text-muted-foreground">
-									💎 Expert models only • 85% revenue share •
+									💎 Expert models only • 75% revenue share •
 									No upfront costs • Start earning immediately
 								</p>
 							</div>
