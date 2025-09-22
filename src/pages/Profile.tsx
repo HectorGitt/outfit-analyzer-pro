@@ -320,16 +320,16 @@ export default function Profile() {
 			<Navbar />
 
 			<div className="container mx-auto px-4 py-8">
-				<div className="max-w-4xl mx-auto">
+				<div className="max-w-7xl mx-auto">
 					{/* Header */}
 					<div className="text-center mb-8 animate-fade-up">
 						<div className="inline-flex items-center justify-center w-16 h-16 bg-primary/10 rounded-full mb-4">
 							<User className="w-8 h-8 text-primary" />
 						</div>
-						<h1 className="text-4xl font-bold mb-4">
+						<h1 className="text-3xl lg:text-4xl xl:text-5xl font-bold mb-4">
 							Your Style Profile
 						</h1>
-						<p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-6">
+						<p className="text-lg xl:text-xl text-muted-foreground max-w-3xl xl:max-w-4xl mx-auto mb-6">
 							Customize your preferences to get personalized
 							fashion recommendations
 						</p>
@@ -360,9 +360,9 @@ export default function Profile() {
 
 					{/* Main Content */}
 					{!loading && (
-						<div className="grid lg:grid-cols-3 gap-8">
+						<div className="grid lg:grid-cols-3 xl:grid-cols-4 gap-8">
 							{/* Profile Picture & Basic Info */}
-							<div className="lg:col-span-1">
+							<div className="lg:col-span-1 xl:col-span-1">
 								<Card className="card-fashion">
 									<CardHeader>
 										<CardTitle className="flex items-center gap-2">
@@ -541,7 +541,7 @@ export default function Profile() {
 							</div>
 
 							{/* Preferences */}
-							<div className="lg:col-span-2 space-y-8">
+							<div className="lg:col-span-2 xl:col-span-3 space-y-8">
 								{/* Style Preferences */}
 								<Card className="card-fashion">
 									<CardHeader>
@@ -600,7 +600,7 @@ export default function Profile() {
 													selected
 												</Badge>
 											</Label>
-											<div className="grid grid-cols-9 gap-3">
+											<div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-9 gap-3">
 												{colorOptions.map((color) => (
 													<StyleChip
 														key={color}
