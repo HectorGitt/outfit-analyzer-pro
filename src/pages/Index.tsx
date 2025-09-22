@@ -1367,9 +1367,9 @@ const Index = () => {
 										<span className="text-muted-foreground">
 											{
 												pricingTiers.spotlight
-													.ai_calls_per_day
+													.agent_calls_minutes
 											}{" "}
-											AI calls per day
+											Agent calls minutes
 										</span>
 									</li>
 									<li className="flex items-center gap-3">
@@ -1512,9 +1512,9 @@ const Index = () => {
 										<span className="text-muted-foreground">
 											{
 												pricingTiers.elite
-													.ai_calls_per_day
+													.agent_calls_minutes
 											}{" "}
-											AI calls per day
+											Agent calls minutes
 										</span>
 									</li>
 									<li className="flex items-center gap-3">
@@ -1654,8 +1654,11 @@ const Index = () => {
 											</svg>
 										</div>
 										<span className="text-muted-foreground">
-											{pricingTiers.icon.ai_calls_per_day}{" "}
-											AI calls per day
+											{
+												pricingTiers.icon
+													.agent_calls_minutes
+											}{" "}
+											Agent calls minutes
 										</span>
 									</li>
 									<li className="flex items-center gap-3">
