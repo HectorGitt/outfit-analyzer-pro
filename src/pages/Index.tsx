@@ -114,10 +114,6 @@ const Index = () => {
 					<div className="grid lg:grid-cols-2 gap-12 items-center">
 						<div className="space-y-8" data-aos="fade-right">
 							<div className="space-y-6">
-								<Badge className="bg-primary/10 text-primary border-primary/20 px-4 py-2">
-									<Sparkles className="w-4 h-4 mr-2" />
-									AI-Powered Fashion Intelligence
-								</Badge>
 								<h1 className="text-5xl lg:text-7xl font-bold leading-tight">
 									Transform Your Style with{" "}
 									<span className="text-gradient block">
@@ -188,10 +184,6 @@ const Index = () => {
 
 				<div className="container mx-auto px-4 relative z-10 max-w-full overflow-hidden">
 					<div className="text-center mb-24">
-						<div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-6 py-3 rounded-full text-sm font-semibold mb-8 border border-primary/20">
-							<Sparkles className="w-4 h-4" />
-							Complete Fashion Solution
-						</div>
 						<h2 className="text-5xl lg:text-7xl font-bold mb-8 leading-tight">
 							General Style Analysis &{" "}
 							<span className="text-gradient bg-gradient-to-r from-primary via-purple-500 to-accent bg-clip-text text-transparent">
