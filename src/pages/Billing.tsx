@@ -51,7 +51,7 @@ declare global {
 			onError: (error: any) => void;
 		}) => {
 			openIframe: () => void;
-			preloadTransaction: (config: {
+			newTransaction: (config: {
 				key: string;
 				email: string;
 				planCode?: string;
@@ -69,7 +69,6 @@ const Billing = () => {
 	const [searchParams] = useSearchParams();
 	const { user, isAuthenticated, pricingTier, updatePricingTier } =
 		useAuthStore();
-	console.log(pricingTier);
 	const [isPaystackLoaded, setIsPaystackLoaded] = useState(false);
 	const [isProcessing, setIsProcessing] = useState(false);
 	const [preloadedPayment, setPreloadedPayment] = useState<
@@ -102,13 +101,11 @@ const Billing = () => {
 	// Selected tier for upgrade (for free users) - default from URL param or spotlight
 	const getDefaultSelectedTier = () => {
 		const tierParam = searchParams.get("plan");
-		console.log("tierParam:", tierParam);
 		const validTiers: (keyof typeof pricingTiers)[] = [
 			"spotlight",
 			"elite",
 			"icon",
 		];
-		console.log("validTiers:", validTiers);
 		return validTiers.includes(tierParam as keyof typeof pricingTiers)
 			? (tierParam as keyof typeof pricingTiers)
 			: "spotlight";
@@ -150,32 +147,6 @@ const Billing = () => {
 		paystackScript.async = true;
 		document.head.appendChild(paystackScript);
 
-		paystackScript.onload = () => {
-			// Add a small delay to ensure PaystackPop is fully initialized
-			setTimeout(() => {
-				if (window.PaystackPop) {
-					setIsPaystackLoaded(true);
-
-					// Preload transaction if user is authenticated and we have plan info
-					if (isAuthenticated && user?.email) {
-						preloadPaymentTransaction();
-					}
-				} else {
-					// Retry after another short delay
-					setTimeout(() => {
-						if (window.PaystackPop) {
-							setIsPaystackLoaded(true);
-
-							// Preload transaction if user is authenticated and we have plan info
-							if (isAuthenticated && user?.email) {
-								preloadPaymentTransaction();
-							}
-						}
-					}, 500);
-				}
-			}, 100);
-		};
-
 		paystackScript.onerror = () => {
 			console.error("Failed to load Paystack script");
 		};
@@ -189,7 +160,7 @@ const Billing = () => {
 	}, []);
 
 	// Preload payment transaction for better performance
-	const preloadPaymentTransaction = () => {
+	const loadPaymentTransaction = () => {
 		if (!window.PaystackPop || !user?.email || !paystackKey) return;
 
 		try {
@@ -209,7 +180,7 @@ const Billing = () => {
 			const popup = new window.PaystackPop({} as any);
 
 			// Preload the transaction
-			const loadPopup = popup.preloadTransaction({
+			const loadPopup = popup.newTransaction({
 				key: import.meta.env.VITE_PAYSTACK_PUBLIC_KEY,
 				email: user.email,
 				planCode: planCode,
@@ -222,11 +193,10 @@ const Billing = () => {
 							"Thank you for your subscription. Your account has been upgraded.",
 						variant: "default",
 					});
-					console.log("Payment successful:", transaction);
-					// Redirect to dashboard after successful payment
-					/* setTimeout(() => {
-						navigate("/dashboard");
-					}, 2000); */
+					// Redirect to profile after successful payment
+					setTimeout(() => {
+						navigate("/profile");
+					}, 2000);
 				},
 				onLoad: (response) => {
 					// Payment iframe loaded
@@ -318,19 +288,6 @@ const Billing = () => {
 			setSelectedTier(tierParam as keyof typeof pricingTiers);
 		}
 	}, [searchParams]);
-
-	// Update preloaded transaction when plan or user changes
-	useEffect(() => {
-		if (isPaystackLoaded && isAuthenticated && user?.email) {
-			preloadPaymentTransaction();
-		}
-	}, [
-		pricingTier,
-		user?.email,
-		isPaystackLoaded,
-		isAuthenticated,
-		selectedTier,
-	]);
 
 	// Fetch transaction history
 	useEffect(() => {
@@ -436,13 +393,8 @@ const Billing = () => {
 
 	// Handle payment for upgrading from free tier
 	const handlePayment = () => {
-		if (!preloadedPayment) {
-			toast({
-				title: "Payment Not Ready",
-				description: "Please wait while we prepare your payment.",
-				variant: "destructive",
-			});
-			return;
+		if (isAuthenticated) {
+			loadPaymentTransaction();
 		}
 
 		if (isProcessing) {
@@ -453,9 +405,6 @@ const Billing = () => {
 			});
 			return;
 		}
-
-		// Trigger the preloaded payment
-		preloadedPayment();
 	};
 
 	const getTierIcon = (tierName: string) => {
@@ -738,7 +687,6 @@ const Billing = () => {
 											size="lg"
 											onClick={handlePayment}
 											disabled={
-												!preloadedPayment ||
 												isProcessing ||
 												!paystackKey ||
 												pricingTier !== "free"
@@ -763,8 +711,6 @@ const Billing = () => {
 												"Payment Configuration Error"
 											) : isProcessing ? (
 												"Processing..."
-											) : !preloadedPayment ? (
-												"Preparing Payment..."
 											) : (
 												<>
 													Pay $
