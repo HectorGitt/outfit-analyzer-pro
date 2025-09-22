@@ -1242,8 +1242,8 @@ const Index = () => {
 											</svg>
 										</div>
 										<span className="text-muted-foreground">
-											{pricingTiers.free.ai_calls_per_day}{" "}
-											AI calls per day
+											{pricingTiers.calendar_integration}{" "}
+											Calendar integration
 										</span>
 									</li>
 									<li className="flex items-center gap-3">
@@ -1261,7 +1261,7 @@ const Index = () => {
 											</svg>
 										</div>
 										<span className="text-muted-foreground">
-											Basic dashboard access
+											AI Styling Advice
 										</span>
 									</li>
 								</ul>
@@ -1269,7 +1269,7 @@ const Index = () => {
 									className="w-full py-6 text-lg font-semibold bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white shadow-lg hover:shadow-xl transition-all duration-300"
 									asChild
 								>
-									<Link to="/register">
+									<Link to="/upload">
 										Get Started Free
 										<ArrowRight className="ml-2 w-5 h-5" />
 									</Link>
@@ -1419,7 +1419,9 @@ const Index = () => {
 									className="w-full py-6 text-lg font-semibold bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-white shadow-lg hover:shadow-xl transition-all duration-300"
 									asChild
 								>
-									<Link to="/register">
+									<Link
+										to={`/billing?plan=${pricingTiers.spotlight.name}`}
+									>
 										Start {pricingTiers.spotlight.name}{" "}
 										Trial
 										<ArrowRight className="ml-2 w-5 h-5" />
@@ -1562,7 +1564,9 @@ const Index = () => {
 									className="w-full py-6 text-lg font-semibold bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white shadow-lg hover:shadow-xl transition-all duration-300"
 									asChild
 								>
-									<Link to="/register">
+									<Link
+										to={`/billing?plan=${pricingTiers.elite.name}`}
+									>
 										Go {pricingTiers.elite.name}
 										<ArrowRight className="ml-2 w-5 h-5" />
 									</Link>
@@ -1697,7 +1701,9 @@ const Index = () => {
 									className="w-full py-6 text-lg font-semibold bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white shadow-lg hover:shadow-xl transition-all duration-300"
 									asChild
 								>
-									<Link to="/register">
+									<Link
+										to={`/billing?plan=${pricingTiers.icon.name}`}
+									>
 										Become an {pricingTiers.icon.name}
 										<ArrowRight className="ml-2 w-5 h-5" />
 									</Link>
