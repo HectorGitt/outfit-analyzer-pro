@@ -149,8 +149,8 @@ const PersonalizedAI = () => {
 										Fair Revenue Sharing
 									</h3>
 									<p className="text-lg text-muted-foreground leading-relaxed">
-										We take a small platform fee (15%) and
-										you keep 85% of all subscription
+										We take a small platform fee (25%) and
+										you keep 75% of all subscription
 										revenue. Creators also earn bonuses for
 										high subscriber retention and model
 										performance ratings.
@@ -158,7 +158,7 @@ const PersonalizedAI = () => {
 									<div className="grid grid-cols-2 gap-3">
 										<div className="bg-white/60 dark:bg-gray-800/60 p-4 rounded-xl border border-white/20">
 											<div className="text-2xl font-bold text-cyan-600 mb-1">
-												85%
+												75%
 											</div>
 											<div className="text-sm text-muted-foreground">
 												Creator Earnings
@@ -166,7 +166,7 @@ const PersonalizedAI = () => {
 										</div>
 										<div className="bg-white/60 dark:bg-gray-800/60 p-4 rounded-xl border border-white/20">
 											<div className="text-2xl font-bold text-teal-600 mb-1">
-												15%
+												25%
 											</div>
 											<div className="text-sm text-muted-foreground">
 												Platform Fee
