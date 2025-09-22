@@ -53,11 +53,9 @@ export function Navbar() {
 		  ]
 		: publicNavigation;
 
-	const isAccountActive = [
-		"/profile",
-		"/wardrobe",
-		"/calendar-view",
-	].includes(location.pathname);
+	const isClosetActive = ["/profile", "/wardrobe", "/calendar-view"].includes(
+		location.pathname
+	);
 
 	const handleLogout = () => {
 		logout();
@@ -125,13 +123,13 @@ export function Navbar() {
 										variant="ghost"
 										className={cn(
 											"flex items-center px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200",
-											isAccountActive
+											isClosetActive
 												? "bg-primary text-primary-foreground shadow-md"
 												: "text-muted-foreground hover:text-foreground hover:bg-muted"
 										)}
 									>
 										<User className="w-4 h-4 mr-2" />
-										Account
+										Closet
 										<ChevronDown className="w-4 h-4 ml-1" />
 									</Button>
 								</DropdownMenuTrigger>
@@ -234,6 +232,15 @@ export function Navbar() {
 											Calendar
 										</Link>
 									</DropdownMenuItem>
+									<DropdownMenuItem asChild>
+										<Link
+											to="/billing"
+											className="cursor-pointer"
+										>
+											<BarChart3 className="mr-2 h-4 w-4" />
+											Billing
+										</Link>
+									</DropdownMenuItem>
 									{user.email === "admin@closetic.com" && (
 										<>
 											<DropdownMenuItem asChild>
@@ -332,7 +339,7 @@ export function Navbar() {
 										variant="ghost"
 										className={cn(
 											"flex items-center px-4 py-3 rounded-lg text-base font-medium transition-all duration-200 w-full justify-start",
-											isAccountActive
+											isClosetActive
 												? "bg-primary text-primary-foreground"
 												: "text-muted-foreground hover:text-foreground hover:bg-muted"
 										)}
@@ -473,6 +480,18 @@ export function Navbar() {
 											>
 												<Calendar className="mr-2 h-4 w-4" />
 												Calendar
+											</Link>
+										</DropdownMenuItem>
+										<DropdownMenuItem asChild>
+											<Link
+												to="/billing"
+												className="cursor-pointer"
+												onClick={() =>
+													setMobileMenuOpen(false)
+												}
+											>
+												<BarChart3 className="mr-2 h-4 w-4" />
+												Billing
 											</Link>
 										</DropdownMenuItem>
 										{user.email ===
