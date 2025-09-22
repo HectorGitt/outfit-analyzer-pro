@@ -3,15 +3,6 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
-	Dialog,
-	DialogContent,
-	DialogDescription,
-	DialogFooter,
-	DialogHeader,
-	DialogTitle,
-	DialogTrigger,
-} from "@/components/ui/dialog";
-import {
 	Select,
 	SelectContent,
 	SelectItem,
@@ -26,9 +17,6 @@ import {
 	Receipt,
 	Calendar,
 	DollarSign,
-	X,
-	AlertTriangle,
-	User,
 	Settings,
 } from "lucide-react";
 import { pricingTiers } from "@/lib/pricingTiers";
@@ -88,8 +76,6 @@ const Billing = () => {
 	const [subscriptionStatus, setSubscriptionStatus] = useState<string>(
 		pricingTier === "free" ? "inactive" : "active"
 	);
-	const [isCancelling, setIsCancelling] = useState(false);
-	const [showCancelDialog, setShowCancelDialog] = useState(false);
 	const [subscriptionEndDate, setSubscriptionEndDate] = useState<
 		string | null
 	>(
@@ -97,6 +83,9 @@ const Billing = () => {
 			? null
 			: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()
 	);
+
+	// Payment management loading state
+	const [isManagingPayment, setIsManagingPayment] = useState(false);
 
 	// Selected tier for upgrade (for free users) - default from URL param or spotlight
 	const getDefaultSelectedTier = () => {
@@ -320,51 +309,9 @@ const Billing = () => {
 		}
 	}, [isAuthenticated]);
 
-	// Handle subscription cancellation
-	const handleCancelSubscription = async () => {
-		if (!user?.email) {
-			toast({
-				title: "Email Required",
-				description: "Please update your email address to proceed.",
-				variant: "destructive",
-			});
-			return;
-		}
-
-		setIsCancelling(true);
-		try {
-			// Here you would call your API to cancel the subscription
-			// For now, we'll simulate the cancellation
-			await new Promise((resolve) => setTimeout(resolve, 2000)); // Simulate API call
-
-			setSubscriptionStatus("cancelled");
-			setSubscriptionEndDate(
-				new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()
-			); // 30 days from now
-
-			toast({
-				title: "Subscription Cancelled",
-				description:
-					"Your subscription will remain active until the end of your current billing period.",
-				variant: "default",
-			});
-
-			setShowCancelDialog(false);
-		} catch (error) {
-			console.error("Failed to cancel subscription:", error);
-			toast({
-				title: "Cancellation Failed",
-				description:
-					"There was an error cancelling your subscription. Please try again.",
-				variant: "destructive",
-			});
-		} finally {
-			setIsCancelling(false);
-		}
-	};
-
 	// Handle payment management redirect
 	const handleManagePayment = async () => {
+		setIsManagingPayment(true);
 		try {
 			// Call the /payment/manage endpoint
 			const response = await paymentAPI.managePayment();
@@ -388,6 +335,8 @@ const Billing = () => {
 					"We're unable to redirect you to payment management at this time.",
 				variant: "destructive",
 			});
+		} finally {
+			setIsManagingPayment(false);
 		}
 	};
 
@@ -497,114 +446,117 @@ const Billing = () => {
 				<div className="container mx-auto px-4">
 					<div className="max-w-6xl mx-auto">
 						<div className="space-y-12">
-							{/* Plan Summary */}
-							<div className="bg-card border border-border rounded-lg p-8 card-fashion">
-								<div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6">
-									<div className="flex items-start space-x-4">
-										<div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center text-primary flex-shrink-0">
-											{getTierIcon(tier.name)}
-										</div>
-										<div className="min-w-0 flex-1">
-											<h2 className="text-2xl font-bold mb-2">
-												{tier.name} Plan
-											</h2>
-											<p className="text-muted-foreground mb-4">
-												{pricingTier === "free"
-													? "Free plan - Upgrade for premium features"
-													: subscriptionStatus ===
-													  "active"
-													? "Active subscription"
-													: "Subscription management"}
-											</p>
-											{subscriptionStatus ===
-												"active" && (
-												<div className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-green-100 text-green-800">
-													<CheckCircle className="w-4 h-4 mr-2" />
-													Active
-												</div>
-											)}
-										</div>
-									</div>
-
-									<div className="lg:text-right">
-										<div className="text-sm font-medium text-muted-foreground mb-1">
-											{pricingTier === "free"
-												? "Current Plan"
-												: "Monthly Price"}
-										</div>
-										<div className="text-3xl font-bold text-primary">
-											{pricingTier === "free" ? (
-												"Free"
-											) : (
-												<>
-													$
-													{tier.price_monthly?.toFixed(
-														2
-													) || "0.00"}
-													<span className="text-lg font-normal text-muted-foreground">
-														/month
-													</span>
-												</>
-											)}
-										</div>
-									</div>
-								</div>
-
-								{subscriptionStatus === "active" && (
-									<div className="mt-6 bg-green-50 border border-green-200 rounded-lg p-4">
-										<div className="flex items-center space-x-2 text-green-800 mb-2">
-											<CheckCircle className="w-5 h-5" />
-											<span className="font-medium">
-												Subscription Active
-											</span>
-										</div>
-										<p className="text-sm text-green-700">
-											{subscriptionEndDate
-												? `Renews on ${new Date(
-														subscriptionEndDate
-												  ).toLocaleDateString()}`
-												: "Monthly billing active"}
-										</p>
-									</div>
-								)}
-
-								<div className="mt-8 border-t pt-6">
-									<h3 className="text-xl font-semibold mb-4">
-										Plan Features
-									</h3>
-									<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-										{Object.entries(tier)
-											.filter(
-												([k]) =>
-													k !== "name" &&
-													k !== "price_monthly"
-											)
-											.slice(0, 6) // Show first 6 features
-											.map(([key, value]) => (
-												<div
-													key={key}
-													className="flex items-center justify-between p-3 bg-muted/50 rounded-lg"
-												>
-													<span className="text-sm text-muted-foreground capitalize">
-														{key.replace(/_/g, " ")}
-													</span>
-													<span className="font-medium">
-														{typeof value ===
-														"boolean"
-															? value
-																? "✓"
-																: "✗"
-															: String(value)}
-													</span>
-												</div>
-											))}
-									</div>
-								</div>
-							</div>
-
-							{/* Payment & Subscription Management */}
+							{/* Plan Summary and Payment Details - Side by Side on Large Screens */}
 							<div className="grid lg:grid-cols-2 gap-8">
-								{/* Payment Section */}
+								{/* Plan Summary */}
+								<div className="bg-card border border-border rounded-lg p-8 card-fashion">
+									<div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6">
+										<div className="flex items-start space-x-4">
+											<div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center text-primary flex-shrink-0">
+												{getTierIcon(tier.name)}
+											</div>
+											<div className="min-w-0 flex-1">
+												<h2 className="text-2xl font-bold mb-2">
+													{tier.name} Plan
+												</h2>
+												<p className="text-muted-foreground mb-4">
+													{pricingTier === "free"
+														? "Free plan - Upgrade for premium features"
+														: subscriptionStatus ===
+														  "active"
+														? "Active subscription"
+														: "Subscription management"}
+												</p>
+												{subscriptionStatus ===
+													"active" && (
+													<div className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-green-100 text-green-800">
+														<CheckCircle className="w-4 h-4 mr-2" />
+														Active
+													</div>
+												)}
+											</div>
+										</div>
+
+										<div className="lg:text-right">
+											<div className="text-sm font-medium text-muted-foreground mb-1">
+												{pricingTier === "free"
+													? "Current Plan"
+													: "Monthly Price"}
+											</div>
+											<div className="text-3xl font-bold text-primary">
+												{pricingTier === "free" ? (
+													"Free"
+												) : (
+													<>
+														$
+														{tier.price_monthly?.toFixed(
+															2
+														) || "0.00"}
+														<span className="text-lg font-normal text-muted-foreground">
+															/month
+														</span>
+													</>
+												)}
+											</div>
+										</div>
+									</div>
+
+									{subscriptionStatus === "active" && (
+										<div className="mt-6 bg-green-50 border border-green-200 rounded-lg p-4">
+											<div className="flex items-center space-x-2 text-green-800 mb-2">
+												<CheckCircle className="w-5 h-5" />
+												<span className="font-medium">
+													Subscription Active
+												</span>
+											</div>
+											<p className="text-sm text-green-700">
+												{subscriptionEndDate
+													? `Renews on ${new Date(
+															subscriptionEndDate
+													  ).toLocaleDateString()}`
+													: "Monthly billing active"}
+											</p>
+										</div>
+									)}
+
+									<div className="mt-8 border-t pt-6">
+										<h3 className="text-xl font-semibold mb-4">
+											Plan Features
+										</h3>
+										<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+											{Object.entries(tier)
+												.filter(
+													([k]) =>
+														k !== "name" &&
+														k !== "price_monthly"
+												)
+												.slice(0, 6) // Show first 6 features
+												.map(([key, value]) => (
+													<div
+														key={key}
+														className="flex items-center justify-between p-3 bg-muted/50 rounded-lg"
+													>
+														<span className="text-sm text-muted-foreground capitalize">
+															{key.replace(
+																/_/g,
+																" "
+															)}
+														</span>
+														<span className="font-medium">
+															{typeof value ===
+															"boolean"
+																? value
+																	? "✓"
+																	: "✗"
+																: String(value)}
+														</span>
+													</div>
+												))}
+										</div>
+									</div>
+								</div>
+
+								{/* Payment Details */}
 								<div className="bg-card border border-border rounded-lg p-8 card-fashion">
 									<div className="flex items-center space-x-3 mb-6">
 										<CreditCard className="w-6 h-6 text-primary" />
@@ -728,10 +680,22 @@ const Billing = () => {
 												variant="outline"
 												className="w-full"
 												onClick={handleManagePayment}
-												disabled={!paystackKey}
+												disabled={
+													!paystackKey ||
+													isManagingPayment
+												}
 											>
-												<Settings className="w-4 h-4 mr-2" />
-												Manage Payment Method
+												{isManagingPayment ? (
+													<>
+														<div className="animate-spin rounded-full h-4 w-4 border-b-2 border-current mr-2"></div>
+														Loading...
+													</>
+												) : (
+													<>
+														<Settings className="w-4 h-4 mr-2" />
+														Manage Payment Method
+													</>
+												)}
 											</Button>
 										)}
 
@@ -750,223 +714,6 @@ const Billing = () => {
 												Policy
 											</p>
 										</div>
-									</div>
-								</div>
-
-								{/* Subscription Management */}
-								<div className="bg-card border border-border rounded-lg p-8 card-fashion">
-									<div className="flex items-center space-x-3 mb-6">
-										<User className="w-6 h-6 text-primary" />
-										<h3 className="text-xl font-semibold">
-											Subscription Management
-										</h3>
-									</div>
-
-									<div className="space-y-6">
-										<div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
-											<div className="flex-1">
-												<h4 className="font-semibold mb-2">
-													Current Status
-												</h4>
-												<p className="text-sm text-muted-foreground mb-2">
-													{pricingTier === "free"
-														? "You're on the free plan. Upgrade for premium features."
-														: subscriptionStatus ===
-														  "active"
-														? "Your subscription is active"
-														: subscriptionStatus ===
-														  "cancelled"
-														? "Your subscription is cancelled"
-														: subscriptionStatus ===
-														  "expired"
-														? "Your subscription has expired"
-														: "Subscription status unknown"}
-												</p>
-												{subscriptionEndDate && (
-													<p className="text-xs text-muted-foreground">
-														{subscriptionStatus ===
-														"cancelled"
-															? `Access until: ${new Date(
-																	subscriptionEndDate
-															  ).toLocaleDateString()}`
-															: `Next billing: ${new Date(
-																	subscriptionEndDate
-															  ).toLocaleDateString()}`}
-													</p>
-												)}
-											</div>
-											<div className="flex-shrink-0">
-												<Badge
-													variant={
-														subscriptionStatus ===
-														"active"
-															? "default"
-															: subscriptionStatus ===
-															  "cancelled"
-															? "secondary"
-															: "destructive"
-													}
-													className="text-sm px-3 py-1"
-												>
-													{subscriptionStatus
-														.charAt(0)
-														.toUpperCase() +
-														subscriptionStatus.slice(
-															1
-														)}
-												</Badge>
-											</div>
-										</div>
-
-										{pricingTier !== "free" &&
-											subscriptionStatus === "active" && (
-												<Dialog
-													open={showCancelDialog}
-													onOpenChange={
-														setShowCancelDialog
-													}
-												>
-													<DialogTrigger asChild>
-														<Button
-															variant="outline"
-															className="w-full border-red-200 text-red-600 hover:bg-red-50 hover:border-red-300"
-														>
-															<X className="w-4 h-4 mr-2" />
-															Cancel Subscription
-														</Button>
-													</DialogTrigger>
-													<DialogContent>
-														<DialogHeader>
-															<DialogTitle className="flex items-center space-x-2">
-																<AlertTriangle className="w-5 h-5 text-red-500" />
-																<span>
-																	Cancel
-																	Subscription
-																</span>
-															</DialogTitle>
-															<DialogDescription>
-																Are you sure you
-																want to cancel
-																your
-																subscription?
-																You'll still
-																have access to
-																your account
-																until the end of
-																your current
-																billing period.
-															</DialogDescription>
-														</DialogHeader>
-
-														<div className="space-y-4">
-															<div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-																<h4 className="font-semibold text-yellow-800 mb-2">
-																	What happens
-																	when you
-																	cancel:
-																</h4>
-																<ul className="text-sm text-yellow-700 space-y-1">
-																	<li>
-																		• You'll
-																		keep
-																		access
-																		until{" "}
-																		{subscriptionEndDate
-																			? new Date(
-																					subscriptionEndDate
-																			  ).toLocaleDateString()
-																			: "your billing period ends"}
-																	</li>
-																	<li>
-																		• No
-																		more
-																		charges
-																		will be
-																		made to
-																		your
-																		account
-																	</li>
-																	<li>
-																		• You
-																		can
-																		reactivate
-																		anytime
-																		before
-																		the
-																		period
-																		ends
-																	</li>
-																	<li>
-																		• Your
-																		data and
-																		preferences
-																		will be
-																		preserved
-																	</li>
-																</ul>
-															</div>
-														</div>
-
-														<DialogFooter>
-															<Button
-																variant="outline"
-																onClick={() =>
-																	setShowCancelDialog(
-																		false
-																	)
-																}
-																disabled={
-																	isCancelling
-																}
-															>
-																Keep
-																Subscription
-															</Button>
-															<Button
-																variant="destructive"
-																onClick={
-																	handleCancelSubscription
-																}
-																disabled={
-																	isCancelling
-																}
-															>
-																{isCancelling
-																	? "Cancelling..."
-																	: "Cancel Subscription"}
-															</Button>
-														</DialogFooter>
-													</DialogContent>
-												</Dialog>
-											)}
-
-										{pricingTier !== "free" &&
-											subscriptionStatus ===
-												"cancelled" && (
-												<div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
-													<h4 className="font-semibold text-blue-800 mb-3">
-														Subscription Cancelled
-													</h4>
-													<p className="text-sm text-blue-700 mb-4">
-														Your subscription will
-														remain active until{" "}
-														{subscriptionEndDate
-															? new Date(
-																	subscriptionEndDate
-															  ).toLocaleDateString()
-															: "the end of your billing period"}
-														. You can reactivate it
-														anytime before then.
-													</p>
-													<Button
-														variant="outline"
-														size="sm"
-														className="border-blue-300 text-blue-600 hover:bg-blue-50"
-													>
-														Reactivate Subscription
-													</Button>
-												</div>
-											)}
 									</div>
 								</div>
 							</div>
