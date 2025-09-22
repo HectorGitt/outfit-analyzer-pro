@@ -566,63 +566,84 @@ export default function Camera() {
 		<div className="min-h-screen bg-gradient-hero">
 			<Navbar />
 
-			<div className="container mx-auto px-4 py-8">
-				<div className="max-w-6xl mx-auto">
+			<div className="container mx-auto px-4 py-6 lg:py-8">
+				<div className="max-w-7xl mx-auto">
 					{/* Header */}
-					<div className="text-center mb-8 animate-fade-up">
+					<div className="text-center mb-6 lg:mb-8 animate-fade-up">
 						<div className="inline-flex items-center justify-center w-16 h-16 bg-primary/10 rounded-full mb-4">
 							<CameraIcon className="w-8 h-8 text-primary" />
 						</div>
-						<h1 className="text-4xl font-bold mb-4">
+						<h1 className="text-3xl lg:text-4xl font-bold mb-3 lg:mb-4">
 							Live Camera Analysis
 						</h1>
-						<p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+						<p className="text-lg lg:text-xl text-muted-foreground max-w-2xl mx-auto px-4">
 							Get real-time fashion feedback using your device
 							camera
 						</p>
+						{!isPro && (
+							<div className="mt-4">
+								<Badge
+									variant="outline"
+									className="bg-gradient-to-r from-purple-50 to-pink-50 border-purple-200 text-purple-700"
+								>
+									<Lock className="w-3 h-3 mr-1" />
+									Pro Feature
+								</Badge>
+							</div>
+						)}
 					</div>
 
-					<div className="flex flex-col lg:flex-row gap-8">
-						{/* Camera Section */}
-						<div className="lg:w-1/2 space-y-6">
-							{error && (
-								<Alert variant="destructive">
-									<AlertCircle className="h-4 w-4" />
-									<AlertDescription>{error}</AlertDescription>
-								</Alert>
-							)}
+					{/* Error Alert */}
+					{error && (
+						<div className="mb-6 lg:mb-8">
+							<Alert
+								variant="destructive"
+								className="max-w-4xl mx-auto"
+							>
+								<AlertCircle className="h-4 w-4" />
+								<AlertDescription className="text-sm lg:text-base">
+									{error}
+								</AlertDescription>
+							</Alert>
+						</div>
+					)}
 
-							<Card className="card-fashion">
-								<CardHeader>
-									<CardTitle className="flex items-center justify-between">
-										<span className="flex items-center gap-2">
-											<CameraIcon className="w-5 h-5 text-primary" />
+					<div className="grid grid-cols-1 xl:grid-cols-3 gap-6 lg:gap-8">
+						{/* Camera Section */}
+						<div className="xl:col-span-2 space-y-6">
+							<Card className="card-fashion overflow-hidden">
+								<CardHeader className="pb-4">
+									<div className="flex items-center justify-between">
+										<CardTitle className="flex items-center gap-3">
+											<div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
+												<CameraIcon className="w-5 h-5 text-primary" />
+											</div>
 											Camera Feed
 											{!isPro && (
 												<Badge
 													variant="outline"
-													className="ml-2"
+													className="ml-2 bg-gradient-to-r from-purple-50 to-pink-50 border-purple-200 text-purple-700"
 												>
 													Pro Only
 												</Badge>
 											)}
-										</span>
+										</CardTitle>
 										{isStreaming && (
-											<Badge className="bg-success text-success-foreground">
-												<div className="w-2 h-2 bg-white rounded-full mr-1 animate-pulse" />
+											<Badge className="bg-green-100 text-green-700 border-green-200 animate-pulse">
+												<div className="w-2 h-2 bg-green-500 rounded-full mr-2" />
 												Live
 											</Badge>
 										)}
-									</CardTitle>
+									</div>
 									{!isPro && (
-										<p className="text-sm text-muted-foreground">
+										<p className="text-sm text-muted-foreground mt-2">
 											Live camera analysis is available
 											with our Pro plan. Upgrade to access
 											real-time outfit feedback.
 										</p>
 									)}
 								</CardHeader>
-								<CardContent>
+								<CardContent className="p-0">
 									<div className="relative bg-muted rounded-xl overflow-hidden aspect-video">
 										{!isPro && (
 											<div className="absolute inset-0 bg-background/80 backdrop-blur-sm z-10 rounded-xl flex items-center justify-center">
@@ -725,124 +746,106 @@ export default function Camera() {
 									</div>
 
 									{/* Camera Controls */}
-									<div className="flex items-center justify-center gap-4 mt-4">
+									<div className="p-6 bg-gradient-to-r from-gray-50 to-white">
 										{isStreaming &&
 											!capturedImage &&
 											isPro && (
-												<>
+												<div className="flex flex-wrap items-center justify-center gap-3">
 													<Button
 														variant="outline"
 														onClick={switchCamera}
+														className="flex items-center gap-2 hover:bg-gray-50"
 													>
-														<RotateCcw className="w-4 h-4 mr-2" />
-														Switch
+														<RotateCcw className="w-4 h-4" />
+														<span className="hidden sm:inline">
+															Switch Camera
+														</span>
 													</Button>
 													<Button
 														onClick={capturePhoto}
-														className="btn-gradient"
+														className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white px-6 py-2 rounded-lg font-medium"
 													>
 														<Square className="w-4 h-4 mr-2" />
-														Capture
+														Capture Photo
 													</Button>
 													<Button
 														variant="outline"
 														onClick={stopCamera}
+														className="text-red-600 border-red-200 hover:bg-red-50"
 													>
 														Stop Camera
 													</Button>
-												</>
+												</div>
 											)}
 
 										{capturedImage && isPro && (
-											<>
+											<div className="flex flex-wrap items-center justify-center gap-3">
 												<Button
 													variant="outline"
 													onClick={retakePhoto}
+													className="flex items-center gap-2 hover:bg-gray-50"
 												>
+													<RotateCcw className="w-4 h-4" />
 													Retake Photo
 												</Button>
 												<Button
 													onClick={analyzeCapture}
-													className="btn-gradient"
 													disabled={
 														isAnalyzing || !user
 													}
+													className="bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 text-white px-6 py-2 rounded-lg font-medium"
 												>
 													<Zap className="w-4 h-4 mr-2" />
 													{isAnalyzing
 														? "Analyzing..."
 														: "Analyze Style"}
 												</Button>
-											</>
+											</div>
 										)}
 
 										{!isPro && (
-											<Button
-												onClick={() =>
-													navigate("/pricing")
-												}
-												className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600"
-											>
-												Upgrade for Camera Access
-											</Button>
+											<div className="text-center">
+												<Button
+													onClick={() =>
+														navigate("/pricing")
+													}
+													className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white px-8 py-3 rounded-lg font-medium"
+													size="lg"
+												>
+													<Lock className="w-4 h-4 mr-2" />
+													Upgrade for Camera Access
+												</Button>
+											</div>
 										)}
 									</div>
 
 									{/* Live Analysis Controls */}
-									{isStreaming && !capturedImage && (
-										<div className="mt-4">
-											{!isPro ? (
-												// Pro upgrade card for free users
-												<Card className="bg-gradient-to-r from-purple-50 to-pink-50 border-purple-200">
-													<CardContent className="pt-6">
-														<div className="text-center">
-															<Timer className="w-12 h-12 text-purple-600 mx-auto mb-4" />
-															<h3 className="text-lg font-semibold mb-2">
-																Live Analysis -
-																Pro Feature
-															</h3>
-															<p className="text-muted-foreground mb-6 max-w-md mx-auto">
-																Get real-time
-																outfit feedback
-																with automatic
-																analysis every
-																few seconds.
-																Perfect for
-																trying on
-																different looks!
-															</p>
-															<Button
-																onClick={() =>
-																	navigate(
-																		"/pricing"
-																	)
-																}
-																className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600"
-															>
-																Upgrade to Pro
-															</Button>
-														</div>
-													</CardContent>
-												</Card>
-											) : (
-												// Pro user live analysis functionality
-												<div className="p-4 bg-gray-50 rounded-lg">
-													<div className="flex items-center justify-between mb-3">
-														<h4 className="text-sm font-medium flex items-center gap-2">
-															<Timer className="w-4 h-4 text-blue-600" />
-															Live Analysis
-														</h4>
-														{isLiveAnalysis && (
-															<Badge className="bg-red-100 text-red-700 border-red-200">
-																<div className="w-2 h-2 bg-red-500 rounded-full mr-1 animate-pulse" />
-																Live
-															</Badge>
-														)}
+									{isStreaming && !capturedImage && isPro && (
+										<Card className="card-fashion">
+											<CardHeader>
+												<CardTitle className="flex items-center gap-3">
+													<div className="w-10 h-10 bg-gradient-to-r from-green-100 to-blue-100 rounded-lg flex items-center justify-center">
+														<Timer className="w-5 h-5 text-green-600" />
 													</div>
-
-													<div className="flex items-center gap-3 mb-3">
-														<label className="text-xs text-gray-600">
-															Interval:
+													Live Analysis
+													{isLiveAnalysis && (
+														<Badge className="bg-green-100 text-green-700 border-green-200 animate-pulse">
+															<div className="w-2 h-2 bg-green-500 rounded-full mr-1" />
+															Active
+														</Badge>
+													)}
+												</CardTitle>
+												<p className="text-sm text-muted-foreground mt-1">
+													Get real-time fashion
+													feedback with automatic
+													analysis
+												</p>
+											</CardHeader>
+											<CardContent>
+												<div className="space-y-4">
+													<div className="flex items-center justify-between">
+														<label className="text-sm font-medium text-gray-700">
+															Analysis Interval
 														</label>
 														<select
 															value={
@@ -856,7 +859,7 @@ export default function Camera() {
 																	)
 																)
 															}
-															className="text-xs border rounded px-2 py-1"
+															className="px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-primary focus:border-transparent"
 															disabled={
 																isLiveAnalysis
 															}
@@ -879,20 +882,19 @@ export default function Camera() {
 														</select>
 													</div>
 
-													<div className="flex items-center justify-center gap-2">
+													<div className="flex items-center justify-center gap-3">
 														{!isLiveAnalysis ? (
 															<Button
 																onClick={
 																	startLiveAnalysis
 																}
-																size="sm"
-																className="bg-green-600 hover:bg-green-700 text-white"
 																disabled={
 																	!user ||
 																	isAnalyzing
 																}
+																className="bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 text-white px-6 py-2 rounded-lg font-medium"
 															>
-																<Play className="w-3 h-3 mr-1" />
+																<Play className="w-4 h-4 mr-2" />
 																Start Live
 																Analysis
 															</Button>
@@ -901,11 +903,10 @@ export default function Camera() {
 																onClick={
 																	stopLiveAnalysis
 																}
-																size="sm"
 																variant="outline"
-																className="border-red-300 text-red-600 hover:bg-red-50"
+																className="border-red-200 text-red-600 hover:bg-red-50 px-6 py-2 rounded-lg"
 															>
-																<Pause className="w-3 h-3 mr-1" />
+																<Pause className="w-4 h-4 mr-2" />
 																Stop Live
 																Analysis
 															</Button>
@@ -913,14 +914,18 @@ export default function Camera() {
 													</div>
 
 													{!user && (
-														<p className="text-xs text-gray-500 mt-2 text-center">
-															Login required for
-															live analysis
-														</p>
+														<Alert>
+															<AlertCircle className="h-4 w-4" />
+															<AlertDescription className="text-sm">
+																Please log in to
+																enable live
+																analysis
+															</AlertDescription>
+														</Alert>
 													)}
 												</div>
-											)}
-										</div>
+											</CardContent>
+										</Card>
 									)}
 								</CardContent>
 							</Card>
@@ -928,21 +933,23 @@ export default function Camera() {
 							{/* Camera Tips */}
 							<Card className="card-fashion">
 								<CardHeader>
-									<CardTitle className="text-lg flex items-center gap-2">
-										<Settings className="w-5 h-5 text-primary" />
+									<CardTitle className="flex items-center gap-3">
+										<div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
+											<Settings className="w-5 h-5 text-primary" />
+										</div>
 										Camera Tips
 									</CardTitle>
 								</CardHeader>
 								<CardContent>
 									{!isPro && (
-										<Alert className="mb-4">
-											<Lock className="h-4 w-4" />
-											<AlertDescription>
+										<Alert className="mb-4 border-purple-200 bg-purple-50">
+											<Lock className="h-4 w-4 text-purple-600" />
+											<AlertDescription className="text-sm">
 												Live camera analysis is a Pro
 												feature.
 												<Button
 													variant="link"
-													className="p-0 h-auto ml-1 text-primary"
+													className="p-0 h-auto ml-1 text-purple-600 hover:text-purple-700 font-medium"
 													onClick={() =>
 														navigate("/pricing")
 													}
@@ -957,81 +964,73 @@ export default function Camera() {
 									{!user && (
 										<Alert className="mb-4">
 											<AlertCircle className="h-4 w-4" />
-											<AlertDescription>
+											<AlertDescription className="text-sm">
 												Please log in to enable outfit
 												analysis functionality
 											</AlertDescription>
 										</Alert>
 									)}
-									<ul className="space-y-2 text-sm text-muted-foreground">
-										<li className="flex items-start gap-2">
-											<span className="w-1.5 h-1.5 bg-primary rounded-full mt-2 flex-shrink-0" />
-											Stand in good lighting for best
-											results
-										</li>
-										<li className="flex items-start gap-2">
-											<span className="w-1.5 h-1.5 bg-primary rounded-full mt-2 flex-shrink-0" />
-											Show your full outfit in the frame
-										</li>
-										<li className="flex items-start gap-2">
-											<span className="w-1.5 h-1.5 bg-primary rounded-full mt-2 flex-shrink-0" />
-											Keep the camera steady while
-											capturing
-										</li>
-										<li className="flex items-start gap-2">
-											<span className="w-1.5 h-1.5 bg-primary rounded-full mt-2 flex-shrink-0" />
-											Use a plain background when possible
-										</li>
+									<div className="space-y-3">
+										<div className="flex items-start gap-3">
+											<div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0"></div>
+											<p className="text-sm text-muted-foreground">
+												Stand in good lighting for best
+												results
+											</p>
+										</div>
+										<div className="flex items-start gap-3">
+											<div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0"></div>
+											<p className="text-sm text-muted-foreground">
+												Show your full outfit in the
+												frame
+											</p>
+										</div>
+										<div className="flex items-start gap-3">
+											<div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0"></div>
+											<p className="text-sm text-muted-foreground">
+												Keep the camera steady while
+												capturing
+											</p>
+										</div>
+										<div className="flex items-start gap-3">
+											<div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0"></div>
+											<p className="text-sm text-muted-foreground">
+												Use a plain background when
+												possible
+											</p>
+										</div>
 										{isPro && (
 											<>
-												<li className="flex items-start gap-2">
-													<span className="w-1.5 h-1.5 bg-green-600 rounded-full mt-2 flex-shrink-0" />
-													Use Live Analysis for
-													real-time fashion feedback
-												</li>
-												<li className="flex items-start gap-2">
-													<span className="w-1.5 h-1.5 bg-green-600 rounded-full mt-2 flex-shrink-0" />
-													Longer intervals save
-													battery and data usage
-												</li>
+												<div className="flex items-start gap-3">
+													<div className="w-2 h-2 bg-green-500 rounded-full mt-2 flex-shrink-0"></div>
+													<p className="text-sm text-green-700 font-medium">
+														Use Live Analysis for
+														real-time fashion
+														feedback
+													</p>
+												</div>
+												<div className="flex items-start gap-3">
+													<div className="w-2 h-2 bg-green-500 rounded-full mt-2 flex-shrink-0"></div>
+													<p className="text-sm text-green-700 font-medium">
+														Longer intervals save
+														battery and data usage
+													</p>
+												</div>
 											</>
 										)}
-									</ul>
+									</div>
 								</CardContent>
 							</Card>
 						</div>
 
-						{/* Analysis Results */}
-						<div className="lg:w-1/2 space-y-6">
-							{isAnalyzing && (
-								<Card className="card-fashion">
-									<CardContent className="flex items-center justify-center py-12">
-										<div className="text-center space-y-4">
-											<div className="w-16 h-16 bg-gradient-primary rounded-full mx-auto animate-float flex items-center justify-center">
-												<Zap className="w-8 h-8 text-white" />
-											</div>
-											<div>
-												<h3 className="text-lg font-semibold">
-													{isLiveAnalysis
-														? "Live Analysis Running..."
-														: "Analyzing Your Style..."}
-												</h3>
-												<p className="text-muted-foreground">
-													{isLiveAnalysis
-														? "Continuously analyzing your outfit"
-														: "Processing your capture"}
-												</p>
-											</div>
-										</div>
-									</CardContent>
-								</Card>
-							)}
-
-							{analysisResult && !isAnalyzing && (
+						{/* Analysis Results & Tips */}
+						<div className="space-y-6">
+							{/* Analysis Results */}
+							{analysisResult && (
 								<div className="space-y-3">
 									{isLiveAnalysis && (
-										<div className="text-center">
-											<Badge className="bg-green-100 text-green-700 border-green-200">
+										<div className="text-center mb-4">
+											<Badge className="bg-green-100 text-green-700 border-green-200 animate-pulse">
 												<Timer className="w-3 h-3 mr-1" />
 												Live Analysis Active
 											</Badge>
@@ -1041,22 +1040,81 @@ export default function Camera() {
 											</p>
 										</div>
 									)}
+									{isAnalyzing && !analysisResult && (
+										<div className="mb-4">
+											<Card className="card-fashion border-blue-200 bg-blue-50/50">
+												<CardContent className="flex items-center justify-center py-6">
+													<div className="text-center space-y-3">
+														<div className="w-12 h-12 bg-gradient-to-r from-blue-100 to-purple-100 rounded-full mx-auto animate-pulse flex items-center justify-center">
+															<Zap className="w-6 h-6 text-blue-600" />
+														</div>
+														<div>
+															<h4 className="text-sm font-semibold text-blue-700">
+																{isLiveAnalysis
+																	? "Updating Live Analysis..."
+																	: "Analyzing New Style..."}
+															</h4>
+															<p className="text-xs text-blue-600">
+																{isLiveAnalysis
+																	? "Getting latest fashion feedback"
+																	: "Processing your new capture"}
+															</p>
+														</div>
+														<div className="w-24 h-1.5 bg-blue-200 rounded-full overflow-hidden">
+															<div className="w-full h-full bg-gradient-to-r from-blue-500 to-purple-500 rounded-full animate-pulse"></div>
+														</div>
+													</div>
+												</CardContent>
+											</Card>
+										</div>
+									)}
 									<FashionAnalysisCard
 										result={analysisResult}
 									/>
 								</div>
 							)}
 
-							{!analysisResult && !isAnalyzing && (
-								<Card className="card-fashion border-dashed">
+							{!analysisResult && isAnalyzing && (
+								<Card className="card-fashion">
 									<CardContent className="flex items-center justify-center py-12">
-										<div className="text-center space-y-2">
+										<div className="text-center space-y-4">
+											<div className="w-16 h-16 bg-gradient-to-r from-blue-100 to-purple-100 rounded-full mx-auto animate-pulse flex items-center justify-center">
+												<Zap className="w-8 h-8 text-blue-600" />
+											</div>
+											<div>
+												<h3 className="text-lg font-semibold">
+													{isLiveAnalysis
+														? "Live Analysis Running..."
+														: "Analyzing Your Style..."}
+												</h3>
+												<p className="text-muted-foreground text-sm">
+													{isLiveAnalysis
+														? "Continuously analyzing your outfit"
+														: "Processing your capture with AI"}
+												</p>
+											</div>
+											<div className="w-32 h-2 bg-gray-200 rounded-full overflow-hidden">
+												<div className="w-full h-full bg-gradient-to-r from-blue-500 to-purple-500 rounded-full animate-pulse"></div>
+											</div>
+										</div>
+									</CardContent>
+								</Card>
+							)}
+
+							{!analysisResult && !isAnalyzing && (
+								<Card className="card-fashion border-dashed border-2">
+									<CardContent className="flex items-center justify-center py-12">
+										<div className="text-center space-y-3">
 											<div className="w-12 h-12 bg-muted rounded-full mx-auto flex items-center justify-center">
 												<CameraIcon className="w-6 h-6 text-muted-foreground" />
 											</div>
 											<h3 className="text-lg font-medium text-muted-foreground">
-												Capture a photo to see analysis
+												Ready for Analysis
 											</h3>
+											<p className="text-sm text-muted-foreground">
+												Capture a photo to see your
+												fashion analysis
+											</p>
 										</div>
 									</CardContent>
 								</Card>
