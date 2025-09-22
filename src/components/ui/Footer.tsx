@@ -57,6 +57,14 @@ const Footer = () => {
 							</li>
 							<li>
 								<Link
+									to="/personalized-ai"
+									className="text-gray-400 hover:text-accent transition-colors"
+								>
+									Personalized AI Model
+								</Link>
+							</li>
+							<li>
+								<Link
 									to="/pricing"
 									className="text-gray-400 hover:text-accent transition-colors"
 								>

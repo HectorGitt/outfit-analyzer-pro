@@ -31,6 +31,7 @@ import EmailVerificationRequired from "./pages/EmailVerificationRequired";
 import EmailVerification from "./pages/EmailVerification";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
+import PersonalizedAI from "./pages/PersonalizedAI";
 
 const queryClient = new QueryClient();
 
@@ -137,6 +138,7 @@ const AppContent = () => {
 				<Route path="/privacy-policy" element={<PrivacyPolicy />} />
 				<Route path="/terms-of-service" element={<TermsOfService />} />
 				<Route path="/pricing" element={<Pricing />} />
+				<Route path="/personalized-ai" element={<PersonalizedAI />} />
 				<Route
 					path="/billing"
 					element={
