@@ -53,7 +53,11 @@ export function Navbar() {
 		  ]
 		: publicNavigation;
 
-	const isAccountActive = ["/profile", "/wardrobe", "/calendar-view"].includes(location.pathname);
+	const isAccountActive = [
+		"/profile",
+		"/wardrobe",
+		"/calendar-view",
+	].includes(location.pathname);
 
 	const handleLogout = () => {
 		logout();
@@ -89,7 +93,12 @@ export function Navbar() {
 					{/* Desktop Navigation */}
 					<div className="hidden md:flex items-center space-x-1">
 						{navigation.map((item) => {
-							if (item.name === "Calendar" || item.name === "Wardrobe" || item.name === "Profile") return null;
+							if (
+								item.name === "Calendar" ||
+								item.name === "Wardrobe" ||
+								item.name === "Profile"
+							)
+								return null;
 							const isActive = location.pathname === item.href;
 							return (
 								<Link
@@ -157,7 +166,7 @@ export function Navbar() {
 								<DropdownMenuTrigger asChild>
 									<Button
 										variant="ghost"
-										className="relative h-8 w-8 rounded-full"
+										className="relative flex items-center space-x-2"
 									>
 										<Avatar className="h-8 w-8">
 											<AvatarImage
@@ -170,6 +179,7 @@ export function Navbar() {
 													.toUpperCase()}
 											</AvatarFallback>
 										</Avatar>
+										<ChevronDown className="w-4 h-4" />
 									</Button>
 								</DropdownMenuTrigger>
 								<DropdownMenuContent
@@ -289,7 +299,12 @@ export function Navbar() {
 				<div className="md:hidden border-t-0 bg-transparent backdrop-blur-md">
 					<div className="px-4 pt-2 pb-4 space-y-1">
 						{navigation.map((item) => {
-							if (item.name === "Calendar" || item.name === "Wardrobe" || item.name === "Profile") return null;
+							if (
+								item.name === "Calendar" ||
+								item.name === "Wardrobe" ||
+								item.name === "Profile"
+							)
+								return null;
 							const isActive = location.pathname === item.href;
 							return (
 								<Link
@@ -331,7 +346,9 @@ export function Navbar() {
 									<DropdownMenuItem asChild>
 										<Link
 											to="/profile"
-											onClick={() => setMobileMenuOpen(false)}
+											onClick={() =>
+												setMobileMenuOpen(false)
+											}
 										>
 											<User className="w-4 h-4 mr-2" />
 											Profile
@@ -340,7 +357,9 @@ export function Navbar() {
 									<DropdownMenuItem asChild>
 										<Link
 											to="/wardrobe"
-											onClick={() => setMobileMenuOpen(false)}
+											onClick={() =>
+												setMobileMenuOpen(false)
+											}
 										>
 											<Shirt className="w-4 h-4 mr-2" />
 											Wardrobe
@@ -349,7 +368,9 @@ export function Navbar() {
 									<DropdownMenuItem asChild>
 										<Link
 											to="/calendar-view"
-											onClick={() => setMobileMenuOpen(false)}
+											onClick={() =>
+												setMobileMenuOpen(false)
+											}
 										>
 											<Calendar className="w-4 h-4 mr-2" />
 											Calendar
@@ -386,6 +407,7 @@ export function Navbar() {
 														{user.email}
 													</p>
 												</div>
+												<ChevronDown className="w-4 h-4" />
 											</div>
 										</Button>
 									</DropdownMenuTrigger>
