@@ -166,10 +166,10 @@ const Billing = () => {
 		try {
 			// Map pricing tiers to Paystack plan codes
 			const planCodeMap: Record<string, string> = {
-				free: "PLN_e9qpqcc0cb63i3b", // Free tier upgrades to Spotlight plan
-				spotlight: "PLN_e9qpqcc0cb63i3b", // $9.99
-				elite: "PLN_8bai9hdvckyoni6", // $19.99
-				icon: "PLN_yhdvk25oz4g9krn", // $39.99
+				free: import.meta.env.VITE_PAYSTACK_SPOTLIGHT_PLAN_ID, // Free tier upgrades to Spotlight plan
+				spotlight: import.meta.env.VITE_PAYSTACK_SPOTLIGHT_PLAN_ID, // $9.99
+				elite: import.meta.env.VITE_PAYSTACK_ELITE_PLAN_ID, // $19.99
+				icon: import.meta.env.VITE_PAYSTACK_ICON_PLAN_ID, // $39.99
 			};
 
 			// For free tier users, use selected tier; for paid users, use current tier
