@@ -55,6 +55,14 @@ const Footer = () => {
 									Camera Analysis
 								</Link>
 							</li>
+							<li>
+								<Link
+									to="/pricing"
+									className="text-gray-400 hover:text-accent transition-colors"
+								>
+									Pricing
+								</Link>
+							</li>
 						</ul>
 					</div>
 
