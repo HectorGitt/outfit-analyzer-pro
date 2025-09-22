@@ -1139,7 +1139,7 @@ const Index = () => {
 			</section>
 
 			{/* Pricing Section - Professional and comprehensive */}
-			<section className="py-24 bg-gradient-to-br from-gray-50 via-white to-blue-50 dark:from-gray-900 dark:via-gray-800 dark:to-blue-950/20">
+			<section className="pt-24 bg-gradient-to-br from-gray-50 via-white to-blue-50 dark:from-gray-900 dark:via-gray-800 dark:to-blue-950/20">
 				<div className="container mx-auto px-4 max-w-full overflow-hidden">
 					<div className="text-center mb-20">
 						<h2 className="text-4xl lg:text-5xl font-bold mb-6">
@@ -1714,59 +1714,6 @@ const Index = () => {
 							</CardContent>
 						</Card>
 					</div>
-
-					{/* FAQ Section */}
-					<div className="mt-20 max-w-4xl mx-auto">
-						<h3 className="text-3xl font-bold text-center mb-12">
-							Frequently Asked Questions
-						</h3>
-						<div className="grid md:grid-cols-2 gap-8">
-							<div className="space-y-6">
-								<div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-white/20">
-									<h4 className="font-bold text-lg mb-3">
-										Can I change plans anytime?
-									</h4>
-									<p className="text-muted-foreground">
-										Yes! You can upgrade or downgrade your
-										plan at any time. Changes take effect
-										immediately.
-									</p>
-								</div>
-								<div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-white/20">
-									<h4 className="font-bold text-lg mb-3">
-										Is there a free trial?
-									</h4>
-									<p className="text-muted-foreground">
-										Absolutely! Start with our free plan and
-										upgrade when you're ready. No credit
-										card required to begin.
-									</p>
-								</div>
-							</div>
-							<div className="space-y-6">
-								<div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-white/20">
-									<h4 className="font-bold text-lg mb-3">
-										What payment methods do you accept?
-									</h4>
-									<p className="text-muted-foreground">
-										We accept all major credit cards,
-										PayPal, and other popular payment
-										methods for your convenience.
-									</p>
-								</div>
-								<div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-white/20">
-									<h4 className="font-bold text-lg mb-3">
-										Can I cancel anytime?
-									</h4>
-									<p className="text-muted-foreground">
-										Yes, you can cancel your subscription at
-										any time. No long-term contracts or
-										cancellation fees.
-									</p>
-								</div>
-							</div>
-						</div>
-					</div>
 				</div>
 			</section>
 
@@ -1862,7 +1809,7 @@ const Index = () => {
 								className="text-lg px-10 py-6 shadow-2xl hover:shadow-3xl transition-all duration-300 bg-white text-primary hover:bg-gray-50 font-semibold"
 								asChild
 							>
-								<Link to="/register">
+								<Link to="/upload">
 									Start Free Analysis
 									<ArrowRight className="ml-3 w-5 h-5" />
 								</Link>
@@ -1873,17 +1820,17 @@ const Index = () => {
 								className="text-lg px-10 py-6 border-2 border-white text-white bg-transparent hover:bg-white hover:text-primary transition-all duration-300 shadow-xl"
 								asChild
 							>
-								<Link to="/upload">
+								<Link to="/billing">
 									<Camera className="mr-3 w-5 h-5" />
-									Try Demo Now
+									Try Pro Plan
 								</Link>
 							</Button>
 						</div>
 
 						<div className="mt-12 pt-8 border-t border-white/20">
 							<p className="text-white/80 text-lg">
-								✨ No credit card required • Instant access •
-								Cancel anytime
+								✨ No credit card required for free plan •
+								Instant access •
 							</p>
 						</div>
 					</div>
