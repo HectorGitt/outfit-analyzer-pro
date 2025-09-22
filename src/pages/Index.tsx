@@ -99,10 +99,7 @@ const Index = () => {
 	const recommendedTier = "elite";
 
 	return (
-		<div
-			className="min-h-screen bg-background overflow-x-hidden"
-			data-aos="fade-in"
-		>
+		<div className="min-h-screen bg-background overflow-x-hidden pt-16">
 			<Navbar />
 
 			{/* Hero Section - Enhanced with better value proposition */}

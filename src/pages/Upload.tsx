@@ -208,7 +208,7 @@ export default function Upload() {
 	};
 
 	return (
-		<div className="min-h-screen bg-gradient-hero overflow-x-hidden">
+		<div className="min-h-screen bg-gradient-hero overflow-x-hidden pt-16">
 			<Navbar />
 			<div className="container mx-auto px-2 sm:px-4 py-8">
 				<div className="max-w-7xl mx-auto">

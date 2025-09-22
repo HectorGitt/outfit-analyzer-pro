@@ -42,7 +42,7 @@ const PersonalizedAI = () => {
 
 	return (
 		<div
-			className="min-h-screen bg-background overflow-x-hidden"
+			className="min-h-screen bg-background overflow-x-hidden pt-16"
 			data-aos="fade-in"
 		>
 			<Navbar />

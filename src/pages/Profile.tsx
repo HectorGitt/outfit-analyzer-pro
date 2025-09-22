@@ -316,7 +316,7 @@ export default function Profile() {
 	};
 
 	return (
-		<div className="min-h-screen bg-gradient-hero">
+		<div className="min-h-screen bg-gradient-hero pt-16">
 			<Navbar />
 
 			<div className="container mx-auto px-4 py-8">
