@@ -108,7 +108,9 @@ export const useFeatureAccess = (feature: keyof typeof pricingTiers.free) => {
 	const { data: userTier } = useUserPricingTier();
 
 	if (!userTier) return false; // No data means no access (free tier features only)
-
+	if (feature === "voice_integration") {
+		return userTier.features["agent_calls_minutes"] > 0;
+	}
 	return userTier.features[feature] === true;
 };
 
