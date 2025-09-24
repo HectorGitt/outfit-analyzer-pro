@@ -1,17 +1,22 @@
 import { useCountryList } from "@/hooks/useCountryList";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import {
-	User,
-	Palette,
-	Heart,
-	ShoppingBag,
-	Save,
-	Camera,
-	Calendar,
 	ArrowRight,
+	Calendar,
+	Camera,
+	CheckCircle,
+	DollarSign,
+	Edit3,
 	Globe,
-	Users,
+	Heart,
+	Palette,
+	Save,
+	Settings,
+	ShoppingBag,
 	Star,
+	TrendingUp,
+	User,
+	Users,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -36,6 +41,7 @@ import {
 	DialogHeader,
 	DialogTitle,
 } from "@/components/ui/dialog";
+import { Progress } from "@/components/ui/progress";
 import { userAPI } from "@/services/api";
 import { UserPreferences, PersonalStyleGuide } from "@/types";
 import { useAuthStore } from "@/stores/authStore";
@@ -68,6 +74,42 @@ export default function Profile() {
 	const [budgetRange, setBudgetRange] = useState<string>("");
 	const [country, setCountry] = useState<string>("");
 	const [gender, setGender] = useState<string>("");
+
+	// Calculate profile completion percentage
+	const profileCompletion = useMemo(() => {
+		let completed = 0;
+		let total = 7; // Total profile fields
+
+		if (selectedStyles.length > 0) completed++;
+		if (selectedColors.length > 0) completed++;
+		if (selectedOccasions.length > 0) completed++;
+		if (bodyType) completed++;
+		if (budgetRange) completed++;
+		if (country) completed++;
+		if (gender) completed++;
+
+		return Math.round((completed / total) * 100);
+	}, [
+		selectedStyles,
+		selectedColors,
+		selectedOccasions,
+		bodyType,
+		budgetRange,
+		country,
+		gender,
+	]);
+
+	// Generate user initials for profile picture
+	const userInitials = useMemo(() => {
+		if (user?.username) {
+			return user.username
+				.split(" ")
+				.map((name) => name.charAt(0).toUpperCase())
+				.slice(0, 2)
+				.join("");
+		}
+		return "U";
+	}, [user?.username]);
 
 	// Fetch user preferences on component mount
 	useEffect(() => {
@@ -323,19 +365,45 @@ export default function Profile() {
 				<div className="max-w-7xl mx-auto">
 					{/* Header */}
 					<div className="text-center mb-8 animate-fade-up">
-						<div className="inline-flex items-center justify-center w-16 h-16 bg-primary/10 rounded-full mb-4">
-							<User className="w-8 h-8 text-primary" />
+						<div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-primary via-primary/80 to-accent rounded-full mb-6 shadow-lg">
+							<User className="w-10 h-10 text-white" />
 						</div>
-						<h1 className="text-3xl lg:text-4xl xl:text-5xl font-bold mb-4">
+						<h1 className="text-3xl lg:text-4xl xl:text-5xl font-bold mb-4 bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
 							Your Style Profile
 						</h1>
 						<p className="text-lg xl:text-xl text-muted-foreground max-w-3xl xl:max-w-4xl mx-auto mb-6">
 							Customize your preferences to get personalized
-							fashion recommendations
+							fashion recommendations tailored just for you
 						</p>
+
+						{/* Profile Completion Progress */}
+						<div className="max-w-md mx-auto mb-6">
+							<div className="flex items-center justify-between mb-2">
+								<span className="text-sm font-medium text-muted-foreground">
+									Profile Completion
+								</span>
+								<span className="text-sm font-bold text-primary">
+									{profileCompletion}%
+								</span>
+							</div>
+							<Progress
+								value={profileCompletion}
+								className="h-2"
+							/>
+							{profileCompletion < 100 && (
+								<p className="text-xs text-muted-foreground mt-2">
+									Complete your profile to unlock better
+									recommendations
+								</p>
+							)}
+						</div>
+
+						{/* Average Score Badge */}
 						{averageScore !== null && (
-							<div className="inline-flex items-center gap-3 bg-gradient-to-r from-primary/10 to-accent/10 rounded-full px-6 py-3 border border-primary/20">
-								<Star className="w-5 h-5 text-primary fill-primary" />
+							<div className="inline-flex items-center gap-3 bg-gradient-to-r from-primary/10 to-accent/10 rounded-full px-6 py-3 border border-primary/20 shadow-sm">
+								<div className="w-8 h-8 bg-primary/20 rounded-full flex items-center justify-center">
+									<Star className="w-4 h-4 text-primary fill-primary" />
+								</div>
 								<div className="text-center">
 									<div className="text-sm text-muted-foreground">
 										Average Fashion Score
@@ -363,26 +431,91 @@ export default function Profile() {
 						<div className="grid lg:grid-cols-3 xl:grid-cols-4 gap-8">
 							{/* Profile Picture & Basic Info */}
 							<div className="lg:col-span-1 xl:col-span-1">
-								<Card className="card-fashion">
+								<Card className="card-fashion sticky top-24">
 									<CardHeader>
 										<CardTitle className="flex items-center gap-2">
 											<Camera className="w-5 h-5 text-primary" />
 											Profile Photo
 										</CardTitle>
 									</CardHeader>
-									<CardContent className="text-center space-y-4">
-										<div className="w-32 h-32 bg-gradient-primary rounded-full mx-auto flex items-center justify-center text-white text-3xl font-bold">
-											JD
+									<CardContent className="text-center space-y-6">
+										{/* Profile Picture */}
+										<div className="relative group">
+											<div className="w-32 h-32 bg-gradient-to-br from-primary via-primary/80 to-accent rounded-full mx-auto flex items-center justify-center text-white text-3xl font-bold shadow-lg transition-transform group-hover:scale-105">
+												{userInitials}
+											</div>
+											<div className="absolute inset-0 rounded-full bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+												<Edit3 className="w-6 h-6 text-white" />
+											</div>
 										</div>
+
 										<Button
 											variant="outline"
-											className="w-full"
+											className="w-full hover:bg-primary hover:text-white transition-colors"
+											disabled={!isPro}
 										>
-											Upload Photo
+											{isPro ? (
+												<>
+													<Camera className="w-4 h-4 mr-2" />
+													Upload Photo
+												</>
+											) : (
+												<>
+													<Star className="w-4 h-4 mr-2" />
+													Pro Feature
+												</>
+											)}
 										</Button>
-										<div className="space-y-4 pt-4">
+
+										{/* Profile Status */}
+										<div className="space-y-3 pt-4 border-t">
+											<div className="flex items-center justify-between">
+												<span className="text-sm text-muted-foreground">
+													Status
+												</span>
+												<Badge
+													variant={
+														isPro
+															? "default"
+															: "secondary"
+													}
+													className={
+														isPro
+															? "bg-gradient-to-r from-purple-500 to-pink-500"
+															: ""
+													}
+												>
+													{isPro ? "Pro" : "Free"}
+												</Badge>
+											</div>
+											<div className="flex items-center justify-between">
+												<span className="text-sm text-muted-foreground">
+													Profile
+												</span>
+												<div className="flex items-center gap-1">
+													{profileCompletion ===
+													100 ? (
+														<CheckCircle className="w-4 h-4 text-green-500" />
+													) : (
+														<TrendingUp className="w-4 h-4 text-orange-500" />
+													)}
+													<span className="text-sm font-medium">
+														{profileCompletion ===
+														100
+															? "Complete"
+															: `${profileCompletion}%`}
+													</span>
+												</div>
+											</div>
+										</div>
+
+										{/* Basic Info Form */}
+										<div className="space-y-4 pt-4 border-t">
 											<div>
-												<Label htmlFor="name">
+												<Label
+													htmlFor="name"
+													className="text-sm font-medium"
+												>
 													Display Name
 												</Label>
 												<Input
@@ -390,27 +523,34 @@ export default function Profile() {
 													defaultValue={
 														user?.username || ""
 													}
-													className="input-fashion"
+													className="input-fashion mt-1"
+													placeholder="Enter your display name"
 												/>
 											</div>
 											<div>
-												<Label htmlFor="email">
-													Email
+												<Label
+													htmlFor="email"
+													className="text-sm font-medium"
+												>
+													Email Address
 												</Label>
 												<Input
 													id="email"
 													defaultValue={
 														user?.email || ""
 													}
-													className="input-fashion"
+													className="input-fashion mt-1"
 													disabled
 												/>
 											</div>
 											<div>
-												<Label htmlFor="country">
+												<Label
+													htmlFor="country"
+													className="text-sm font-medium"
+												>
 													Country
 												</Label>
-												<div className="relative">
+												<div className="relative mt-1">
 													<Globe className="absolute left-3 top-3 h-4 w-4 text-muted-foreground z-10" />
 													<Select
 														value={country}
@@ -439,10 +579,13 @@ export default function Profile() {
 												</div>
 											</div>
 											<div>
-												<Label htmlFor="gender">
+												<Label
+													htmlFor="gender"
+													className="text-sm font-medium"
+												>
 													Gender
 												</Label>
-												<div className="relative">
+												<div className="relative mt-1">
 													<Users className="absolute left-3 top-3 h-4 w-4 text-muted-foreground z-10" />
 													<Select
 														value={gender}
@@ -472,11 +615,14 @@ export default function Profile() {
 												</div>
 											</div>
 											<div>
-												<Label htmlFor="body_type">
+												<Label
+													htmlFor="body_type"
+													className="text-sm font-medium"
+												>
 													Body Type
 												</Label>
-												<div className="relative">
-													<Globe className="absolute left-3 top-3 h-4 w-4 text-muted-foreground z-10" />
+												<div className="relative mt-1">
+													<User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground z-10" />
 													<Select
 														value={bodyType}
 														onValueChange={
@@ -504,11 +650,14 @@ export default function Profile() {
 												</div>
 											</div>
 											<div>
-												<Label htmlFor="budget">
+												<Label
+													htmlFor="budget"
+													className="text-sm font-medium"
+												>
 													Budget Range
 												</Label>
-												<div className="relative">
-													<Users className="absolute left-3 top-3 h-4 w-4 text-muted-foreground z-10" />
+												<div className="relative mt-1">
+													<Settings className="absolute left-3 top-3 h-4 w-4 text-muted-foreground z-10" />
 													<Select
 														value={budgetRange}
 														onValueChange={
@@ -543,25 +692,41 @@ export default function Profile() {
 							{/* Preferences */}
 							<div className="lg:col-span-2 xl:col-span-3 space-y-8">
 								{/* Style Preferences */}
-								<Card className="card-fashion">
+								<Card className="card-fashion hover:shadow-lg transition-shadow">
 									<CardHeader>
 										<CardTitle className="flex items-center gap-2">
 											<Heart className="w-5 h-5 text-primary" />
 											Style Preferences
+											{selectedStyles.length > 0 && (
+												<Badge
+													variant="secondary"
+													className="ml-auto"
+												>
+													{selectedStyles.length}{" "}
+													selected
+												</Badge>
+											)}
 										</CardTitle>
 									</CardHeader>
 									<CardContent className="space-y-4">
 										<div>
 											<Label className="text-base font-medium mb-3 block">
-												What styles do you love?
-												<Badge
-													variant="secondary"
-													className="ml-2"
-												>
-													{selectedStyles.length}{" "}
-													selected
-												</Badge>
+												What styles do you love? Choose
+												all that apply
 											</Label>
+											{selectedStyles.length === 0 && (
+												<div className="text-center py-4 text-muted-foreground mb-4 bg-muted/30 rounded-lg">
+													<Heart className="w-8 h-8 mx-auto mb-2 opacity-50" />
+													<p className="text-sm">
+														No styles selected yet
+													</p>
+													<p className="text-xs mt-1">
+														Choose your favorite
+														styles to get better
+														recommendations
+													</p>
+												</div>
+											)}
 											<div className="flex flex-wrap gap-2">
 												{styleOptions.map((style) => (
 													<StyleChip
@@ -581,25 +746,41 @@ export default function Profile() {
 								</Card>
 
 								{/* Color Preferences */}
-								<Card className="card-fashion">
+								<Card className="card-fashion hover:shadow-lg transition-shadow">
 									<CardHeader>
 										<CardTitle className="flex items-center gap-2">
 											<Palette className="w-5 h-5 text-primary" />
 											Color Palette
+											{selectedColors.length > 0 && (
+												<Badge
+													variant="secondary"
+													className="ml-auto"
+												>
+													{selectedColors.length}{" "}
+													selected
+												</Badge>
+											)}
 										</CardTitle>
 									</CardHeader>
 									<CardContent className="space-y-4">
 										<div>
 											<Label className="text-base font-medium mb-3 block">
-												Your favorite colors
-												<Badge
-													variant="secondary"
-													className="ml-2"
-												>
-													{selectedColors.length}{" "}
-													selected
-												</Badge>
+												Your favorite colors - select
+												the ones you love
 											</Label>
+											{selectedColors.length === 0 && (
+												<div className="text-center py-4 text-muted-foreground mb-4 bg-muted/30 rounded-lg">
+													<Palette className="w-8 h-8 mx-auto mb-2 opacity-50" />
+													<p className="text-sm">
+														No colors selected yet
+													</p>
+													<p className="text-xs mt-1">
+														Choose your favorite
+														colors for personalized
+														recommendations
+													</p>
+												</div>
+											)}
 											<div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-9 gap-3">
 												{colorOptions.map((color) => (
 													<StyleChip
@@ -621,25 +802,42 @@ export default function Profile() {
 								</Card>
 
 								{/* Occasion Preferences */}
-								<Card className="card-fashion">
+								<Card className="card-fashion hover:shadow-lg transition-shadow">
 									<CardHeader>
 										<CardTitle className="flex items-center gap-2">
 											<ShoppingBag className="w-5 h-5 text-primary" />
 											Occasion Types
+											{selectedOccasions.length > 0 && (
+												<Badge
+													variant="secondary"
+													className="ml-auto"
+												>
+													{selectedOccasions.length}{" "}
+													selected
+												</Badge>
+											)}
 										</CardTitle>
 									</CardHeader>
 									<CardContent className="space-y-4">
 										<div>
 											<Label className="text-base font-medium mb-3 block">
-												What occasions do you dress for?
-												<Badge
-													variant="secondary"
-													className="ml-2"
-												>
-													{selectedOccasions.length}{" "}
-													selected
-												</Badge>
+												What occasions do you dress for
+												most often?
 											</Label>
+											{selectedOccasions.length === 0 && (
+												<div className="text-center py-4 text-muted-foreground mb-4 bg-muted/30 rounded-lg">
+													<ShoppingBag className="w-8 h-8 mx-auto mb-2 opacity-50" />
+													<p className="text-sm">
+														No occasions selected
+														yet
+													</p>
+													<p className="text-xs mt-1">
+														Tell us about your
+														lifestyle for better
+														outfit suggestions
+													</p>
+												</div>
+											)}
 											<div className="flex flex-wrap gap-2">
 												{occasionOptions.map(
 													(occasion) => (
@@ -662,7 +860,122 @@ export default function Profile() {
 									</CardContent>
 								</Card>
 
-								{/* Personal Style Guide - Separate Card */}
+								{/* Body Type & Budget */}
+								<div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+									{/* Body Type */}
+									<Card className="card-fashion hover:shadow-lg transition-shadow">
+										<CardHeader>
+											<CardTitle className="flex items-center gap-2">
+												<User className="w-5 h-5 text-primary" />
+												Body Type
+												{bodyType && (
+													<Badge
+														variant="secondary"
+														className="ml-auto"
+													>
+														Selected
+													</Badge>
+												)}
+											</CardTitle>
+										</CardHeader>
+										<CardContent className="space-y-4">
+											<div>
+												<Label className="text-base font-medium mb-3 block">
+													What's your body shape?
+												</Label>
+												{!bodyType && (
+													<div className="text-center py-4 text-muted-foreground mb-4 bg-muted/30 rounded-lg">
+														<User className="w-8 h-8 mx-auto mb-2 opacity-50" />
+														<p className="text-sm">
+															No body type
+															selected
+														</p>
+														<p className="text-xs mt-1">
+															Choose your body
+															type for better fit
+															recommendations
+														</p>
+													</div>
+												)}
+												<div className="flex flex-wrap gap-2">
+													{bodyTypes.map((type) => (
+														<StyleChip
+															key={type}
+															label={type}
+															selected={
+																bodyType ===
+																type.toLowerCase()
+															}
+															onClick={() =>
+																setBodyType(
+																	type
+																)
+															}
+														/>
+													))}
+												</div>
+											</div>
+										</CardContent>
+									</Card>
+
+									{/* Budget Range */}
+									<Card className="card-fashion hover:shadow-lg transition-shadow">
+										<CardHeader>
+											<CardTitle className="flex items-center gap-2">
+												<DollarSign className="w-5 h-5 text-primary" />
+												Budget Range
+												{budgetRange && (
+													<Badge
+														variant="secondary"
+														className="ml-auto"
+													>
+														Selected
+													</Badge>
+												)}
+											</CardTitle>
+										</CardHeader>
+										<CardContent className="space-y-4">
+											<div>
+												<Label className="text-base font-medium mb-3 block">
+													What's your typical clothing
+													budget?
+												</Label>
+												{!budgetRange && (
+													<div className="text-center py-4 text-muted-foreground mb-4 bg-muted/30 rounded-lg">
+														<DollarSign className="w-8 h-8 mx-auto mb-2 opacity-50" />
+														<p className="text-sm">
+															No budget selected
+														</p>
+														<p className="text-xs mt-1">
+															Set your budget for
+															tailored
+															recommendations
+														</p>
+													</div>
+												)}
+												<div className="flex flex-wrap gap-2">
+													{budgetRanges.map(
+														(budget) => (
+															<StyleChip
+																key={budget}
+																label={budget}
+																selected={
+																	budgetRange ===
+																	budget
+																}
+																onClick={() =>
+																	setBudgetRange(
+																		budget
+																	)
+																}
+															/>
+														)
+													)}
+												</div>
+											</div>
+										</CardContent>
+									</Card>
+								</div>
 								{personal_style_guide && (
 									<Card className="card-fashion">
 										<CardHeader>
