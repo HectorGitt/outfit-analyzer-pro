@@ -180,8 +180,8 @@ api.interceptors.response.use(
 			const endpoint = upgradeInfo?.endpoint || "unknown endpoint";
 
 			// Show upgrade toast with detailed information including endpoint
-			toast.error(message, {
-				description: `🚫 Rate limit reached on: ${endpoint}\n\nYou've used ${currentUsage}/${limit} AI requests this ${resetPeriod}.\n\nUpgrade to ${tierName} for unlimited AI access and premium features!`,
+			toast.error("Rate Limit Exceeded", {
+				description: message,
 				action: {
 					label: "Upgrade Now",
 					onClick: () => {
