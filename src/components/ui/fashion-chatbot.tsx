@@ -44,8 +44,7 @@ import { ChatbotRequest } from "@/types/api";
 import { useToast } from "@/hooks/use-toast";
 import { useChatbotStore, type Message } from "@/stores/chatbotStore";
 import { useAuthStore } from "@/stores/authStore";
-import { usePricingTier } from "@/hooks/useCalendar";
-import { useUserPricingTier, useFeatureAccess } from "@/hooks/usePricing";
+import { pricingTiers } from "@/lib/pricingTiers";
 import { tool, RealtimeAgent, RealtimeSession } from "@openai/agents-realtime";
 import { z } from "zod";
 import { QueryClient } from "@tanstack/react-query";
@@ -640,10 +639,11 @@ const LoginRequiredMessage = ({
 
 const FashionChatbot = () => {
 	// Check authentication status
-	const { isAuthenticated } = useAuthStore();
-	const { data: userTier, isLoading: pricingLoading } = useUserPricingTier();
-	const isPro = userTier?.tier !== "free";
-	const hasVoiceAccess = useFeatureAccess("voice_integration");
+	const { isAuthenticated, pricingTier } = useAuthStore();
+	const isPro = pricingTier !== "free";
+	const hasVoiceAccess =
+		pricingTiers[pricingTier as keyof typeof pricingTiers]
+			?.agent_calls_minutes > 0;
 	const navigate = useNavigate();
 
 	// Zustand store state and actions
@@ -1120,6 +1120,58 @@ Say: “Thanks for your patience—I’m connecting you with a specialist now.�
 			console.log("Realtime session connected successfully");
 			setRealtimeSession(session);
 			console.log("Realtime session set in state");
+
+			// The RealtimeSession doesn't use .on() for events, it uses transport events
+			// Let's access the transport layer for events
+			try {
+				if (
+					session.transport &&
+					typeof session.transport.on === "function"
+				) {
+					console.log("Setting up transport event listeners");
+
+					session.transport.on("message", (event) => {
+						console.log("Transport message:", event);
+					});
+
+					session.transport.on("error", (error) => {
+						console.error("Transport error:", error);
+					});
+
+					session.transport.on("close", (event) => {
+						console.log("Transport closed:", event);
+					});
+
+					session.transport.on("open", (event) => {
+						console.log("Transport opened:", event);
+					});
+				}
+
+				// Monitor usage and context changes
+				if (session.usage) {
+					console.log("Initial usage:", session.usage);
+				}
+
+				// Set up a polling mechanism to monitor changes
+				const monitorSession = () => {
+					if (session.usage) {
+						console.log("Current usage:", session.usage);
+					}
+					if (session.context) {
+						console.log("Current context:", session.context);
+					}
+				};
+
+				// Monitor every 5 seconds during voice calls
+				const monitor = setInterval(monitorSession, 5000);
+
+				// Clean up monitor when session ends
+				setTimeout(() => {
+					clearInterval(monitor);
+				}, 300000); // 5 minutes max
+			} catch (error) {
+				console.error("Error setting up session monitoring:", error);
+			}
 			return session;
 		} catch (error) {
 			console.error("Failed to initialize realtime session:", error);
@@ -1306,16 +1358,20 @@ Say: “Thanks for your patience—I’m connecting you with a specialist now.�
 									Login required
 								</span>
 							)}
-							{isAuthenticated && !isPro && (
+							{!isAuthenticated && !isPro && (
 								<span className="text-xs text-amber-600 dark:text-amber-400 truncate flex items-center gap-1">
 									<Zap className="h-3 w-3" />
-									{userTier?.name || "Free"}
+									{pricingTiers[
+										pricingTier as keyof typeof pricingTiers
+									]?.name || "Free"}
 								</span>
 							)}
 							{isAuthenticated && isPro && (
 								<span className="text-xs text-green-600 dark:text-green-400 truncate flex items-center gap-1">
 									<Zap className="h-3 w-3" />
-									{userTier?.name || "Pro"}
+									{pricingTiers[
+										pricingTier as keyof typeof pricingTiers
+									]?.name || "Pro"}
 								</span>
 							)}
 						</div>
@@ -1524,7 +1580,10 @@ Say: “Thanks for your patience—I’m connecting you with a specialist now.�
 								<span className="sm:hidden">Tap to send</span>
 								{!isPro && (
 									<span className="ml-2 text-amber-600 dark:text-amber-400">
-										• Voice chat: {userTier?.name || "Free"}{" "}
+										• Voice chat:{" "}
+										{pricingTiers[
+											pricingTier as keyof typeof pricingTiers
+										]?.name || "Free"}{" "}
 										only
 									</span>
 								)}
@@ -1567,7 +1626,9 @@ Say: “Thanks for your patience—I’m connecting you with a specialist now.�
 							title={
 								!hasVoiceAccess
 									? `Voice chat requires ${
-											userTier?.name || "Pro"
+											pricingTiers[
+												pricingTier as keyof typeof pricingTiers
+											]?.name || "Pro"
 									  } plan`
 									: isVoiceMode
 									? "Switch to text mode"
@@ -1576,7 +1637,9 @@ Say: “Thanks for your patience—I’m connecting you with a specialist now.�
 							aria-label={
 								!hasVoiceAccess
 									? `Voice chat requires ${
-											userTier?.name || "Pro"
+											pricingTiers[
+												pricingTier as keyof typeof pricingTiers
+											]?.name || "Pro"
 									  } plan`
 									: isVoiceMode
 									? "Switch to text mode"
