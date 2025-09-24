@@ -349,8 +349,8 @@ export function Navbar() {
 										<ChevronDown className="w-4 h-4 ml-auto" />
 									</Button>
 								</DropdownMenuTrigger>
-								<DropdownMenuContent className="w-56">
-									<DropdownMenuItem asChild>
+								<DropdownMenuContent className="w-80 md:w-56">
+									<DropdownMenuItem asChild className="py-2">
 										<Link
 											to="/profile"
 											onClick={() =>
@@ -361,7 +361,7 @@ export function Navbar() {
 											Profile
 										</Link>
 									</DropdownMenuItem>
-									<DropdownMenuItem asChild>
+									<DropdownMenuItem asChild className="py-2">
 										<Link
 											to="/wardrobe"
 											onClick={() =>
@@ -372,7 +372,7 @@ export function Navbar() {
 											Wardrobe
 										</Link>
 									</DropdownMenuItem>
-									<DropdownMenuItem asChild>
+									<DropdownMenuItem asChild className="py-2">
 										<Link
 											to="/calendar-view"
 											onClick={() =>
@@ -419,7 +419,7 @@ export function Navbar() {
 										</Button>
 									</DropdownMenuTrigger>
 									<DropdownMenuContent
-										className="w-56"
+										className="w-80 md:w-56"
 										align="start"
 										forceMount
 									>
@@ -434,7 +434,10 @@ export function Navbar() {
 											</div>
 										</div>
 										<DropdownMenuSeparator />
-										<DropdownMenuItem asChild>
+										<DropdownMenuItem
+											asChild
+											className="py-2"
+										>
 											<Link
 												to="/profile"
 												className="cursor-pointer"
@@ -446,7 +449,10 @@ export function Navbar() {
 												Profile
 											</Link>
 										</DropdownMenuItem>
-										<DropdownMenuItem asChild>
+										<DropdownMenuItem
+											asChild
+											className="py-2"
+										>
 											<Link
 												to="/wardrobe"
 												className="cursor-pointer"
@@ -458,7 +464,10 @@ export function Navbar() {
 												Wardrobe
 											</Link>
 										</DropdownMenuItem>
-										<DropdownMenuItem asChild>
+										<DropdownMenuItem
+											asChild
+											className="py-2"
+										>
 											<Link
 												to="/dashboard"
 												className="cursor-pointer"
@@ -470,7 +479,10 @@ export function Navbar() {
 												Dashboard
 											</Link>
 										</DropdownMenuItem>
-										<DropdownMenuItem asChild>
+										<DropdownMenuItem
+											asChild
+											className="py-2"
+										>
 											<Link
 												to="/calendar-view"
 												className="cursor-pointer"
@@ -482,7 +494,10 @@ export function Navbar() {
 												Calendar
 											</Link>
 										</DropdownMenuItem>
-										<DropdownMenuItem asChild>
+										<DropdownMenuItem
+											asChild
+											className="py-2"
+										>
 											<Link
 												to="/billing"
 												className="cursor-pointer"
@@ -497,7 +512,10 @@ export function Navbar() {
 										{user.email ===
 											"admin@closetic.com" && (
 											<>
-												<DropdownMenuItem asChild>
+												<DropdownMenuItem
+													asChild
+													className="py-2"
+												>
 													<Link
 														to="/admin"
 														className="cursor-pointer"
@@ -511,7 +529,10 @@ export function Navbar() {
 														Admin Panel
 													</Link>
 												</DropdownMenuItem>
-												<DropdownMenuItem asChild>
+												<DropdownMenuItem
+													asChild
+													className="py-2"
+												>
 													<Link
 														to="/admin/users"
 														className="cursor-pointer"
@@ -530,7 +551,7 @@ export function Navbar() {
 										<DropdownMenuSeparator />
 										<DropdownMenuItem
 											onClick={handleLogout}
-											className="cursor-pointer"
+											className="cursor-pointer py-2"
 										>
 											<LogOut className="mr-2 h-4 w-4" />
 											Sign out
