@@ -316,7 +316,7 @@ export default function UserManagement() {
 
 	if (loading && users.length === 0) {
 		return (
-			<div className="min-h-screen bg-gradient-hero">
+			<div className="min-h-screen bg-gradient-hero pt-16">
 				<Navbar />
 				<div className="container mx-auto px-4 py-8">
 					<div className="max-w-7xl mx-auto">
@@ -346,7 +346,7 @@ export default function UserManagement() {
 	}
 
 	return (
-		<div className="min-h-screen bg-gradient-hero">
+		<div className="min-h-screen bg-gradient-hero pt-16">
 			<Navbar />
 
 			<div className="container mx-auto px-4 py-8">
