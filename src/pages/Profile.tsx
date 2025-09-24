@@ -40,18 +40,18 @@ import { userAPI } from "@/services/api";
 import { UserPreferences, PersonalStyleGuide } from "@/types";
 import { useAuthStore } from "@/stores/authStore";
 import { Link } from "react-router-dom";
-import { usePricingTier } from "@/hooks/useCalendar";
+import { useUserPricingTier } from "@/hooks/usePricing";
 
 export default function Profile() {
 	const countryList = useCountryList();
 	const { user } = useAuthStore();
+	const { data: userTier, isLoading: pricingLoading } = useUserPricingTier();
 	const [preferences, setPreferences] = useState<UserPreferences | null>(
 		null
 	);
 	const [personal_style_guide, setPersonalStyleGuide] =
 		useState<PersonalStyleGuide | null>(null);
-	const { data: pricingData } = usePricingTier();
-	const isPro = pricingData?.data?.is_pro ?? false;
+	const isPro = userTier?.tier !== "free";
 	const hasPreferences = Boolean(
 		preferences && Object.keys(preferences).length > 0
 	);

@@ -9,6 +9,8 @@ import {
 	analyticsAPI,
 	authAPI,
 } from "@/services/api";
+import { pricingTiers } from "@/lib/pricingTiers";
+import { useAuthStore } from "@/stores/authStore";
 import {
 	CalendarEvent,
 	WardrobeItem,
@@ -539,13 +541,4 @@ export const useCalendarDashboard = (date?: Date) => {
 		isError:
 			eventsQuery.isError || plansQuery.isError || wardrobeQuery.isError,
 	};
-};
-
-// Pricing Tier Hook
-export const usePricingTier = () => {
-	return useQuery({
-		queryKey: ["pricing-tier"],
-		queryFn: () => authAPI.getPricingTier(),
-		refetchOnWindowFocus: false,
-	});
 };

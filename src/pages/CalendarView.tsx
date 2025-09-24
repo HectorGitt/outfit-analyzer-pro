@@ -21,6 +21,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { FullCalendarModal } from "@/components/ui/full-calendar-modal";
 import { Navbar } from "@/components/navigation/navbar";
 import { toast } from "sonner";
+import { useUserPricingTier } from "@/hooks/usePricing";
+import { pricingTiers } from "@/lib/pricingTiers";
 import {
 	useEvents,
 	useSyncGoogleCalendarEvents,
@@ -29,12 +31,6 @@ import {
 	useCalendarDashboard,
 	useGenerateOutfitSuggestion,
 } from "@/hooks/useCalendar";
-import {
-	useUserPricingTier,
-	useFeatureAccess,
-	useFeatureLimit,
-	pricingQueryKeys,
-} from "@/hooks/usePricing";
 import {
 	CalendarEvent as InternalCalendarEvent,
 	GoogleCalendarEvent,
@@ -82,8 +78,12 @@ const CalendarView = () => {
 
 	// Get Pro user status and feature access
 	const isPro = userTier?.tier !== "free";
-	const canRegenerateOutfits = useFeatureAccess("outfit_alternatives");
-	const maxOutfitsPerMonth = useFeatureLimit("max_outfit_plans_per_month");
+	const canRegenerateOutfits =
+		pricingTiers[userTier?.tier as keyof typeof pricingTiers]
+			?.outfit_alternatives || false;
+	const maxOutfitsPerMonth =
+		pricingTiers[userTier?.tier as keyof typeof pricingTiers]
+			?.max_outfit_plans_per_month || 0;
 
 	// Normalize plans length from varying API shapes
 	const plansCount = useMemo(() => {
@@ -409,22 +409,18 @@ const CalendarView = () => {
 								<h1 className="text-3xl font-bold">
 									Calendar & Outfits
 								</h1>
-								{pricingLoading ? (
-									<Skeleton className="h-6 w-16 rounded-full" />
-								) : (
-									<Badge
-										variant={
-											isPro ? "default" : "secondary"
-										}
-										className={
-											isPro
-												? "bg-gradient-to-r from-purple-500 to-pink-500 text-white"
-												: ""
-										}
-									>
-										{userTier?.name || "Free"}
-									</Badge>
-								)}
+								<Badge
+									variant={isPro ? "default" : "secondary"}
+									className={
+										isPro
+											? "bg-gradient-to-r from-purple-500 to-pink-500 text-white"
+											: ""
+									}
+								>
+									{pricingTiers[
+										userTier?.tier as keyof typeof pricingTiers
+									]?.name || "Free"}
+								</Badge>
 							</div>
 							<p className="text-muted-foreground mt-1">
 								{isPro

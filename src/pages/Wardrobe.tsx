@@ -37,6 +37,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { ImageUpload } from "@/components/ui/image-upload";
 import { Navbar } from "@/components/navigation/navbar";
 import { toast } from "sonner";
+import { useAuthStore } from "@/stores/authStore";
+import { pricingTiers } from "@/lib/pricingTiers";
 import {
 	useWardrobeItems,
 	useCreateWardrobeItem,
@@ -46,11 +48,6 @@ import {
 	useUploadItemImage,
 	useMarkItemWorn,
 } from "@/hooks/useCalendar";
-import {
-	useUserPricingTier,
-	useFeatureAccess,
-	useFeatureLimit,
-} from "@/hooks/usePricing";
 
 const Wardrobe = () => {
 	const navigate = useNavigate();
@@ -94,13 +91,14 @@ const Wardrobe = () => {
 	const deleteItem = useDeleteWardrobeItem();
 	const markItemWorn = useMarkItemWorn();
 	const uploadImage = useUploadItemImage();
-	const { data: userTier, isLoading: pricingLoading } = useUserPricingTier();
+	const { pricingTier } = useAuthStore();
 
 	// Get pricing tier information and feature access
-	const isPro = userTier?.tier !== "free";
-	const canUploadImages = userTier?.tier === "icon"; // Only Icon tier gets image upload
-	const maxWardrobeItems = useFeatureLimit("max_wardrobe_items");
-	const canUseBulkAdd = userTier?.tier !== "free"; // Paid tiers get bulk add
+	const tierData = pricingTiers[pricingTier];
+	const isPro = pricingTier !== "free";
+	const canUploadImages = pricingTier === "icon"; // Only Icon tier gets image upload
+	const maxWardrobeItems = tierData.max_wardrobe_items;
+	const canUseBulkAdd = pricingTier !== "free"; // Paid tiers get bulk add
 
 	// Get wardrobe items from API response
 	const wardrobeItems = wardrobeData?.data?.wardrobe || [];
@@ -319,22 +317,18 @@ const Wardrobe = () => {
 								<h1 className="text-3xl font-bold">
 									My Wardrobe
 								</h1>
-								{pricingLoading ? (
-									<Skeleton className="h-6 w-16 rounded-full" />
-								) : (
-									<Badge
-										variant={
-											isPro ? "default" : "secondary"
-										}
-										className={
-											isPro
-												? "bg-gradient-to-r from-purple-500 to-pink-500 text-white"
-												: ""
-										}
-									>
-										{userTier?.name || "Free"}
-									</Badge>
-								)}
+								<Badge
+									variant={isPro ? "default" : "secondary"}
+									className={
+										isPro
+											? "bg-gradient-to-r from-purple-500 to-pink-500 text-white"
+											: ""
+									}
+								>
+									{pricingTiers[
+										pricingTier as keyof typeof pricingTiers
+									]?.name || "Free"}
+								</Badge>
 							</div>
 							<p className="text-muted-foreground mt-1">
 								Manage your clothing items and create outfits

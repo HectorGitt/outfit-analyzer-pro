@@ -20,13 +20,12 @@ import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useAuthStore } from "@/stores/authStore";
 import { fashionAPI } from "@/services/api";
-import { FashionAnalysisResponse, ApiResponse } from "@/types";
-import { usePricingTier } from "@/hooks/useCalendar";
+import { useUserPricingTier } from "@/hooks/usePricing";
 
 export default function Camera() {
-	const navigate = useNavigate();
-	const { data: pricingData } = usePricingTier();
-	const isPro = pricingData?.data?.is_pro ?? false;
+	const { user } = useAuthStore();
+	const { data: userTier, isLoading: pricingLoading } = useUserPricingTier();
+	const isPro = userTier?.tier !== "free";
 
 	const videoRef = useRef<HTMLVideoElement>(null);
 	const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -43,7 +42,6 @@ export default function Camera() {
 		"user"
 	);
 	const [error, setError] = useState<string | null>(null);
-	const { user } = useAuthStore();
 
 	const startCamera = async () => {
 		if (!isPro) {
@@ -563,7 +561,7 @@ export default function Camera() {
 	}, []);
 
 	return (
-		<div className="min-h-screen bg-gradient-hero">
+		<div className="min-h-screen bg-gradient-hero pt-16">
 			<Navbar />
 
 			<div className="container mx-auto px-4 py-6 lg:py-8">

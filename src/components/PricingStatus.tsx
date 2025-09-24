@@ -1,72 +1,29 @@
 import React from "react";
-import {
-	useUserPricingTier,
-	useFeatureAccess,
-	useFeatureLimit,
-} from "@/hooks/usePricing";
+import { useAuthStore } from "@/stores/authStore";
+import { pricingTiers } from "@/lib/pricingTiers";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Check, X, Loader2 } from "lucide-react";
+import { Check, X } from "lucide-react";
 
 export const PricingStatus: React.FC = () => {
-	const { data: userTier, isLoading, error } = useUserPricingTier();
+	const { pricingTier } = useAuthStore();
+	const tierData =
+		pricingTiers[pricingTier as keyof typeof pricingTiers] ||
+		pricingTiers.free;
 
-	// Example feature checks
-	const hasCalendarIntegration = useFeatureAccess("calendar_integration");
-	const hasWeatherIntegration = useFeatureAccess("weather_integration");
-	const maxUploads = useFeatureLimit("max_upload_analyze");
-	const maxOutfits = useFeatureLimit("max_outfit_plans_per_month");
-
-	if (isLoading) {
-		return (
-			<Card>
-				<CardContent className="flex items-center justify-center py-8">
-					<Loader2 className="w-6 h-6 animate-spin mr-2" />
-					Loading pricing information...
-				</CardContent>
-			</Card>
-		);
-	}
-
-	if (error) {
-		return (
-			<Card>
-				<CardContent className="py-8">
-					<p className="text-red-500">
-						Failed to load pricing information
-					</p>
-					<Button
-						variant="outline"
-						size="sm"
-						className="mt-2"
-						onClick={() => window.location.reload()}
-					>
-						Retry
-					</Button>
-				</CardContent>
-			</Card>
-		);
-	}
-
-	if (!userTier) {
-		return (
-			<Card>
-				<CardContent className="py-8">
-					<p className="text-muted-foreground">
-						No pricing information available
-					</p>
-				</CardContent>
-			</Card>
-		);
-	}
+	// Feature checks
+	const hasCalendarIntegration = tierData.calendar_integration;
+	const hasWeatherIntegration = tierData.weather_integration;
+	const maxUploads = tierData.max_upload_analyze;
+	const maxOutfits = tierData.max_outfit_plans_per_month;
 
 	return (
 		<Card>
 			<CardHeader>
 				<CardTitle className="flex items-center justify-between">
 					<span>Your Plan</span>
-					<Badge variant="secondary">{userTier.name}</Badge>
+					<Badge variant="secondary">{tierData.name}</Badge>
 				</CardTitle>
 			</CardHeader>
 			<CardContent className="space-y-4">

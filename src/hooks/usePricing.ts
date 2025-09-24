@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { apiCall } from "@/lib/api";
+import { authAPI } from "@/services/api";
 import { pricingTiers } from "@/lib/pricingTiers";
 import { useAuthStore } from "@/stores/authStore";
 import { toast } from "sonner";
@@ -21,48 +21,46 @@ export const pricingQueryKeys = {
 
 // Hook to get user's current pricing tier
 export const useUserPricingTier = () => {
+	const { user, updatePricingTier } = useAuthStore();
+
 	return useQuery({
 		queryKey: pricingQueryKeys.userTier(),
-		queryFn: async (): Promise<UserPricingTier> => {
-			try {
-				const response = await apiCall("GET", "/users/pricing-tier");
-				const data = response.data as any;
-
-				// Transform API response to UserPricingTier format
-				const tierKey = data.pricing_tier || "free";
-				const tierData =
-					pricingTiers[tierKey as keyof typeof pricingTiers] ||
-					pricingTiers.free;
-
-				return {
-					tier: tierKey,
-					name: data.name || tierData.name,
-					features: tierData,
-					isActive: data.isActive !== false,
-					expiresAt: data.expiresAt,
-				};
-			} catch (error) {
-				// If API fails, return free tier as default
-				console.warn(
-					"Failed to fetch user pricing tier, using free tier as default:",
-					error
-				);
-				if (error.response?.status === 401) {
-					useAuthStore.getState().logout();
-					toast.error("Session expired. Please log in again.");
-				}
-				return {
-					tier: "free" as keyof typeof pricingTiers,
-					name: "Free",
-					features: pricingTiers.free,
-					isActive: true,
-				};
+		queryFn: async () => {
+			if (!user) {
+				throw new Error("User not authenticated");
 			}
+
+			const response = await authAPI.getPricingTier();
+			const pricingData = response.data;
+
+			// Update the auth store with the latest pricing tier from the API
+			const tierKey =
+				pricingData.pricing_tier as keyof typeof pricingTiers;
+			updatePricingTier(tierKey);
+
+			// Construct the UserPricingTier object
+			const tierData = pricingTiers[tierKey] || pricingTiers.free;
+
+			const userTier: UserPricingTier = {
+				tier: tierKey,
+				name: tierData.name,
+				features: tierData,
+				isActive: pricingData.subscription_status === "active",
+				expiresAt: pricingData.subscription_end_date,
+			};
+
+			return userTier;
 		},
-		refetchOnWindowFocus: false,
-		enabled: useAuthStore.getState().isAuthenticated, // Only run when user is authenticated
-		staleTime: 5 * 60 * 1000, // Consider data fresh for 5 minutes
+		enabled: !!user, // Only run query if user is authenticated
+		refetchOnWindowFocus: true,
+		refetchInterval: 5 * 60 * 1000, // Refetch every 5 minutes
+		refetchIntervalInBackground: false, // Don't refetch when tab is not active
+		staleTime: 2 * 60 * 1000, // Consider data stale after 2 minutes
 		gcTime: 10 * 60 * 1000, // Keep in cache for 10 minutes
+		onError: (error) => {
+			console.warn("Failed to fetch user pricing tier:", error);
+			toast.error("Failed to load pricing information");
+		},
 	});
 };
 
@@ -71,21 +69,23 @@ export const usePricingTiers = () => {
 	return useQuery({
 		queryKey: pricingQueryKeys.tiers(),
 		queryFn: async () => {
-			// For now, return static data. Later this can be fetched from API
-			return Object.entries(pricingTiers).map(([key, tier]) => ({
-				key: key as keyof typeof pricingTiers,
+			const response = await authAPI.getAllPricingTiers();
+			return response.data.data.pricing_tiers.map((tier: any) => ({
+				key: tier.name.toLowerCase() as keyof typeof pricingTiers,
 				...tier,
 			}));
 		},
 		refetchOnWindowFocus: false,
-		staleTime: 30 * 60 * 1000, // Static data, keep for 30 minutes
-		gcTime: 60 * 60 * 1000, // Keep in cache for 1 hour
+		refetchInterval: 30 * 60 * 1000, // Refetch every 30 minutes for static pricing data
+		staleTime: 60 * 60 * 1000, // Static data, keep for 1 hour
+		gcTime: 2 * 60 * 60 * 1000, // Keep in cache for 2 hours
 	});
 };
 
 // Hook to upgrade/downgrade pricing tier (for future subscription implementation)
 export const useUpdatePricingTier = () => {
 	const queryClient = useQueryClient();
+	const { updatePricingTier: updateStorePricingTier } = useAuthStore();
 
 	return useMutation({
 		mutationFn: async (tier: keyof typeof pricingTiers) => {
@@ -94,11 +94,38 @@ export const useUpdatePricingTier = () => {
 			});
 			return response.data;
 		},
-		onSuccess: () => {
+		onSuccess: (data) => {
+			// Update auth store with new tier
+			const newTier = data.pricing_tier as keyof typeof pricingTiers;
+			updateStorePricingTier(newTier);
+
 			// Invalidate and refetch user pricing tier
 			queryClient.invalidateQueries({
 				queryKey: pricingQueryKeys.userTier(),
 			});
+
+			toast.success("Pricing tier updated successfully");
+		},
+		onError: (error) => {
+			toast.error("Failed to update pricing tier");
+			console.error("Pricing tier update error:", error);
+		},
+	});
+};
+
+// Hook to manually refresh pricing data
+export const useRefreshPricingData = () => {
+	const queryClient = useQueryClient();
+
+	return useMutation({
+		mutationFn: async () => {
+			// Invalidate all pricing queries to force refetch
+			await queryClient.invalidateQueries({
+				queryKey: pricingQueryKeys.all,
+			});
+		},
+		onSuccess: () => {
+			toast.success("Pricing data refreshed");
 		},
 	});
 };

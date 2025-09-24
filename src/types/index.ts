@@ -76,6 +76,7 @@ export interface AuthUser {
 	avatar?: string;
 	role: "user" | "admin";
 	token: string;
+	pricingTier?: string;
 }
 
 export interface LoginCredentials {

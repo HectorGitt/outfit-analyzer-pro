@@ -20,7 +20,7 @@ import { useAuthStore } from "@/stores/authStore";
 import { fashionAPI } from "@/services/api";
 import { FashionAnalysis } from "@/types";
 import { Navbar } from "@/components/navigation/navbar";
-import { usePricingTier } from "@/hooks/useCalendar";
+import { useUserPricingTier } from "@/hooks/usePricing";
 
 export default function Dashboard() {
 	const [timeRange, setTimeRange] = useState("30d");
@@ -30,8 +30,8 @@ export default function Dashboard() {
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
 	const { user } = useAuthStore();
-	const { data: pricingData } = usePricingTier();
-	const isPro = pricingData?.data?.is_pro ?? false;
+	const { data: userTier, isLoading: pricingLoading } = useUserPricingTier();
+	const isPro = userTier?.tier !== "free";
 
 	const fetchDashboardData = async () => {
 		try {
@@ -182,7 +182,7 @@ export default function Dashboard() {
 	];
 
 	return (
-		<div className="min-h-screen bg-gradient-hero">
+		<div className="min-h-screen bg-gradient-hero pt-16">
 			<Navbar />
 			<div className="container mx-auto px-4 py-8">
 				<div className="max-w-7xl mx-auto">

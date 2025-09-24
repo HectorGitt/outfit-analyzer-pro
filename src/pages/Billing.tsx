@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import { useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -25,6 +26,7 @@ import { useAuthStore } from "@/stores/authStore";
 import { useToast } from "@/hooks/use-toast";
 import { paymentAPI, authAPI } from "@/services/api";
 import { Navbar } from "@/components/navigation/navbar";
+import { useUserPricingTier, pricingQueryKeys } from "@/hooks/usePricing";
 
 // Declare Paystack on window object
 declare global {
@@ -55,8 +57,9 @@ declare global {
 const Billing = () => {
 	const navigate = useNavigate();
 	const [searchParams] = useSearchParams();
-	const { user, isAuthenticated, pricingTier, updatePricingTier } =
-		useAuthStore();
+	const queryClient = useQueryClient();
+	const { user, isAuthenticated } = useAuthStore();
+	const { data: userTier, isLoading: pricingLoading } = useUserPricingTier();
 	const [isPaystackLoaded, setIsPaystackLoaded] = useState(false);
 	const [isProcessing, setIsProcessing] = useState(false);
 	const [preloadedPayment, setPreloadedPayment] = useState<
@@ -72,14 +75,14 @@ const Billing = () => {
 	);
 	const [totalTransactions, setTotalTransactions] = useState(0);
 
-	// Subscription management state - defaults based on pricing tier
+	// Subscription management state - defaults based on userTier
 	const [subscriptionStatus, setSubscriptionStatus] = useState<string>(
-		pricingTier === "free" ? "inactive" : "active"
+		userTier?.tier === "free" ? "inactive" : "active"
 	);
 	const [subscriptionEndDate, setSubscriptionEndDate] = useState<
 		string | null
 	>(
-		pricingTier === "free"
+		userTier?.tier === "free"
 			? null
 			: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()
 	);
@@ -104,8 +107,10 @@ const Billing = () => {
 		getDefaultSelectedTier()
 	);
 
-	// Get plan from auth store instead of URL params
-	const tier = pricingTiers[pricingTier] || pricingTiers.free;
+	// Get plan from query hook instead of URL params
+	const tier =
+		pricingTiers[userTier?.tier as keyof typeof pricingTiers] ||
+		pricingTiers.free;
 
 	// Validate Paystack key
 	const paystackKey = import.meta.env.VITE_PAYSTACK_PUBLIC_KEY;
@@ -163,7 +168,7 @@ const Billing = () => {
 
 			// For free tier users, use selected tier; for paid users, use current tier
 			const targetTier =
-				pricingTier === "free" ? selectedTier : pricingTier;
+				userTier?.tier === "free" ? selectedTier : userTier?.tier;
 			const planCode = planCodeMap[targetTier];
 
 			const popup = new window.PaystackPop({} as any);
@@ -182,10 +187,11 @@ const Billing = () => {
 							"Thank you for your subscription. Your account has been upgraded.",
 						variant: "default",
 					});
-					// Redirect to profile after successful payment
-					setTimeout(() => {
-						navigate("/profile");
-					}, 2000);
+
+					// Invalidate and refetch pricing data to update the UI immediately
+					queryClient.invalidateQueries({
+						queryKey: pricingQueryKeys.userTier(),
+					});
 				},
 				onLoad: (response) => {
 					// Payment iframe loaded
@@ -226,11 +232,10 @@ const Billing = () => {
 				const response = await authAPI.getPricingTier();
 
 				if (response.success && response.data) {
-					// Update auth store with real API data
-					const apiPricingTier = response.data.pricing_tier || "free";
-					updatePricingTier(
-						apiPricingTier as keyof typeof pricingTiers
-					);
+					// Invalidate and refetch pricing data to ensure consistency
+					await queryClient.invalidateQueries({
+						queryKey: pricingQueryKeys.userTier(),
+					});
 
 					// Update local state with real subscription data
 					setSubscriptionStatus(
@@ -242,8 +247,8 @@ const Billing = () => {
 				}
 			} catch (error) {
 				console.error("Failed to fetch subscription status:", error);
-				// Fallback to auth store data if API fails
-				if (pricingTier === "free") {
+				// Fallback to query data if API fails
+				if (userTier?.tier === "free") {
 					setSubscriptionStatus("inactive");
 					setSubscriptionEndDate(null);
 				} else {
@@ -260,7 +265,7 @@ const Billing = () => {
 		if (isAuthenticated) {
 			fetchSubscriptionStatus();
 		}
-	}, [isAuthenticated, updatePricingTier]);
+	}, [isAuthenticated, queryClient, userTier?.tier]);
 
 	// Update selectedTier when URL parameter changes
 	useEffect(() => {
@@ -414,7 +419,7 @@ const Billing = () => {
 								</Badge>
 							</div>
 							<p className="text-xl text-muted-foreground mb-4">
-								{pricingTier === "free"
+								{userTier?.tier === "free"
 									? "Upgrade your plan to unlock premium features"
 									: "Manage your subscription and payment methods"}
 							</p>
@@ -460,7 +465,7 @@ const Billing = () => {
 													{tier.name} Plan
 												</h2>
 												<p className="text-muted-foreground mb-4">
-													{pricingTier === "free"
+													{userTier?.tier === "free"
 														? "Free plan - Upgrade for premium features"
 														: subscriptionStatus ===
 														  "active"
@@ -479,12 +484,12 @@ const Billing = () => {
 
 										<div className="lg:text-right">
 											<div className="text-sm font-medium text-muted-foreground mb-1">
-												{pricingTier === "free"
+												{userTier?.tier === "free"
 													? "Current Plan"
 													: "Monthly Price"}
 											</div>
 											<div className="text-3xl font-bold text-primary">
-												{pricingTier === "free" ? (
+												{userTier?.tier === "free" ? (
 													"Free"
 												) : (
 													<>
@@ -583,7 +588,7 @@ const Billing = () => {
 											</span>
 										</div>
 
-										{pricingTier === "free" && (
+										{userTier?.tier === "free" && (
 											<div className="space-y-2">
 												<label className="text-sm font-medium">
 													Choose Your Plan
@@ -641,10 +646,10 @@ const Billing = () => {
 											disabled={
 												isProcessing ||
 												!paystackKey ||
-												pricingTier !== "free"
+												userTier?.tier !== "free"
 											}
 										>
-											{pricingTier === "free" ? (
+											{userTier?.tier === "free" ? (
 												<>
 													Upgrade to{" "}
 													{
@@ -675,7 +680,7 @@ const Billing = () => {
 											)}
 										</Button>
 
-										{pricingTier !== "free" && (
+										{userTier?.tier !== "free" && (
 											<Button
 												variant="outline"
 												className="w-full"

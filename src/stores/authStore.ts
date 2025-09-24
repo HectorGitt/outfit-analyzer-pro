@@ -91,6 +91,8 @@ export const useAuthStore = create<AuthState & AuthActions>()(
 						// Expected FastAPI structure
 						userInfo = tokenData.user_info;
 						accessToken = tokenData.access_token;
+						const tierInfo = userInfo.tier;
+						console.log("Tier info from login:", tierInfo);
 					} else if (
 						(tokenData as any).user &&
 						(tokenData as any).token
@@ -98,19 +100,28 @@ export const useAuthStore = create<AuthState & AuthActions>()(
 						// Alternative structure
 						userInfo = (tokenData as any).user;
 						accessToken = (tokenData as any).token;
+						const tierInfo = (tokenData as any).tier;
+						console.log("Tier info from login:", tierInfo);
 					} else if (tokenData.access_token) {
 						// Token only structure - extract user info from token or use defaults
 						accessToken = tokenData.access_token;
+
 						userInfo = {
 							id: credentials.username, // fallback
 							username: credentials.username,
 							email: credentials.username, // fallback
+							tier: "free", // fallback
 						};
 					} else {
 						throw new Error(
 							"Invalid response structure from server"
 						);
 					}
+
+					// Get the tier from the response
+					const userTier =
+						userInfo.tier || (tokenData as any).tier || "free";
+					console.log("Final user tier:", userTier);
 
 					// Transform Token response to AuthUser
 					const authUser: AuthUser = {
@@ -120,6 +131,7 @@ export const useAuthStore = create<AuthState & AuthActions>()(
 						avatar: undefined, // Backend doesn't provide avatar in login response
 						role: "user", // Default role, could be enhanced with backend role info
 						token: accessToken,
+						pricingTier: userTier,
 					};
 
 					// Store token for API requests
@@ -131,6 +143,7 @@ export const useAuthStore = create<AuthState & AuthActions>()(
 						isLoading: false,
 						error: null,
 						errorDetails: null,
+						pricingTier: userTier as keyof typeof pricingTiers,
 					});
 
 					// Note: Pricing tier will be fetched automatically by React Query hooks when needed
