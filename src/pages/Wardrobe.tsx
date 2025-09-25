@@ -1053,10 +1053,13 @@ const Wardrobe = () => {
 											{filteredItems.map((item: any) => (
 												<div
 													key={item.id}
-													className="flex items-center justify-between p-4 border rounded-lg"
+													className="flex flex-col sm:flex-row sm:items-center justify-between p-4 border rounded-lg gap-3 cursor-pointer hover:bg-muted/50 transition-colors"
+													onClick={() =>
+														handleItemClick(item)
+													}
 												>
-													<div className="flex items-center gap-4">
-														<div className="w-12 h-12 bg-muted rounded-lg flex items-center justify-center overflow-hidden">
+													<div className="flex items-center gap-4 flex-1 min-w-0">
+														<div className="w-12 h-12 bg-muted rounded-lg flex items-center justify-center overflow-hidden flex-shrink-0">
 															{item.image_url ? (
 																<img
 																	src={
@@ -1079,13 +1082,13 @@ const Wardrobe = () => {
 																})()
 															)}
 														</div>
-														<div>
-															<h4 className="font-medium">
+														<div className="flex-1 min-w-0">
+															<h4 className="font-medium truncate">
 																{
 																	item.description
 																}
 															</h4>
-															<div className="flex items-center gap-2 mt-1">
+															<div className="flex flex-wrap items-center gap-1 mt-1">
 																<Badge
 																	className={getCategoryColor(
 																		item.category
@@ -1125,8 +1128,8 @@ const Wardrobe = () => {
 																	}`}
 																>
 																	{item.is_available
-																		? "Ready to Wear"
-																		: "In Laundry"}
+																		? "Ready"
+																		: "Laundry"}
 																</Badge>
 															</div>
 															{item.tags &&
@@ -1134,8 +1137,8 @@ const Wardrobe = () => {
 																	.length >
 																	0 && (
 																	<div className="flex items-center gap-1 mt-1">
-																		<Tag className="w-3 h-3 text-muted-foreground" />
-																		<span className="text-xs text-muted-foreground">
+																		<Tag className="w-3 h-3 text-muted-foreground flex-shrink-0" />
+																		<span className="text-xs text-muted-foreground truncate">
 																			{item.tags.join(
 																				", "
 																			)}
@@ -1144,8 +1147,8 @@ const Wardrobe = () => {
 																)}
 															{item.last_worn_date && (
 																<div className="flex items-center gap-1 mt-1">
-																	<CheckCircle className="w-3 h-3 text-green-600" />
-																	<span className="text-xs text-muted-foreground">
+																	<CheckCircle className="w-3 h-3 text-green-600 flex-shrink-0" />
+																	<span className="text-xs text-muted-foreground truncate">
 																		Worn{" "}
 																		{new Date(
 																			item.last_worn_date
@@ -1166,47 +1169,60 @@ const Wardrobe = () => {
 															)}
 														</div>
 													</div>
-													<div className="flex items-center gap-2">
+													<div className="flex items-center justify-between sm:justify-end gap-2 flex-shrink-0">
 														{item.is_favorite && (
-															<Heart className="w-4 h-4 text-red-500 fill-red-500" />
+															<Heart className="w-4 h-4 text-red-500 fill-red-500 flex-shrink-0" />
 														)}
-														<Button
-															variant="outline"
-															size="sm"
-															onClick={() =>
-																handleMarkAsWorn(
-																	item.id.toString()
-																)
-															}
-															disabled={
-																markItemWorn.isPending
-															}
-															className={
-																item.is_available
-																	? "text-green-600 hover:text-green-700 hover:bg-green-50"
-																	: "text-orange-600 hover:text-orange-700 hover:bg-orange-50"
-															}
-															title="Toggle worn status"
-														>
-															<CheckCircle className="w-4 h-4 mr-1" />
-															{item.is_available
-																? "Mark as Worn"
-																: "Mark as Clean"}
-														</Button>
-														<Button
-															variant="outline"
-															size="sm"
-															onClick={() =>
-																handleDeleteItem(
-																	item.id.toString()
-																)
-															}
-															disabled={
-																deleteItem.isPending
-															}
-														>
-															<Trash2 className="w-4 h-4" />
-														</Button>
+														<div className="flex gap-2">
+															<Button
+																variant="outline"
+																size="sm"
+																onClick={() =>
+																	handleMarkAsWorn(
+																		item.id.toString()
+																	)
+																}
+																disabled={
+																	markItemWorn.isPending
+																}
+																className={`text-xs px-2 py-1 h-8 ${
+																	item.is_available
+																		? "text-green-600 hover:text-green-700 hover:bg-green-50"
+																		: "text-orange-600 hover:text-orange-700 hover:bg-orange-50"
+																}`}
+																title="Toggle worn status"
+															>
+																<CheckCircle className="w-3 h-3 mr-1" />
+																<span className="hidden sm:inline">
+																	{item.is_available
+																		? "Mark as Worn"
+																		: "Mark as Clean"}
+																</span>
+																<span className="sm:hidden">
+																	{item.is_available
+																		? "Wear"
+																		: "Clean"}
+																</span>
+															</Button>
+															<Button
+																variant="outline"
+																size="sm"
+																onClick={() =>
+																	handleDeleteItem(
+																		item.id.toString()
+																	)
+																}
+																disabled={
+																	deleteItem.isPending
+																}
+																className="text-xs px-2 py-1 h-8"
+															>
+																<Trash2 className="w-3 h-3" />
+																<span className="hidden sm:inline ml-1">
+																	Delete
+																</span>
+															</Button>
+														</div>
 													</div>
 												</div>
 											))}
@@ -1304,7 +1320,9 @@ const Wardrobe = () => {
 														onUpload={
 															handleWardrobeFileUpload
 														}
-														maxFiles={10}
+														maxFiles={
+															maxWardrobeItems
+														}
 														multiple={true}
 														className="mt-2"
 													/>
