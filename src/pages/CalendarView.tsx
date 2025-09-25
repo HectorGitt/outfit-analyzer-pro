@@ -592,7 +592,7 @@ const CalendarView = () => {
 														)}
 													</div>
 												</div>
-												<div className="flex items-center gap-2">
+												<div className="flex flex-col gap-2 sm:flex-row sm:items-center">
 													<Badge
 														className={getEventTypeColor(
 															event.eventType ||
@@ -664,7 +664,12 @@ const CalendarView = () => {
 																						item.id
 																					}
 																					variant="outline"
-																					className="bg-white text-xs"
+																					className="bg-white text-xs cursor-pointer hover:bg-gray-50 transition-colors"
+																					onClick={(
+																						e
+																					) => {
+																						window.location.href = `/wardrobe?item=${item.id}`;
+																					}}
 																				>
 																					{
 																						item.color_primary
