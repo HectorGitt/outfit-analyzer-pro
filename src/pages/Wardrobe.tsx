@@ -570,7 +570,7 @@ const Wardrobe = () => {
 					</Card>
 
 					{/* Floating View Toggle */}
-					<div className="fixed top-20 right-4 z-50">
+					<div className="fixed top-12 right-4 z-50">
 						<div className="bg-background border rounded-lg shadow-lg p-1">
 							<div className="flex items-center gap-1">
 								<Button
@@ -1027,10 +1027,10 @@ const Wardrobe = () => {
 
 							{/* Wardrobe Items List */}
 							<Card>
-								<CardHeader>
+								<CardHeader className="px-2 md:px-6">
 									<CardTitle>Your Wardrobe Items</CardTitle>
 								</CardHeader>
-								<CardContent>
+								<CardContent className="px-2 md:px-6">
 									{isLoading ? (
 										<div className="space-y-4">
 											{[...Array(3)].map((_, i) => (
@@ -1070,7 +1070,7 @@ const Wardrobe = () => {
 											{filteredItems.map((item: any) => (
 												<div
 													key={item.id}
-													className="flex flex-col sm:flex-row sm:items-center justify-between p-4 border rounded-lg gap-3 cursor-pointer hover:bg-muted/50 transition-colors"
+													className="flex flex-col sm:flex-row sm:items-center justify-between p-4	 border rounded-lg gap-3 cursor-pointer hover:bg-muted/50 transition-colors"
 													onClick={() =>
 														handleItemClick(item)
 													}
@@ -1100,7 +1100,7 @@ const Wardrobe = () => {
 															)}
 														</div>
 														<div className="flex-1 min-w-0">
-															<h4 className="font-medium truncate">
+															<h4 className="font-medium">
 																{
 																	item.description
 																}
@@ -1190,7 +1190,7 @@ const Wardrobe = () => {
 														{item.is_favorite && (
 															<Heart className="w-4 h-4 text-red-500 fill-red-500 flex-shrink-0" />
 														)}
-														<div className="flex gap-2">
+														<div className="flex flex-col gap-3 sm:flex-row sm:items-center w-full sm:w-auto">
 															<Button
 																variant="outline"
 																size="sm"
@@ -1202,7 +1202,7 @@ const Wardrobe = () => {
 																disabled={
 																	markItemWorn.isPending
 																}
-																className={`text-xs px-2 py-1 h-8 ${
+																className={`text-xs px-1 py-1 h-8 sm:px-2 w-full sm:w-auto ${
 																	item.is_available
 																		? "text-green-600 hover:text-green-700 hover:bg-green-50"
 																		: "text-orange-600 hover:text-orange-700 hover:bg-orange-50"
@@ -1232,9 +1232,12 @@ const Wardrobe = () => {
 																disabled={
 																	deleteItem.isPending
 																}
-																className="text-xs px-2 py-1 h-8"
+																className="text-xs px-1 py-1 h-8 sm:px-2 w-full sm:w-auto"
 															>
 																<Trash2 className="w-3 h-3" />
+																<span className=" sm:inline">
+																	Delete
+																</span>
 															</Button>
 														</div>
 													</div>
@@ -1335,7 +1338,8 @@ const Wardrobe = () => {
 															handleWardrobeFileUpload
 														}
 														maxFiles={
-															maxWardrobeItems
+															maxWardrobeItems -
+															wardrobeItems.length
 														}
 														multiple={true}
 														className="mt-2"
