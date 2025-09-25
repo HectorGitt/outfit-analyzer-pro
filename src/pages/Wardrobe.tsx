@@ -16,13 +16,17 @@ import {
 	CheckCircle,
 	Footprints,
 	Watch,
+	RotateCcw,
+	X,
+	Loader2,
+	Zap,
+	AlertCircle,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
 	Select,
 	SelectContent,
@@ -49,14 +53,25 @@ import {
 	useMarkItemWorn,
 } from "@/hooks/useCalendar";
 
+import { WardrobeItemModal } from "@/components/ui/wardrobe-item-modal";
+
+interface UploadedWardrobeFile {
+	id: string;
+	file: File;
+	preview: string;
+	isUploading: boolean;
+	success?: boolean;
+	error?: string;
+	uploadedAt: Date;
+}
+
 const Wardrobe = () => {
 	const navigate = useNavigate();
-	const [activeTab, setActiveTab] = useState("summary");
+	const [viewMode, setViewMode] = useState<"text" | "image">("text");
 	const [searchTerm, setSearchTerm] = useState("");
 	const [categoryFilter, setCategoryFilter] = useState("all");
 	const [seasonFilter, setSeasonFilter] = useState("all");
-
-	// Form states for adding new items
+	const [bulkWardrobeText, setBulkWardrobeText] = useState("");
 	const [newItemForm, setNewItemForm] = useState({
 		description: "",
 		category: "",
@@ -70,13 +85,13 @@ const Wardrobe = () => {
 		tags: "",
 		is_favorite: false,
 	});
-
-	// Simple text input for bulk wardrobe items (free users)
-	const [bulkWardrobeText, setBulkWardrobeText] = useState("");
-
-	// Image upload state
 	const [uploadedImage, setUploadedImage] = useState<File | null>(null);
-	const [imageDescription, setImageDescription] = useState("");
+	const [uploadedWardrobeFiles, setUploadedWardrobeFiles] = useState<
+		UploadedWardrobeFile[]
+	>([]);
+	const [isBatchUploading, setIsBatchUploading] = useState(false);
+	const [selectedItem, setSelectedItem] = useState<any>(null);
+	const [isModalOpen, setIsModalOpen] = useState(false);
 
 	// API hooks
 	const {
@@ -125,6 +140,17 @@ const Wardrobe = () => {
 
 		return matchesSearch && matchesCategory && matchesSeason;
 	});
+
+	// Stats for uploaded wardrobe files
+	const wardrobeUploadStats = {
+		total: uploadedWardrobeFiles.length,
+		uploading: uploadedWardrobeFiles.filter((f) => f.isUploading).length,
+		success: uploadedWardrobeFiles.filter((f) => f.success).length,
+		pending: uploadedWardrobeFiles.filter(
+			(f) => !f.success && !f.error && !f.isUploading
+		).length,
+		errors: uploadedWardrobeFiles.filter((f) => f.error).length,
+	};
 
 	// Handle form submission for text-based item creation
 	const handleCreateTextItem = async () => {
@@ -205,39 +231,131 @@ const Wardrobe = () => {
 			return;
 		}
 
-		if (!uploadedImage || !imageDescription) {
-			toast.error("Please upload an image and provide a description");
+		if (!uploadedImage) {
+			toast.error("Please upload an image");
 			return;
 		}
 
 		try {
-			// Create item first with basic info derived from description
-			const itemData = {
-				description: imageDescription,
-				category: "top" as any, // Default category, could be improved with AI classification
-				color_primary: "multicolor", // Default color, could be improved with AI detection
-				season: "all" as any,
-				occasion: ["casual"],
-			};
-
-			const newItem = await createItem.mutateAsync(itemData);
-
-			// Upload image for the created item
-			if (newItem.data.id) {
-				await uploadImage.mutateAsync({
-					id: newItem.data.id.toString(),
-					file: uploadedImage,
-				});
-			}
+			// Send only the image to the API - backend will create the wardrobe item
+			await uploadImage.mutateAsync({
+				id: "", // Empty ID since we're creating from image
+				file: uploadedImage,
+			});
 
 			// Reset form
 			setUploadedImage(null);
-			setImageDescription("");
 
 			// Toasts are handled by the hooks
 		} catch (error) {
 			console.error("Failed to create wardrobe item with image:", error);
 		}
+	};
+
+	// Handle multiple wardrobe file uploads
+	const handleWardrobeFileUpload = (files: File[]) => {
+		if (!canUploadImages) {
+			toast.error(
+				"Image upload is only available for Pro users. Please upgrade your account."
+			);
+			return;
+		}
+
+		const newUploadedFiles: UploadedWardrobeFile[] = files.map((file) => ({
+			id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
+			file,
+			preview: "",
+			isUploading: false,
+			uploadedAt: new Date(),
+		}));
+
+		// Create previews for new files
+		newUploadedFiles.forEach((uploadedFile) => {
+			const reader = new FileReader();
+			reader.onload = (e) => {
+				const preview = e.target?.result as string;
+				setUploadedWardrobeFiles((prev) =>
+					prev.map((f) =>
+						f.id === uploadedFile.id ? { ...f, preview } : f
+					)
+				);
+			};
+			reader.readAsDataURL(uploadedFile.file);
+		});
+
+		setUploadedWardrobeFiles((prev) => [...prev, ...newUploadedFiles]);
+	};
+
+	// Handle batch upload of wardrobe items
+	const handleBatchWardrobeUpload = async () => {
+		const pendingFiles = uploadedWardrobeFiles.filter(
+			(f) => !f.success && !f.isUploading && !f.error
+		);
+
+		if (pendingFiles.length === 0) return;
+
+		setIsBatchUploading(true);
+
+		try {
+			await Promise.all(
+				pendingFiles.map((file) => uploadWardrobeFile(file.id))
+			);
+		} finally {
+			setIsBatchUploading(false);
+		}
+	};
+
+	// Handle individual wardrobe file upload with retry
+	const uploadWardrobeFile = async (fileId: string): Promise<void> => {
+		setUploadedWardrobeFiles((prev) =>
+			prev.map((f) =>
+				f.id === fileId
+					? { ...f, isUploading: true, error: undefined }
+					: f
+			)
+		);
+
+		try {
+			const fileData = uploadedWardrobeFiles.find((f) => f.id === fileId);
+			if (!fileData) return;
+
+			await uploadImage.mutateAsync({
+				id: "", // Empty ID since we're creating from image
+				file: fileData.file,
+			});
+
+			setUploadedWardrobeFiles((prev) =>
+				prev.map((f) =>
+					f.id === fileId
+						? { ...f, isUploading: false, success: true }
+						: f
+				)
+			);
+		} catch (err: any) {
+			console.error("❌ Wardrobe upload failed:", err);
+			const errorMessage =
+				err?.message ||
+				err?.details?.message ||
+				"Failed to upload wardrobe item";
+
+			setUploadedWardrobeFiles((prev) =>
+				prev.map((f) =>
+					f.id === fileId
+						? { ...f, error: errorMessage, isUploading: false }
+						: f
+				)
+			);
+		}
+	};
+
+	// Remove uploaded wardrobe file
+	const removeWardrobeFile = (fileId: string) => {
+		setUploadedWardrobeFiles((prev) => prev.filter((f) => f.id !== fileId));
+	};
+
+	// Clear all uploaded wardrobe files
+	const clearAllWardrobeFiles = () => {
+		setUploadedWardrobeFiles([]);
 	};
 
 	// Handle item deletion
@@ -268,6 +386,17 @@ const Wardrobe = () => {
 		} catch (error) {
 			console.error("Failed to toggle item worn status:", error);
 		}
+	};
+
+	// Modal handlers
+	const handleItemClick = (item: any) => {
+		setSelectedItem(item);
+		setIsModalOpen(true);
+	};
+
+	const handleModalClose = () => {
+		setIsModalOpen(false);
+		setSelectedItem(null);
 	};
 
 	// Get category color for badges
@@ -423,28 +552,46 @@ const Wardrobe = () => {
 						</CardContent>
 					</Card>
 
-					{/* Main Content Tabs */}
-					<Tabs value={activeTab} onValueChange={setActiveTab}>
-						<TabsList className="grid w-full grid-cols-2">
-							<TabsTrigger
-								value="summary"
-								className="flex items-center gap-2"
-							>
-								<List className="w-4 h-4" />
-								Summary/Text View
-							</TabsTrigger>
-							<TabsTrigger
-								value="image"
-								className="flex items-center gap-2"
-							>
-								<ImageIcon className="w-4 h-4" />
-								Image View{" "}
-								{!canUploadImages && "(Upload Locked)"}
-							</TabsTrigger>
-						</TabsList>
+					{/* Floating View Toggle */}
+					<div className="fixed top-20 right-4 z-50">
+						<div className="bg-background border rounded-lg shadow-lg p-1">
+							<div className="flex items-center gap-1">
+								<Button
+									variant={
+										viewMode === "text"
+											? "default"
+											: "ghost"
+									}
+									size="sm"
+									onClick={() => setViewMode("text")}
+									className="h-8 px-3"
+								>
+									<List className="w-4 h-4 mr-1" />
+									Text
+								</Button>
+								<Button
+									variant={
+										viewMode === "image"
+											? "default"
+											: "ghost"
+									}
+									size="sm"
+									onClick={() => setViewMode("image")}
+									className="h-8 px-3"
+								>
+									<ImageIcon className="w-4 h-4 mr-1" />
+									Image
+									{!canUploadImages && (
+										<Lock className="w-3 h-3 ml-1" />
+									)}
+								</Button>
+							</div>
+						</div>
+					</div>
 
-						{/* Summary/Text Tab */}
-						<TabsContent value="summary" className="space-y-6">
+					{/* Main Content */}
+					{viewMode === "text" ? (
+						<>
 							{/* Add New Item Form */}
 							<Card>
 								<CardHeader>
@@ -909,16 +1056,28 @@ const Wardrobe = () => {
 													className="flex items-center justify-between p-4 border rounded-lg"
 												>
 													<div className="flex items-center gap-4">
-														<div className="w-12 h-12 bg-muted rounded-lg flex items-center justify-center">
-															{(() => {
-																const IconComponent =
-																	getCategoryIcon(
-																		item.category
+														<div className="w-12 h-12 bg-muted rounded-lg flex items-center justify-center overflow-hidden">
+															{item.image_url ? (
+																<img
+																	src={
+																		item.image_url
+																	}
+																	alt={
+																		item.description
+																	}
+																	className="w-full h-full object-cover"
+																/>
+															) : (
+																(() => {
+																	const IconComponent =
+																		getCategoryIcon(
+																			item.category
+																		);
+																	return (
+																		<IconComponent className="w-6 h-6 text-muted-foreground" />
 																	);
-																return (
-																	<IconComponent className="w-6 h-6 text-muted-foreground" />
-																);
-															})()}
+																})()
+															)}
 														</div>
 														<div>
 															<h4 className="font-medium">
@@ -1055,16 +1214,15 @@ const Wardrobe = () => {
 									)}
 								</CardContent>
 							</Card>
-						</TabsContent>
-
-						{/* Image View Tab */}
-						<TabsContent value="image" className="space-y-6">
+						</>
+					) : (
+						<>
 							{/* Add New Item with Image - Pro only or disabled preview */}
 							<Card>
 								<CardHeader>
 									<CardTitle className="flex items-center gap-2">
 										<Upload className="w-5 h-5" />
-										Add New Item (Image)
+										Add Items from Images
 										{!canUploadImages && (
 											<Badge
 												variant="outline"
@@ -1081,25 +1239,73 @@ const Wardrobe = () => {
 											photos.
 										</p>
 									)}
+									{/* Upload Stats */}
+									{uploadedWardrobeFiles.length > 0 && (
+										<div className="flex flex-wrap gap-4 mt-4">
+											<div className="text-center">
+												<div className="text-2xl font-bold text-primary">
+													{wardrobeUploadStats.total}
+												</div>
+												<div className="text-sm text-muted-foreground">
+													Uploaded
+												</div>
+											</div>
+											<div className="text-center">
+												<div className="text-2xl font-bold text-green-600">
+													{
+														wardrobeUploadStats.success
+													}
+												</div>
+												<div className="text-sm text-muted-foreground">
+													Success
+												</div>
+											</div>
+											<div className="text-center">
+												<div className="text-2xl font-bold text-blue-600">
+													{
+														wardrobeUploadStats.pending
+													}
+												</div>
+												<div className="text-sm text-muted-foreground">
+													Pending
+												</div>
+											</div>
+											<div className="text-center">
+												<div className="text-2xl font-bold text-red-600">
+													{wardrobeUploadStats.errors}
+												</div>
+												<div className="text-sm text-muted-foreground">
+													Errors
+												</div>
+											</div>
+										</div>
+									)}
 								</CardHeader>
 								<CardContent>
 									<div className="space-y-4">
 										<div className="relative">
-											<Label htmlFor="image">
-												Upload Image
+											<Label htmlFor="wardrobe-images">
+												Upload Wardrobe Images
 											</Label>
+											<p className="text-sm text-muted-foreground mt-1 mb-4">
+												AI will process each outfit
+												image to create wardrobe items.
+												Information like category,
+												description, colors, brand,
+												size, season, occasion, and tags
+												are inferred from the image.
+												Multiple items can be included
+												in a single image for efficient
+												processing.
+											</p>
 											<div className="relative">
 												{canUploadImages ? (
 													<ImageUpload
-														onUpload={(file) =>
-															setUploadedImage(
-																Array.isArray(
-																	file
-																)
-																	? file[0]
-																	: file
-															)
+														onUpload={
+															handleWardrobeFileUpload
 														}
+														maxFiles={10}
+														multiple={true}
 														className="mt-2"
 													/>
 												) : (
@@ -1123,76 +1329,200 @@ const Wardrobe = () => {
 													</div>
 												)}
 											</div>
-											{uploadedImage && (
-												<p className="text-sm text-muted-foreground mt-2">
-													Selected:{" "}
-													{uploadedImage.name}
-												</p>
-											)}
 										</div>
-										<div className="relative">
-											<Label htmlFor="imageDescription">
-												Description
-											</Label>
-											<div className="relative">
-												<Textarea
-													id="imageDescription"
-													placeholder="Describe this clothing item (e.g., Blue denim jacket with silver buttons)"
-													value={imageDescription}
-													onChange={(e) =>
-														setImageDescription(
-															e.target.value
-														)
-													}
-													rows={3}
-													disabled={!canUploadImages}
-													className="mt-2"
-												/>
-												{!canUploadImages && (
-													<div className="absolute inset-0 bg-background/80 backdrop-blur-sm rounded-lg flex items-center justify-center">
-														<div className="text-center">
-															<Lock className="w-6 h-6 text-muted-foreground mx-auto mb-1" />
-															<p className="text-xs text-muted-foreground">
-																Pro Only
-															</p>
-														</div>
-													</div>
-												)}
-											</div>
-										</div>
-										<div className="flex items-center gap-2">
-											<Button
-												onClick={handleCreateImageItem}
-												disabled={
-													!canUploadImages ||
-													createItem.isPending ||
-													uploadImage.isPending ||
-													!uploadedImage ||
-													!imageDescription.trim()
-												}
-												className="flex items-center gap-2"
-											>
-												<Upload className="w-4 h-4" />
-												{createItem.isPending ||
-												uploadImage.isPending
-													? "Adding..."
-													: !canUploadImages
-													? "Upgrade to Add Images"
-													: "Add Item with Image"}
-											</Button>
-											{!canUploadImages && (
+
+										{/* Batch Upload Actions */}
+										{uploadedWardrobeFiles.length > 0 && (
+											<div className="space-y-3">
 												<Button
-													size="sm"
-													variant="outline"
-													onClick={() =>
-														navigate("/pricing")
+													onClick={
+														handleBatchWardrobeUpload
 													}
-													className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white border-0"
+													disabled={
+														isBatchUploading ||
+														wardrobeUploadStats.pending ===
+															0
+													}
+													className="w-full"
+													size="lg"
 												>
-													Upgrade to Pro
+													{isBatchUploading ? (
+														<>
+															<Loader2 className="w-5 h-5 mr-2 animate-spin" />
+															Uploading All (
+															{
+																wardrobeUploadStats.pending
+															}
+															)...
+														</>
+													) : (
+														<>
+															<Zap className="w-5 h-5 mr-2" />
+															Upload All (
+															{
+																wardrobeUploadStats.pending
+															}
+															)
+														</>
+													)}
 												</Button>
-											)}
-										</div>
+
+												<div className="flex gap-2">
+													<Button
+														variant="outline"
+														onClick={
+															clearAllWardrobeFiles
+														}
+														className="flex-1"
+													>
+														Clear All
+													</Button>
+												</div>
+											</div>
+										)}
+
+										{/* Uploaded Files Grid */}
+										{uploadedWardrobeFiles.length > 0 && (
+											<div className="space-y-4">
+												<h4 className="font-medium">
+													Uploaded Images (
+													{
+														uploadedWardrobeFiles.length
+													}
+													)
+												</h4>
+												<div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+													{uploadedWardrobeFiles.map(
+														(file) => (
+															<div
+																key={file.id}
+																className="relative group border rounded-lg overflow-hidden"
+															>
+																<img
+																	src={
+																		file.preview
+																	}
+																	alt={
+																		file
+																			.file
+																			.name
+																	}
+																	className="w-full aspect-square object-cover"
+																/>
+																<div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors">
+																	<div className="absolute top-1 right-1">
+																		{file.success && (
+																			<Badge className="bg-gray-500 text-white text-xs">
+																				<CheckCircle className="w-3 h-3 mr-1" />
+																				Done
+																			</Badge>
+																		)}
+																		{file.isUploading && (
+																			<Badge className="bg-gray-500 text-white text-xs">
+																				<Loader2 className="w-3 h-3 mr-1 animate-spin" />
+																				Uploading
+																			</Badge>
+																		)}
+																		{file.error && (
+																			<Badge className="bg-gray-500 text-white text-xs">
+																				Error
+																			</Badge>
+																		)}
+																		<Button
+																			size="icon"
+																			variant="outline"
+																			className="w-8 h-8 bg-gray-500/20 border-gray-500/50 hover:bg-gray-500/30 text-gray-600 opacity-0 group-hover:opacity-100 transition-opacity"
+																			onClick={() =>
+																				removeWardrobeFile(
+																					file.id
+																				)
+																			}
+																		>
+																			<X className="w-4 h-4" />
+																		</Button>
+																	</div>
+																</div>
+																<div className="absolute bottom-1 left-1 bg-black/70 text-white px-1 py-0.5 rounded text-xs truncate max-w-[calc(100%-8px)]">
+																	{file.file
+																		.name
+																		.length >
+																	12
+																		? `${file.file.name.substring(
+																				0,
+																				12
+																		  )}...`
+																		: file
+																				.file
+																				.name}
+																</div>
+																{file.error && (
+																	<div className="absolute bottom-0 left-0 right-0 bg-black/70 p-2">
+																		<Button
+																			size="sm"
+																			variant="outline"
+																			className="w-full bg-gray-500/20 border-gray-500/50 hover:bg-gray-500/30 text-white text-xs"
+																			onClick={() =>
+																				uploadWardrobeFile(
+																					file.id
+																				)
+																			}
+																		>
+																			<RotateCcw className="w-3 h-3 mr-1" />
+																			Retry
+																		</Button>
+																	</div>
+																)}
+															</div>
+														)
+													)}
+												</div>
+											</div>
+										)}
+
+										{/* Legacy Single Upload - Keep for backward compatibility */}
+										{uploadedWardrobeFiles.length === 0 && (
+											<div className="border-t pt-4">
+												<p className="text-sm text-muted-foreground mb-4">
+													Or upload a single image:
+												</p>
+												<div className="flex items-center gap-2">
+													<Button
+														onClick={
+															handleCreateImageItem
+														}
+														disabled={
+															!canUploadImages ||
+															createItem.isPending ||
+															uploadImage.isPending ||
+															!uploadedImage
+														}
+														className="flex items-center gap-2"
+													>
+														<Upload className="w-4 h-4" />
+														{createItem.isPending ||
+														uploadImage.isPending
+															? "Adding..."
+															: !canUploadImages
+															? "Upgrade to Add Images"
+															: "Add Item with Image"}
+													</Button>
+													{!canUploadImages && (
+														<Button
+															size="sm"
+															variant="outline"
+															onClick={() =>
+																navigate(
+																	"/pricing"
+																)
+															}
+															className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white border-0"
+														>
+															Upgrade to Pro
+														</Button>
+													)}
+												</div>
+											</div>
+										)}
 									</div>
 								</CardContent>
 							</Card>
@@ -1208,7 +1538,7 @@ const Wardrobe = () => {
 								</CardHeader>
 								<CardContent>
 									{isLoading ? (
-										<div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+										<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
 											{[...Array(6)].map((_, i) => (
 												<Skeleton
 													key={i}
@@ -1229,11 +1559,14 @@ const Wardrobe = () => {
 											</p>
 										</div>
 									) : (
-										<div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+										<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
 											{filteredItems.map((item: any) => (
 												<div
 													key={item.id}
-													className="group relative"
+													className="group relative cursor-pointer"
+													onClick={() =>
+														handleItemClick(item)
+													}
 												>
 													<div className="aspect-square bg-muted rounded-lg flex items-center justify-center overflow-hidden">
 														{item.image_url ? (
@@ -1253,95 +1586,44 @@ const Wardrobe = () => {
 																		item.category
 																	);
 																return (
-																	<IconComponent className="w-8 h-8 text-muted-foreground" />
+																	<IconComponent className="w-12 h-12 text-muted-foreground" />
 																);
 															})()
 														)}
-													</div>
-													<div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center">
-														<div className="text-center text-white p-2">
-															<p className="text-sm font-medium truncate">
-																{
-																	item.description
-																}
-															</p>
-															<div className="flex items-center justify-center gap-1 mt-1">
-																<Badge className="text-xs">
-																	{
-																		item.color_primary
-																	}
-																</Badge>
-																<Badge
-																	className={`text-xs ${
-																		item.is_available
-																			? "bg-green-500"
-																			: "bg-orange-500"
-																	}`}
-																>
-																	{item.is_available
-																		? "Ready to Wear"
-																		: "In Laundry"}
-																</Badge>
-															</div>
-															{item.last_worn_date && (
-																<p className="text-xs mt-1 opacity-90">
-																	Worn{" "}
-																	{new Date(
-																		item.last_worn_date
-																	).toLocaleString(
-																		undefined,
-																		{
-																			year: "numeric",
-																			month: "short",
-																			day: "numeric",
-																			hour: "2-digit",
-																			minute: "2-digit",
-																			timeZoneName:
-																				"short",
-																		}
-																	)}{" "}
-																	•{" "}
-																	{item.is_available
-																		? "Ready"
-																		: "Laundry"}
-																</p>
-															)}
-														</div>
 													</div>
 													<div className="absolute top-2 left-2 opacity-0 group-hover:opacity-100 transition-opacity">
 														<Button
 															variant="secondary"
 															size="sm"
-															onClick={() =>
+															onClick={(e) => {
+																e.stopPropagation();
 																handleMarkAsWorn(
 																	item.id.toString()
-																)
-															}
+																);
+															}}
 															disabled={
 																markItemWorn.isPending
 															}
-															className={`h-8 px-2 text-xs ${
+															className={`h-6 px-2 text-xs ${
 																item.is_available
 																	? "bg-green-600 hover:bg-green-700 text-white"
 																	: "bg-orange-600 hover:bg-orange-700 text-white"
 															}`}
 															title="Toggle worn status"
 														>
-															<CheckCircle className="w-3 h-3 mr-1" />
-															{item.is_available
-																? "Mark as Worn"
-																: "Mark as Clean"}
+															<CheckCircle className="w-3 h-3" />
 														</Button>
 													</div>
 													<Button
 														variant="destructive"
 														size="sm"
 														className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity h-6 w-6 p-0"
-														onClick={() =>
+														onClick={(e) => {
+															e.stopPropagation();
 															handleDeleteItem(
 																item.id.toString()
-															)
-														}
+															);
+														}}
 													>
 														<Trash2 className="w-3 h-3" />
 													</Button>
@@ -1351,8 +1633,21 @@ const Wardrobe = () => {
 									)}
 								</CardContent>
 							</Card>
-						</TabsContent>
-					</Tabs>
+						</>
+					)}
+
+					{/* Wardrobe Item Modal */}
+					{selectedItem && (
+						<WardrobeItemModal
+							item={selectedItem}
+							isOpen={isModalOpen}
+							onClose={handleModalClose}
+							onDelete={handleDeleteItem}
+							onMarkAsWorn={handleMarkAsWorn}
+							markItemWorn={markItemWorn}
+							deleteItem={deleteItem}
+						/>
+					)}
 				</div>
 			</div>
 		</div>

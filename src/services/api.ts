@@ -527,7 +527,10 @@ export const wardrobeAPI = {
 		}),
 
 	uploadItemImage: (id: string, file: File) =>
-		uploadFile(`calendar/wardrobe/${id}/image`, file),
+		uploadFile(
+			`calendar/wardrobe/image${id ? `?item_id=${id}` : ""}`,
+			file
+		),
 };
 
 // Outfit Suggestions API endpoints

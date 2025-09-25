@@ -21,6 +21,7 @@ import { fashionAPI } from "@/services/api";
 import { FashionAnalysis } from "@/types";
 import { Navbar } from "@/components/navigation/navbar";
 import { useUserPricingTier } from "@/hooks/usePricing";
+import { AnalysisModal } from "@/components/ui/analysis-modal";
 
 export default function Dashboard() {
 	const [timeRange, setTimeRange] = useState("30d");
@@ -32,6 +33,9 @@ export default function Dashboard() {
 	const { user } = useAuthStore();
 	const { data: userTier, isLoading: pricingLoading } = useUserPricingTier();
 	const isPro = userTier?.tier !== "free";
+	const [selectedAnalysis, setSelectedAnalysis] =
+		useState<FashionAnalysis | null>(null);
+	const [isAnalysisModalOpen, setIsAnalysisModalOpen] = useState(false);
 
 	const fetchDashboardData = async () => {
 		try {
@@ -100,6 +104,17 @@ export default function Dashboard() {
 			setLoading(false);
 		}
 	}, [user]);
+
+	// Modal handlers
+	const handleAnalysisClick = (analysis: FashionAnalysis) => {
+		setSelectedAnalysis(analysis);
+		setIsAnalysisModalOpen(true);
+	};
+
+	const handleAnalysisModalClose = () => {
+		setIsAnalysisModalOpen(false);
+		setSelectedAnalysis(null);
+	};
 
 	const stats = [
 		{
@@ -352,7 +367,12 @@ export default function Dashboard() {
 													.map((analysis) => (
 														<div
 															key={analysis.id}
-															className="flex items-center gap-4 p-3 rounded-lg bg-muted/50"
+															className="flex items-center gap-4 p-3 rounded-lg bg-muted/50 hover:bg-muted/70 transition-colors cursor-pointer"
+															onClick={() =>
+																handleAnalysisClick(
+																	analysis
+																)
+															}
 														>
 															<div className="w-16 h-20 bg-muted rounded-lg flex items-center justify-center">
 																{analysis.image_url ? (
@@ -498,7 +518,12 @@ export default function Dashboard() {
 											{analysisHistory.map((analysis) => (
 												<div
 													key={analysis.id}
-													className="bg-muted/50 rounded-lg p-4 space-y-3 hover:bg-muted/70 transition-colors"
+													className="bg-muted/50 rounded-lg p-4 space-y-3 hover:bg-muted/70 transition-colors cursor-pointer"
+													onClick={() =>
+														handleAnalysisClick(
+															analysis
+														)
+													}
 												>
 													<div className="aspect-[3/4] bg-muted rounded-lg flex items-center justify-center overflow-hidden">
 														{analysis.image_url ? (
@@ -805,6 +830,13 @@ export default function Dashboard() {
 					</Tabs>
 				</div>
 			</div>
+
+			{/* Analysis Modal */}
+			<AnalysisModal
+				analysis={selectedAnalysis}
+				isOpen={isAnalysisModalOpen}
+				onClose={handleAnalysisModalClose}
+			/>
 		</div>
 	);
 }
