@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import {
 	Shirt,
 	Plus,
@@ -67,6 +67,7 @@ interface UploadedWardrobeFile {
 
 const Wardrobe = () => {
 	const navigate = useNavigate();
+	const [searchParams] = useSearchParams();
 	const [viewMode, setViewMode] = useState<"text" | "image">("text");
 	const [searchTerm, setSearchTerm] = useState("");
 	const [categoryFilter, setCategoryFilter] = useState("all");
@@ -118,6 +119,22 @@ const Wardrobe = () => {
 	// Get wardrobe items from API response
 	const wardrobeItems = wardrobeData?.data?.wardrobe || [];
 	//console.log("Wardrobe items:", wardrobeItems);
+
+	// Check for item parameter in URL and open modal
+	useEffect(() => {
+		const itemId = searchParams.get("item");
+		if (itemId && wardrobeItems.length > 0) {
+			const item = wardrobeItems.find(
+				(item: any) => item.id.toString() === itemId.toString()
+			);
+			if (item) {
+				setSelectedItem(item);
+				setIsModalOpen(true);
+				// Clear the URL parameter after opening modal
+				navigate("/wardrobe", { replace: true });
+			}
+		}
+	}, [searchParams, wardrobeItems, navigate]);
 
 	// Filter items based on search and filters
 	const filteredItems = wardrobeItems.filter((item: any) => {
@@ -1218,9 +1235,6 @@ const Wardrobe = () => {
 																className="text-xs px-2 py-1 h-8"
 															>
 																<Trash2 className="w-3 h-3" />
-																<span className="hidden sm:inline ml-1">
-																	Delete
-																</span>
 															</Button>
 														</div>
 													</div>
