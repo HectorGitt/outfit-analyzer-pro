@@ -400,7 +400,7 @@ const CalendarView = () => {
 	return (
 		<div className="min-h-screen bg-background pt-16">
 			<Navbar />
-			<div className="container mx-auto px-4 py-8">
+			<div className="container mx-auto px-2 md:px-4">
 				<div className="max-w-6xl mx-auto space-y-6">
 					{/* Header Section */}
 					<div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
@@ -555,9 +555,9 @@ const CalendarView = () => {
 								{displayEvents.map((event) => (
 									<Card
 										key={event.id}
-										className="card-fashion"
+										className="card-fashion p-3"
 									>
-										<CardHeader>
+										<CardHeader className="p-2 md:p-6">
 											<div className="flex items-start justify-between">
 												<div className="flex items-start gap-4">
 													<div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mt-1">
@@ -584,7 +584,7 @@ const CalendarView = () => {
 															)}
 														</div>
 														{event.description && (
-															<p className="text-sm text-muted-foreground mt-2 line-clamp-2">
+															<p className="text-sm text-muted-foreground mt-2">
 																{
 																	event.description
 																}
@@ -614,7 +614,7 @@ const CalendarView = () => {
 												</div>
 											</div>
 										</CardHeader>
-										<CardContent>
+										<CardContent className="p-2 md:p-6">
 											{/* Show outfit details if available */}
 											{event.hasOutfit &&
 												event.outfitPlan && (
@@ -741,7 +741,7 @@ const CalendarView = () => {
 												)}
 
 											{/* Action Buttons */}
-											<div className="flex items-center gap-3">
+											<div className="flex flex-col gap-3 sm:flex-row sm:items-center">
 												{event.hasOutfit ? (
 													<>
 														<Button
@@ -824,7 +824,7 @@ const CalendarView = () => {
 								))}
 
 								{displayEvents.length === 0 && (
-									<Card className="card-fashion text-center p-8">
+									<Card className="card-fashion text-center p-6 sm:p-8">
 										<div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
 											<Calendar className="w-8 h-8 text-muted-foreground" />
 										</div>
@@ -879,7 +879,7 @@ const CalendarView = () => {
 
 					{/* Quick Stats */}
 					{!isLoading && displayEvents.length > 0 && (
-						<Card className="border-dashed">
+						<Card className="border-dashed p-4 sm:p-6">
 							<CardContent className="pt-6">
 								<div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
 									<div>

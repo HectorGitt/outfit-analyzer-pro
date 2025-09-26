@@ -300,12 +300,19 @@ export const WardrobeItemModal: React.FC<WardrobeItemModalProps> = ({
 					<div className="flex items-center justify-between pt-4 border-t">
 						<div className="flex items-center gap-2">
 							<Button
-								variant="outline"
+								variant="destructive"
 								size="sm"
-								onClick={onClose}
+								onClick={() => {
+									onDelete(item.id.toString());
+									onClose();
+								}}
+								disabled={deleteItem.isPending}
 							>
-								Close
+								<Trash2 className="w-4 h-4 mr-2" />
+								Delete
 							</Button>
+						</div>
+						<div className="flex items-center gap-2">
 							<Button
 								variant="outline"
 								size="sm"
@@ -322,19 +329,12 @@ export const WardrobeItemModal: React.FC<WardrobeItemModalProps> = ({
 									? "Mark as Worn"
 									: "Mark as Clean"}
 							</Button>
-						</div>
-						<div className="flex items-center gap-2">
 							<Button
-								variant="destructive"
+								variant="outline"
 								size="sm"
-								onClick={() => {
-									onDelete(item.id.toString());
-									onClose();
-								}}
-								disabled={deleteItem.isPending}
+								onClick={onClose}
 							>
-								<Trash2 className="w-4 h-4 mr-2" />
-								Delete
+								Close
 							</Button>
 						</div>
 					</div>
