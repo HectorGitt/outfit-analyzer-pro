@@ -110,6 +110,24 @@ const Index = () => {
 				<div className="container mx-auto px-4 max-w-full overflow-hidden">
 					<div className="grid lg:grid-cols-2 gap-12 items-center">
 						<div className="space-y-8" data-aos="fade-right">
+							<div className="flex mb-6">
+								<a
+									href="https://www.producthunt.com/products/closetic?embed=true&utm_source=badge-featured&utm_medium=badge&utm_source=badge-closetic"
+									target="_blank"
+									rel="noopener noreferrer"
+								>
+									<img
+										src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1019665&theme=dark&t=1758927779922"
+										alt="Closetic - AI Fashion and Wardrobe Assistant | Product Hunt"
+										style={{
+											width: "250px",
+											height: "54px",
+										}}
+										width="250"
+										height="54"
+									/>
+								</a>
+							</div>
 							<div className="space-y-6">
 								<h1 className="text-5xl lg:text-7xl font-bold leading-tight">
 									Transform Your Style with{" "}
