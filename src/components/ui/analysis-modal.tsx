@@ -51,9 +51,6 @@ export const AnalysisModal: React.FC<AnalysisModalProps> = ({
 							<h2 className="text-2xl font-bold">
 								Style Analysis Details
 							</h2>
-							<p className="text-sm text-muted-foreground">
-								Analysis #{analysis.id}
-							</p>
 						</div>
 					</DialogTitle>
 					<DialogDescription>

@@ -546,8 +546,7 @@ export default function Dashboard() {
 													<div>
 														<div className="flex items-center justify-between mb-2">
 															<h4 className="font-medium text-sm">
-																Style Analysis #
-																{analysis.id}
+																Style Analysis
 															</h4>
 															<Badge
 																variant="outline"
