@@ -201,9 +201,6 @@ export const AnalysisModal: React.FC<AnalysisModalProps> = ({
 								})}
 							</span>
 						</div>
-						<Badge variant="outline" className="text-xs">
-							ID: {analysis.id}
-						</Badge>
 					</div>
 
 					{/* Close Button */}
